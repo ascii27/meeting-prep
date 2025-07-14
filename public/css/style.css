@@ -1,0 +1,367 @@
+/* Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f5f7fa;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+a {
+  text-decoration: none;
+  color: #3498db;
+}
+
+/* Login Page */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+}
+
+.login-card h1 {
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.login-card p {
+  margin-bottom: 30px;
+  color: #7f8c8d;
+}
+
+.google-btn {
+  display: flex;
+  align-items: center;
+  width: 240px;
+  height: 50px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  margin: 0 auto;
+  transition: all 0.2s ease;
+}
+
+.google-btn:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+
+.google-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 2px;
+  margin: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.btn-text {
+  color: #757575;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  margin-left: 10px;
+}
+
+/* Header */
+.header {
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo h1 {
+  font-size: 24px;
+  color: #2c3e50;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.profile-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.user-email {
+  font-size: 12px;
+  color: #7f8c8d;
+}
+
+.logout-btn {
+  background-color: #e74c3c;
+  color: #fff;
+  padding: 8px 15px;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.logout-btn:hover {
+  background-color: #c0392b;
+}
+
+/* Dashboard */
+.dashboard-container {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.dashboard-container h2 {
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-size: 24px;
+}
+
+.week-view {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.day-container {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.day-header {
+  background-color: #3498db;
+  color: #fff;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.day-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.date {
+  font-size: 14px;
+}
+
+.meetings-list {
+  padding: 15px;
+}
+
+.no-meetings {
+  text-align: center;
+  color: #7f8c8d;
+  padding: 20px;
+  font-style: italic;
+}
+
+.meeting-card {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-left: 4px solid #ccc;
+  margin-bottom: 10px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+}
+
+.meeting-card.status-ready {
+  border-left-color: #2ecc71;
+}
+
+.meeting-card.status-in-progress {
+  border-left-color: #f39c12;
+}
+
+.meeting-card.status-not-started {
+  border-left-color: #95a5a6;
+}
+
+.meeting-time {
+  width: 120px;
+  font-size: 14px;
+  color: #7f8c8d;
+}
+
+.meeting-details {
+  flex: 1;
+}
+
+.meeting-title {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.meeting-attendees {
+  font-size: 13px;
+  color: #7f8c8d;
+}
+
+.meeting-status {
+  width: 100px;
+  text-align: right;
+}
+
+.status-indicator {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.status-indicator.ready {
+  background-color: #e8f8f5;
+  color: #2ecc71;
+}
+
+.status-indicator.in-progress {
+  background-color: #fef9e7;
+  color: #f39c12;
+}
+
+.status-indicator.not-started {
+  background-color: #f8f9f9;
+  color: #95a5a6;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 20px;
+  color: #7f8c8d;
+  font-size: 14px;
+  margin-top: 40px;
+}
+
+/* Error Page */
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.error-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+}
+
+.error-card h1 {
+  font-size: 80px;
+  color: #e74c3c;
+  margin-bottom: 10px;
+}
+
+.error-card h2 {
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.error-card p {
+  margin-bottom: 30px;
+  color: #7f8c8d;
+}
+
+.btn {
+  background-color: #3498db;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+}
+
+.btn:hover {
+  background-color: #2980b9;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .logo {
+    margin-bottom: 15px;
+  }
+  
+  .user-info {
+    flex-direction: column;
+  }
+  
+  .user-profile {
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+  
+  .meeting-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .meeting-time {
+    margin-bottom: 10px;
+  }
+  
+  .meeting-status {
+    width: 100%;
+    text-align: left;
+    margin-top: 10px;
+  }
+}

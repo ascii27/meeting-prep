@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meeting Prep Assistant - Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="logo">
+      <h1>Meeting Prep Assistant</h1>
+    </div>
+    <div class="user-info">
+      <div class="user-profile">
+        <img src="<%= profileImage %>" alt="Profile" class="profile-image">
+        <div class="user-details">
+          <p class="user-name"><%= name %></p>
+          <p class="user-email"><%= email %></p>
+        </div>
+      </div>
+      <a href="/auth/logout" class="logout-btn">Logout</a>
+    </div>
+  </header>
+
+  <main class="dashboard-container">
+    <h2>This Week's Meetings</h2>
+    
+    <div class="week-view">
+      <% weekDays.forEach(day => { %>
+        <div class="day-container">
+          <div class="day-header">
+            <h3><%= day.dayName %></h3>
+            <span class="date"><%= day.formattedDate %></span>
+          </div>
+          
+          <div class="meetings-list">
+            <% if (day.meetings.length === 0) { %>
+              <div class="no-meetings">No meetings scheduled</div>
+            <% } else { %>
+              <% day.meetings.forEach(meeting => { %>
+                <div class="meeting-card status-<%= meeting.status %>">
+                  <div class="meeting-time">
+                    <%= meeting.startTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) %> - 
+                    <%= meeting.endTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) %>
+                  </div>
+                  <div class="meeting-details">
+                    <h4 class="meeting-title"><%= meeting.title %></h4>
+                    <div class="meeting-attendees">
+                      <% if (meeting.attendees.length <= 3) { %>
+                        <%= meeting.attendees.join(', ') %>
+                      <% } else { %>
+                        <%= meeting.attendees.slice(0, 2).join(', ') %> +<%= meeting.attendees.length - 2 %> more
+                      <% } %>
+                    </div>
+                  </div>
+                  <div class="meeting-status">
+                    <% if (meeting.status === 'ready') { %>
+                      <span class="status-indicator ready">Ready</span>
+                    <% } else if (meeting.status === 'in-progress') { %>
+                      <span class="status-indicator in-progress">In Progress</span>
+                    <% } else { %>
+                      <span class="status-indicator not-started">Not Started</span>
+                    <% } %>
+                  </div>
+                </div>
+              <% }); %>
+            <% } %>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2025 Meeting Prep Assistant</p>
+  </footer>
+</body>
+</html>
