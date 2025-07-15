@@ -31,6 +31,9 @@ router.get('/', ensureAuth, async (req, res) => {
       weekOffset
     );
     
+    // Store raw events in session for document API access
+    req.session.events = events;
+    
     // Group events by day
     const groupedEvents = groupEventsByDay(events);
     

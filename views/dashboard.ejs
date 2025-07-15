@@ -46,7 +46,7 @@
               <div class="no-meetings">No meetings scheduled</div>
             <% } else { %>
               <% day.meetings.forEach(meeting => { %>
-                <div class="meeting-card status-<%= meeting.status %>">
+                <div class="meeting-card status-<%= meeting.status %>" data-event-id="<%= meeting.id %>">
                   <div class="meeting-time">
                     <%= meeting.timeRange %>
                   </div>
@@ -95,6 +95,10 @@
                         </ul>
                       </div>
                     <% } %>
+                    <div class="meeting-documents">
+                      <h5>Documents:</h5>
+                      <p>Click to load documents for this meeting.</p>
+                    </div>
                   </div>
                 </div>
               <% }); %>
