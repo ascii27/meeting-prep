@@ -185,18 +185,14 @@ function setupMeetingCardExpansion() {
   const meetingCards = document.querySelectorAll('.meeting-card');
   
   meetingCards.forEach(card => {
-    card.addEventListener('click', function(e) {
-      // Don't expand if clicking on a link
-      if (e.target.tagName === 'A') {
-        return;
-      }
-      
+    card.addEventListener('click', function() {
       // Toggle expanded class
       this.classList.toggle('expanded');
       
-      // Get the meeting details section
-      const detailsSection = this.querySelector('.meeting-expanded-details');
-      const documentsSection = this.querySelector('.meeting-documents');
+      // Find details section within this card
+      const detailsSection = this.querySelector('.meeting-details');
+      const documentsSection = this.querySelector('.documents-section');
+      const preparationSection = this.querySelector('.preparation-section');
       const eventId = this.getAttribute('data-event-id');
       
       if (detailsSection) {
@@ -206,6 +202,11 @@ function setupMeetingCardExpansion() {
           // Fetch documents for this event when expanded
           if (eventId && documentsSection) {
             fetchDocumentsForEvent(eventId, documentsSection);
+          }
+          
+          // Fetch preparation materials for this event when expanded
+          if (eventId && preparationSection && typeof fetchPreparationMaterials === 'function') {
+            fetchPreparationMaterials(eventId, preparationSection);
           }
         } else {
           detailsSection.style.display = 'none';

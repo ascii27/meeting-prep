@@ -45,7 +45,8 @@ app.use(passport.session());
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
 app.use('/dashboard', require('./routes/dashboard'));
-app.use('/api', require('./routes/documents'));
+app.use('/api/documents', require('./routes/documents'));
+app.use('/api/preparation', require('./routes/preparation'));
 
 // 404 handler
 app.use((req, res) => {

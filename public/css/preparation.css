@@ -1,0 +1,134 @@
+/**
+ * Styles for AI-powered meeting preparation UI
+ */
+
+.preparation-container {
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-top: 15px;
+}
+
+.prep-section {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.prep-section h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 18px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.summary-content {
+  line-height: 1.6;
+  color: #444;
+}
+
+.topics-list, .suggestions-list, .documents-list {
+  padding-left: 20px;
+}
+
+.topics-list li, .suggestions-list li, .documents-list li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.meeting-notes {
+  width: 100%;
+  min-height: 100px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.save-notes-btn, .refresh-prep-btn {
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.save-notes-btn:hover, .refresh-prep-btn:hover {
+  background-color: #3367d6;
+}
+
+.save-notes-btn:disabled {
+  background-color: #a4c2f4;
+  cursor: not-allowed;
+}
+
+.refresh-prep-btn {
+  background-color: #34a853;
+}
+
+.refresh-prep-btn:hover {
+  background-color: #2d8e49;
+}
+
+.loading-spinner {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+.loading-spinner::after {
+  content: "";
+  display: block;
+  width: 30px;
+  height: 30px;
+  margin: 10px auto;
+  border-radius: 50%;
+  border: 3px solid #ccc;
+  border-top-color: #4285f4;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  text-align: center;
+  padding: 20px;
+  color: #d32f2f;
+}
+
+.retry-button {
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.retry-button:hover {
+  background-color: #b71c1c;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .preparation-container {
+    padding: 10px;
+  }
+  
+  .prep-section {
+    padding: 12px;
+  }
+}
