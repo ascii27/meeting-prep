@@ -158,10 +158,43 @@ a {
   padding: 0 20px;
 }
 
-.dashboard-container h2 {
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
+}
+
+.dashboard-header h2 {
   color: #2c3e50;
   font-size: 24px;
+  margin: 0;
+}
+
+.week-navigation {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-btn {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.nav-btn:hover {
+  background-color: #2980b9;
+}
+
+#current-week-text {
+  font-weight: 500;
+  color: #2c3e50;
 }
 
 .week-view {
@@ -208,12 +241,20 @@ a {
 
 .meeting-card {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   padding: 15px;
   border-left: 4px solid #ccc;
   margin-bottom: 10px;
   background-color: #f9f9f9;
   border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.meeting-card:hover {
+  background-color: #f2f2f2;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .meeting-card.status-ready {
@@ -243,9 +284,63 @@ a {
   margin-bottom: 5px;
 }
 
+.meeting-title a {
+  color: #2c3e50;
+  text-decoration: none;
+}
+
+.meeting-title a:hover {
+  color: #3498db;
+  text-decoration: underline;
+}
+
+.meeting-location {
+  font-size: 13px;
+  color: #7f8c8d;
+  margin-bottom: 3px;
+}
+
 .meeting-attendees {
   font-size: 13px;
   color: #7f8c8d;
+}
+
+.meeting-expanded-details {
+  width: 100%;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.meeting-description h5,
+.meeting-full-attendees h5 {
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #2c3e50;
+}
+
+.meeting-description p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #34495e;
+  white-space: pre-line;
+}
+
+.meeting-full-attendees ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.meeting-full-attendees li {
+  font-size: 13px;
+  color: #7f8c8d;
+  padding: 3px 0;
+}
+
+.meeting-card.expanded {
+  background-color: #f2f2f2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .meeting-status {
@@ -273,15 +368,6 @@ a {
 .status-indicator.not-started {
   background-color: #f8f9f9;
   color: #95a5a6;
-}
-
-/* Footer */
-.footer {
-  text-align: center;
-  padding: 20px;
-  color: #7f8c8d;
-  font-size: 14px;
-  margin-top: 40px;
 }
 
 /* Error Page */

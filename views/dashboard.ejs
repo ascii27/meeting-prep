@@ -24,7 +24,14 @@
   </header>
 
   <main class="dashboard-container">
-    <h2>This Week's Meetings</h2>
+    <div class="dashboard-header">
+      <h2>Meetings: <%= weekDateRange %></h2>
+      <div class="week-navigation">
+        <button id="prev-week" class="nav-btn">Previous Week</button>
+        <span id="current-week-text"><%= weekOffset === 0 ? 'Current Week' : '' %></span>
+        <button id="next-week" class="nav-btn">Next Week</button>
+      </div>
+    </div>
     
     <div class="week-view">
       <% weekDays.forEach(day => { %>
@@ -41,11 +48,19 @@
               <% day.meetings.forEach(meeting => { %>
                 <div class="meeting-card status-<%= meeting.status %>">
                   <div class="meeting-time">
-                    <%= meeting.startTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) %> - 
-                    <%= meeting.endTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) %>
+                    <%= meeting.timeRange %>
                   </div>
                   <div class="meeting-details">
-                    <h4 class="meeting-title"><%= meeting.title %></h4>
+                    <h4 class="meeting-title">
+                      <% if (meeting.htmlLink) { %>
+                        <a href="<%= meeting.htmlLink %>" target="_blank"><%= meeting.title %></a>
+                      <% } else { %>
+                        <%= meeting.title %>
+                      <% } %>
+                    </h4>
+                    <% if (meeting.location) { %>
+                      <div class="meeting-location"><%= meeting.location %></div>
+                    <% } %>
                     <div class="meeting-attendees">
                       <% if (meeting.attendees.length <= 3) { %>
                         <%= meeting.attendees.join(', ') %>
@@ -63,6 +78,24 @@
                       <span class="status-indicator not-started">Not Started</span>
                     <% } %>
                   </div>
+                  <div class="meeting-expanded-details" style="display: none;">
+                    <% if (meeting.description) { %>
+                      <div class="meeting-description">
+                        <h5>Description:</h5>
+                        <p><%= meeting.description %></p>
+                      </div>
+                    <% } %>
+                    <% if (meeting.attendees && meeting.attendees.length > 0) { %>
+                      <div class="meeting-full-attendees">
+                        <h5>Attendees:</h5>
+                        <ul>
+                          <% meeting.attendees.forEach(attendee => { %>
+                            <li><%= attendee %></li>
+                          <% }); %>
+                        </ul>
+                      </div>
+                    <% } %>
+                  </div>
                 </div>
               <% }); %>
             <% } %>
@@ -75,5 +108,7 @@
   <footer class="footer">
     <p>&copy; 2025 Meeting Prep Assistant</p>
   </footer>
+  
+  <script src="/js/dashboard.js"></script>
 </body>
 </html>
