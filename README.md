@@ -31,7 +31,13 @@ An application that automatically prepares users for upcoming meetings by analyz
    GOOGLE_CLIENT_SECRET=your_client_secret
    SESSION_SECRET=your_session_secret
    ```
-4. Set up Google OAuth credentials in the Google Cloud Console
+4. Set up Google OAuth credentials in the Google Cloud Console:
+   - Create a project in Google Cloud Console
+   - Enable the Google Calendar API and Google Docs API
+   - Configure OAuth consent screen
+   - Create OAuth credentials (Web application)
+   - Add the following redirect URI: `http://localhost:3000/auth/google/callback`
+   - The application requests these scopes: profile, email, calendar.readonly, documents.readonly
 5. Run the application:
    ```
    npm run dev
