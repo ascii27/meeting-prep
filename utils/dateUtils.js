@@ -4,22 +4,32 @@
  */
 
 /**
- * Formats a date object or ISO string to a human-readable format
- * @param {Date|string} date - Date object or ISO string
- * @param {Object} options - Formatting options
+ * Formats a date according to the specified options
+ * @param {Date} date - The date to format
+ * @param {Object} options - Formatting options for Intl.DateTimeFormat
  * @returns {string} - Formatted date string
  */
 function formatDate(date, options = {}) {
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
-  
   const defaultOptions = {
-    weekday: 'long',
     month: 'short',
-    day: 'numeric',
-    ...options
+    day: 'numeric'
   };
   
-  return dateObj.toLocaleDateString('en-US', defaultOptions);
+  const mergedOptions = { ...defaultOptions, ...options };
+  return new Intl.DateTimeFormat('en-US', mergedOptions).format(date);
+}
+
+/**
+ * Gets ISO date string that preserves the local date (YYYY-MM-DD)
+ * This ensures timezone consistency when using dates as keys
+ * @param {Date} date - The date to convert
+ * @returns {string} - ISO date string in local timezone (YYYY-MM-DD)
+ */
+function getLocalISODateString(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 /**
@@ -92,7 +102,7 @@ function groupEventsByDay(events) {
   
   events.forEach(event => {
     const startDate = new Date(event.start);
-    const dayKey = startDate.toISOString().split('T')[0]; // YYYY-MM-DD
+    const dayKey = getLocalISODateString(startDate); // YYYY-MM-DD
     
     if (!groupedEvents[dayKey]) {
       groupedEvents[dayKey] = {
@@ -133,7 +143,7 @@ function getWeekDays(weekOffset = 0) {
       dayName: formatDate(date, { weekday: 'long' }),
       dayNumber: date.getDate(),
       month: formatDate(date, { month: 'short' }),
-      isoString: date.toISOString().split('T')[0]
+      isoString: getLocalISODateString(date)
     });
   }
   
@@ -165,5 +175,6 @@ module.exports = {
   isAllDayEvent,
   groupEventsByDay,
   getWeekDays,
-  getWeekDateRangeText
+  getWeekDateRangeText,
+  getLocalISODateString
 };
