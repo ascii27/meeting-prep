@@ -10,7 +10,7 @@ const documentService = require('../services/documentService');
 
 /**
  * @desc    Get documents for a specific event
- * @route   GET /api/events/:eventId/documents
+ * @route   GET /api/documents/events/:eventId/documents
  * @access  Private
  */
 router.get('/events/:eventId/documents', ensureAuth, async (req, res) => {
