@@ -189,15 +189,16 @@ function setupMeetingCardExpansion() {
       // Toggle expanded class
       this.classList.toggle('expanded');
       
-      // Find details section within this card
-      const detailsSection = this.querySelector('.meeting-details');
-      const documentsSection = this.querySelector('.documents-section');
+      // Find expanded details section within this card
+      const expandedDetailsSection = this.querySelector('.meeting-expanded-details');
+      const documentsSection = this.querySelector('.meeting-documents');
       const preparationSection = this.querySelector('.preparation-section');
       const eventId = this.getAttribute('data-event-id');
       
-      if (detailsSection) {
+      if (expandedDetailsSection) {
         if (this.classList.contains('expanded')) {
-          detailsSection.style.display = 'block';
+          // Show the expanded details
+          expandedDetailsSection.style.display = 'block';
           
           // Fetch documents for this event when expanded
           if (eventId && documentsSection) {
@@ -209,7 +210,8 @@ function setupMeetingCardExpansion() {
             fetchPreparationMaterials(eventId, preparationSection);
           }
         } else {
-          detailsSection.style.display = 'none';
+          // Hide the expanded details
+          expandedDetailsSection.style.display = 'none';
         }
       }
     });
