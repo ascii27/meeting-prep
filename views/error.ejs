@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error - Meeting Prep Assistant</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="logo">
+      <h1>Meeting Prep Assistant</h1>
+    </div>
+    <nav class="nav">
+      <ul>
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/auth/logout">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container error-container">
+    <div class="error-box">
+      <h2>Error</h2>
+      <p class="error-message"><%= message %></p>
+      
+      <% if (error && Object.keys(error).length > 0) { %>
+        <div class="error-details">
+          <h3>Details:</h3>
+          <pre><%= JSON.stringify(error, null, 2) %></pre>
+        </div>
+      <% } %>
+      
+      <div class="error-actions">
+        <a href="/dashboard" class="btn">Return to Dashboard</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2025 Meeting Prep Assistant</p>
+  </footer>
+</body>
+</html>
