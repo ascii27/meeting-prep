@@ -57,7 +57,7 @@ async function fetchDocumentsForEvent(eventId, container) {
     container.innerHTML = '<p>Loading documents...</p>';
     
     // Fetch documents from API
-    const response = await fetch(`/api/events/${eventId}/documents`);
+    const response = await fetch(`/api/documents/events/${eventId}/documents`);
     const result = await response.json();
     
     if (!response.ok) {
