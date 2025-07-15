@@ -7,6 +7,9 @@ An application that automatically prepares users for upcoming meetings by analyz
 - Google authentication for secure access to calendar and document data
 - Day planner list view of meetings for the current week (Monday-Friday)
 - Meeting details including title, time, attendees, and preparation status
+- Document processing for meeting-related Google Docs
+- AI-powered meeting preparation with document summaries and suggestions
+- User notes for personal meeting preparation
 - Clean, responsive UI for desktop and mobile use
 
 ## Tech Stack
@@ -14,8 +17,9 @@ An application that automatically prepares users for upcoming meetings by analyz
 - **Frontend**: HTML, CSS, JavaScript with EJS templating
 - **Backend**: Node.js with Express
 - **Authentication**: Google OAuth 2.0
-- **APIs**: Google Calendar API, Google Docs API (planned)
-- **AI Integration**: OpenAI for document analysis (planned)
+- **APIs**: Google Calendar API, Google Docs API
+- **AI Integration**: OpenAI for document analysis
+- **Caching**: In-memory caching for API responses and AI-generated content
 
 ## Setup
 
@@ -24,12 +28,16 @@ An application that automatically prepares users for upcoming meetings by analyz
    ```
    npm install
    ```
-3. Create a `.env` file with the following variables:
+3. Create a `.env` file with the following variables (see `.env.example`):
    ```
    PORT=3000
    GOOGLE_CLIENT_ID=your_client_id
    GOOGLE_CLIENT_SECRET=your_client_secret
    SESSION_SECRET=your_session_secret
+   OPENAI_API_KEY=your_openai_api_key
+   OPENAI_MODEL=gpt-4
+   OPENAI_MAX_TOKENS=500
+   OPENAI_TEMPERATURE=0.3
    ```
 4. Set up Google OAuth credentials in the Google Cloud Console:
    - Create a project in Google Cloud Console
@@ -45,7 +53,9 @@ An application that automatically prepares users for upcoming meetings by analyz
 
 ## Development Roadmap
 
-- Calendar Integration: Fetch real meeting data from Google Calendar
-- Document Processing: Process documents attached to calendar events
-- AI-Powered Meeting Preparation: Generate meeting summaries and preparation suggestions
-- Data Storage: Store meeting summaries and preparation notes
+- ✅ Calendar Integration: Fetch real meeting data from Google Calendar
+- ✅ Document Processing: Process documents attached to calendar events
+- ✅ AI-Powered Meeting Preparation: Generate meeting summaries and preparation suggestions
+- 🔄 User Management: Enhanced user profiles and preferences
+- 🔄 Data Storage: Persistent storage for meeting preparations and user notes
+- 🔄 Mobile Optimization: Enhanced mobile experience
