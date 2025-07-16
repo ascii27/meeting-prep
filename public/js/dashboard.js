@@ -120,7 +120,7 @@ async function fetchDocumentContent(documentId, container) {
     container.innerHTML = '<p>Loading document content...</p>';
     
     // Fetch document content from API
-    const response = await fetch(`/api/documents/${documentId}`);
+    const response = await fetch(`/api/documents/documents/${documentId}`);
     const result = await response.json();
     
     if (!response.ok) {
@@ -185,35 +185,62 @@ function setupMeetingCardExpansion() {
   const meetingCards = document.querySelectorAll('.meeting-card');
   
   meetingCards.forEach(card => {
-    card.addEventListener('click', function() {
-      // Toggle expanded class
-      this.classList.toggle('expanded');
-      
-      // Find expanded details section within this card
-      const expandedDetailsSection = this.querySelector('.meeting-expanded-details');
-      const documentsSection = this.querySelector('.meeting-documents');
-      const preparationSection = this.querySelector('.preparation-section');
-      const eventId = this.getAttribute('data-event-id');
-      
-      if (expandedDetailsSection) {
-        if (this.classList.contains('expanded')) {
-          // Show the expanded details
-          expandedDetailsSection.style.display = 'block';
+    // Get the main card sections that should trigger expansion/collapse
+    const cardHeader = card.querySelector('.meeting-time');
+    const cardMainDetails = card.querySelector('.meeting-details');
+    const cardStatus = card.querySelector('.meeting-status');
+    
+    // These are the elements that should trigger the expand/collapse
+    const triggerElements = [cardHeader, cardMainDetails, cardStatus];
+    
+    // Add click handlers to the trigger elements only
+    triggerElements.forEach(element => {
+      if (element) {
+        element.addEventListener('click', function(event) {
+          // Get the parent card
+          const parentCard = this.closest('.meeting-card');
           
-          // Fetch documents for this event when expanded
-          if (eventId && documentsSection) {
-            fetchDocumentsForEvent(eventId, documentsSection);
-          }
+          // Toggle expanded class
+          parentCard.classList.toggle('expanded');
           
-          // Fetch preparation materials for this event when expanded
-          if (eventId && preparationSection && typeof fetchPreparationMaterials === 'function') {
-            fetchPreparationMaterials(eventId, preparationSection);
+          // Find expanded details section
+          const expandedDetailsSection = parentCard.querySelector('.meeting-expanded-details');
+          const documentsSection = parentCard.querySelector('.meeting-documents');
+          const preparationSection = parentCard.querySelector('.preparation-section');
+          const eventId = parentCard.getAttribute('data-event-id');
+          
+          if (expandedDetailsSection) {
+            if (parentCard.classList.contains('expanded')) {
+              // Show the expanded details
+              expandedDetailsSection.style.display = 'block';
+              
+              // Fetch documents for this event when expanded
+              if (eventId && documentsSection) {
+                fetchDocumentsForEvent(eventId, documentsSection);
+              }
+              
+              // Fetch preparation materials for this event when expanded
+              if (eventId && preparationSection && typeof fetchPreparationMaterials === 'function') {
+                fetchPreparationMaterials(eventId, preparationSection);
+              }
+            } else {
+              // Hide the expanded details
+              expandedDetailsSection.style.display = 'none';
+            }
           }
-        } else {
-          // Hide the expanded details
-          expandedDetailsSection.style.display = 'none';
-        }
+        });
       }
     });
+    
+    // Get the expanded details section
+    const expandedDetailsSection = card.querySelector('.meeting-expanded-details');
+    
+    if (expandedDetailsSection) {
+      // Prevent clicks inside the expanded details from bubbling up to the card
+      expandedDetailsSection.addEventListener('click', function(event) {
+        // Stop the event from reaching the card
+        event.stopPropagation();
+      });
+    }
   });
 }
