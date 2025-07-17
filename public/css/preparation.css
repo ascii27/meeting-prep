@@ -151,8 +151,72 @@
 
 .loading-spinner {
   text-align: center;
+  padding: 30px;
+  color: #3498db;
+  font-style: italic;
+}
+
+/* Styled loading preparation UI with steps */
+.loading-preparation {
   padding: 20px;
-  color: #666;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+}
+
+.loading-preparation h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.loading-step {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  background-color: #f1f1f1;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.loading-step.current {
+  background-color: #e1f5fe;
+  border-left: 4px solid #2196f3;
+  opacity: 1;
+}
+
+.loading-step.completed {
+  background-color: #e8f5e9;
+  border-left: 4px solid #4caf50;
+  opacity: 1;
+}
+
+.step-icon {
+  font-size: 18px;
+  margin-right: 12px;
+}
+
+.step-text {
+  font-size: 14px;
+  color: #333;
+}
+
+.loading-progress {
+  height: 6px;
+  background-color: #e0e0e0;
+  border-radius: 3px;
+  margin: 15px 0;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #2196f3;
+  width: 0;
+  transition: width 0.8s ease;
 }
 
 .loading-spinner::after {

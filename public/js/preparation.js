@@ -248,14 +248,53 @@ async function refreshPreparationAnalysis(meetingId, container) {
     // Update current meeting ID
     currentMeetingId = targetMeetingId;
     
-    // Show loading state
-    container.innerHTML = '<div class="loading-spinner">Generating AI analysis...</div>';
+    // Show detailed loading state with steps
+    container.innerHTML = `
+      <div class="loading-preparation">
+        <h3>Preparing Meeting Analysis</h3>
+        <div class="loading-step current" id="step-documents">
+          <span class="step-icon">📄</span>
+          <span class="step-text">Downloading meeting documents...</span>
+        </div>
+        <div class="loading-step" id="step-analysis">
+          <span class="step-icon">🧠</span>
+          <span class="step-text">Analyzing content with AI...</span>
+        </div>
+        <div class="loading-step" id="step-summary">
+          <span class="step-icon">📝</span>
+          <span class="step-text">Generating summary...</span>
+        </div>
+        <div class="loading-progress">
+          <div class="progress-bar"></div>
+        </div>
+      </div>
+    `;
+    
+    // Start progress animation
+    const progressBar = document.querySelector('.progress-bar');
+    if (progressBar) {
+      progressBar.style.width = '15%';
+      setTimeout(() => { progressBar.style.width = '30%'; }, 1000);
+    }
     
     // Trigger analysis
     console.log(`[Client] Sending POST request to /api/preparation/${targetMeetingId}/analyze`);
     const response = await fetch(`/api/preparation/${targetMeetingId}/analyze`, {
       method: 'POST'
     });
+    
+    // Update progress to show we're now analyzing
+    const stepDocuments = document.getElementById('step-documents');
+    const stepAnalysis = document.getElementById('step-analysis');
+    if (stepDocuments && stepAnalysis) {
+      stepDocuments.classList.remove('current');
+      stepDocuments.classList.add('completed');
+      stepAnalysis.classList.add('current');
+      if (progressBar) {
+        progressBar.style.width = '60%';
+      }
+    }
+    
     console.log(`[Client] Received response from analyze endpoint:`, response.status);
     
     if (!response.ok) {
@@ -263,12 +302,31 @@ async function refreshPreparationAnalysis(meetingId, container) {
       throw new Error(`Failed to generate analysis: ${response.status} ${response.statusText}`);
     }
     
+    // Update progress to show we're generating summary
+    const stepSummary = document.getElementById('step-summary');
+    if (stepAnalysis && stepSummary) {
+      stepAnalysis.classList.remove('current');
+      stepAnalysis.classList.add('completed');
+      stepSummary.classList.add('current');
+      if (progressBar) {
+        progressBar.style.width = '90%';
+      }
+    }
+    
     console.log('[Client] Successfully received analysis data from server');
     const data = await response.json();
     console.log('[Client] Analysis data:', data);
     
-    // Display updated preparation materials
-    displayPreparationMaterials(data, container);
+    // Complete the progress bar
+    if (progressBar) {
+      progressBar.style.width = '100%';
+    }
+    
+    // Small delay to show the completed progress
+    setTimeout(() => {
+      // Display updated preparation materials
+      displayPreparationMaterials(data, container);
+    }, 500);
   } catch (error) {
     console.error('Error generating analysis:', error);
     container.innerHTML = `
