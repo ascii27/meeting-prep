@@ -75,6 +75,25 @@ router.post('/:meetingId/analyze', ensureAuth, async (req, res) => {
 });
 
 /**
+ * @route   GET /api/preparation/:meetingId/status
+ * @desc    Check if preparation materials exist for a meeting
+ * @access  Private
+ */
+router.get('/:meetingId/status', ensureAuth, (req, res) => {
+  try {
+    const meetingId = req.params.meetingId;
+    
+    // Check if preparation materials exist in cache
+    const exists = meetingPrepService.checkPrepExists(meetingId);
+    
+    res.json({ exists });
+  } catch (error) {
+    console.error('Error checking preparation status:', error);
+    res.status(500).json({ error: 'Failed to check preparation status' });
+  }
+});
+
+/**
  * @route   POST /api/preparation/:meetingId/notes
  * @desc    Save user notes for a meeting
  * @access  Private

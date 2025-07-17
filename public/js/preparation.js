@@ -7,6 +7,56 @@
 let currentMeetingId = null;
 
 /**
+ * Initialize the preparation section with a button to generate analysis
+ * @param {string} meetingId - Meeting ID
+ * @param {HTMLElement} container - Container to display preparation materials
+ */
+async function initializePreparationSection(meetingId, container) {
+  console.log(`[Client] Initializing preparation section for meeting: ${meetingId}`);
+  try {
+    // Set current meeting ID
+    currentMeetingId = meetingId;
+    
+    // Check if preparation materials already exist (cached)
+    console.log(`[Client] Checking if preparation materials exist for meeting: ${meetingId}`);
+    const response = await fetch(`/api/preparation/${meetingId}/status`);
+    
+    if (!response.ok) {
+      throw new Error('Failed to check preparation status');
+    }
+    
+    const data = await response.json();
+    
+    if (data.exists) {
+      // If materials exist, fetch and display them
+      console.log(`[Client] Preparation materials exist for meeting: ${meetingId}, fetching them`);
+      fetchPreparationMaterials(meetingId, container);
+    } else {
+      // If no materials exist, show the generate button
+      console.log(`[Client] No preparation materials exist for meeting: ${meetingId}, showing generate button`);
+      container.innerHTML = `
+        <div class="preparation-placeholder">
+          <p>No AI analysis has been generated for this meeting yet.</p>
+          <button class="generate-analysis-button" onclick="refreshPreparationAnalysis('${meetingId}', this.parentElement.parentElement)">
+            Generate Analysis
+          </button>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('Error initializing preparation section:', error);
+    container.innerHTML = `
+      <div class="preparation-placeholder">
+        <p>Ready to analyze this meeting with AI.</p>
+        <button class="generate-analysis-button" onclick="refreshPreparationAnalysis('${meetingId}', this.parentElement.parentElement)">
+          Generate Analysis
+        </button>
+      </div>
+    `;
+  }
+}
+
+/**
  * Fetch preparation materials for a meeting
  * @param {string} meetingId - Meeting ID
  * @param {HTMLElement} container - Container to display preparation materials
@@ -38,6 +88,9 @@ async function fetchPreparationMaterials(meetingId, container) {
         <button class="retry-button" onclick="fetchPreparationMaterials('${meetingId}', this.parentElement.parentElement)">
           Retry
         </button>
+        <button class="generate-analysis-button" onclick="refreshPreparationAnalysis('${meetingId}', this.parentElement.parentElement)">
+          Generate New Analysis
+        </button>
       </div>
     `;
   }
@@ -62,26 +115,6 @@ function displayPreparationMaterials(data, container) {
   summarySection.innerHTML = `
     <h3>Meeting Summary</h3>
     <div class="summary-content">${data.summary}</div>
-  `;
-  
-  // Add topics section
-  const topicsSection = document.createElement('div');
-  topicsSection.className = 'prep-section topics-section';
-  topicsSection.innerHTML = `
-    <h3>Key Topics</h3>
-    <ul class="topics-list">
-      ${data.topics.map(topic => `<li>${topic}</li>`).join('')}
-    </ul>
-  `;
-  
-  // Add suggestions section
-  const suggestionsSection = document.createElement('div');
-  suggestionsSection.className = 'prep-section suggestions-section';
-  suggestionsSection.innerHTML = `
-    <h3>Preparation Suggestions</h3>
-    <ul class="suggestions-list">
-      ${data.suggestions.map(suggestion => `<li>${suggestion}</li>`).join('')}
-    </ul>
   `;
   
   // Add documents section
@@ -112,8 +145,6 @@ function displayPreparationMaterials(data, container) {
   
   // Append all sections to the preparation container
   prepContainer.appendChild(summarySection);
-  prepContainer.appendChild(topicsSection);
-  prepContainer.appendChild(suggestionsSection);
   prepContainer.appendChild(documentsSection);
   prepContainer.appendChild(notesSection);
   prepContainer.appendChild(refreshSection);
@@ -182,39 +213,65 @@ async function saveUserNotes() {
 }
 
 /**
- * Refresh preparation analysis for the current meeting
+ * Refresh preparation analysis for a meeting
+ * @param {string} meetingId - Meeting ID (optional, uses currentMeetingId if not provided)
+ * @param {HTMLElement} container - Container to display preparation materials (optional)
  */
-async function refreshPreparationAnalysis() {
-  if (!currentMeetingId) return;
+async function refreshPreparationAnalysis(meetingId, container) {
+  // Use provided meetingId or fall back to currentMeetingId
+  const targetMeetingId = meetingId || currentMeetingId;
+  console.log(`[Client] refreshPreparationAnalysis called for meeting: ${targetMeetingId}`);
+  if (!targetMeetingId) {
+    console.error('[Client] No meeting ID provided for analysis');
+    return;
+  }
   
   try {
-    // Get the preparation container
-    const prepContainer = document.querySelector('.preparation-container');
-    if (!prepContainer) return;
-    
-    const container = prepContainer.parentElement;
-    
-    // Show loading state
-    container.innerHTML = '<div class="loading-spinner">Refreshing analysis...</div>';
-    
-    // Trigger re-analysis
-    const response = await fetch(`/api/preparation/${currentMeetingId}/analyze`, {
-      method: 'POST'
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to refresh analysis');
+    // If container is not provided, try to find it
+    if (!container) {
+      const prepContainer = document.querySelector('.preparation-container');
+      if (!prepContainer) return;
+      container = prepContainer.parentElement;
     }
     
+    // Update current meeting ID
+    currentMeetingId = targetMeetingId;
+    
+    // Show loading state
+    container.innerHTML = '<div class="loading-spinner">Generating AI analysis...</div>';
+    
+    // Trigger analysis
+    console.log(`[Client] Sending POST request to /api/preparation/${targetMeetingId}/analyze`);
+    const response = await fetch(`/api/preparation/${targetMeetingId}/analyze`, {
+      method: 'POST'
+    });
+    console.log(`[Client] Received response from analyze endpoint:`, response.status);
+    
+    if (!response.ok) {
+      console.error(`[Client] Error response from server: ${response.status}`);
+      throw new Error(`Failed to generate analysis: ${response.status} ${response.statusText}`);
+    }
+    
+    console.log('[Client] Successfully received analysis data from server');
     const data = await response.json();
+    console.log('[Client] Analysis data:', data);
     
     // Display updated preparation materials
     displayPreparationMaterials(data, container);
   } catch (error) {
-    console.error('Error refreshing analysis:', error);
-    alert('Failed to refresh analysis. Please try again.');
+    console.error('Error generating analysis:', error);
+    container.innerHTML = `
+      <div class="error-message">
+        <p>Failed to generate analysis: ${error.message}</p>
+        <button class="generate-analysis-button" onclick="refreshPreparationAnalysis('${targetMeetingId}', this.parentElement.parentElement)">
+          Try Again
+        </button>
+      </div>
+    `;
   }
 }
 
 // Export functions for use in other scripts
 window.fetchPreparationMaterials = fetchPreparationMaterials;
+window.initializePreparationSection = initializePreparationSection;
+window.refreshPreparationAnalysis = refreshPreparationAnalysis;

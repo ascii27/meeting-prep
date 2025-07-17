@@ -17,12 +17,29 @@ function getPrepCacheKey(meetingId) {
 /**
  * Clear preparation cache for a meeting
  * @param {string} meetingId - Meeting ID
+ * @param {boolean} preserveDocumentCache - Whether to preserve document content cache (default: true)
  */
-function clearPrepCache(meetingId) {
+function clearPrepCache(meetingId, preserveDocumentCache = true) {
+  console.log(`[MeetingPrepService] Clearing preparation cache for meeting ${meetingId}`);
+  
+  // Clear preparation cache for this meeting
   const cacheKey = getPrepCacheKey(meetingId);
   prepCache.del(cacheKey);
-  // Also clear OpenAI analysis cache
+  
+  // Clear OpenAI cache for this meeting
+  console.log(`[MeetingPrepService] Clearing OpenAI cache for meeting ${meetingId}`);
   openaiService.clearMeetingCache(meetingId);
+  
+  // Optionally clear document cache (but by default we preserve it for manual analysis)
+  if (!preserveDocumentCache) {
+    console.log(`[MeetingPrepService] Clearing document cache for meeting ${meetingId}`);
+    // Note: We're not actually clearing the document cache here since we want to preserve
+    // recently accessed documents for manual analysis
+  } else {
+    console.log(`[MeetingPrepService] Preserving document cache for meeting ${meetingId}`);
+  }
+  
+  console.log(`[MeetingPrepService] Cache cleared for meeting ${meetingId}`);
 }
 
 /**
@@ -32,18 +49,24 @@ function clearPrepCache(meetingId) {
  * @returns {Promise<Object>} - Meeting preparation materials
  */
 async function prepareMeetingMaterials(meetingId, tokens) {
+  console.log(`[MeetingPrepService] Preparing materials for meeting ${meetingId}`);
   const cacheKey = getPrepCacheKey(meetingId);
   
   // Check cache first
   const cachedPrep = prepCache.get(cacheKey);
   if (cachedPrep) {
+    console.log(`[MeetingPrepService] Using cached preparation materials for meeting ${meetingId}`);
     return cachedPrep;
   }
   
+  console.log(`[MeetingPrepService] No cached materials found, generating new analysis for meeting ${meetingId}`);
+  
   try {
     // Get documents for the meeting
+    console.log(`[MeetingPrepService] Fetching documents for meeting ${meetingId}`);
     const event = { id: meetingId }; // Minimal event object with ID
     const documents = await documentService.getDocumentsForEvent(event, tokens);
+    console.log(`[MeetingPrepService] Found ${documents ? documents.length : 0} documents for meeting ${meetingId}`);
     
     if (!documents || documents.length === 0) {
       return {
@@ -55,12 +78,22 @@ async function prepareMeetingMaterials(meetingId, tokens) {
     }
     
     // Process each document and collect analyses
+    console.log(`[MeetingPrepService] Starting analysis of ${documents.length} documents for meeting ${meetingId}`);
     const documentAnalyses = await Promise.all(
       documents.map(async (doc) => {
+        console.log(`[MeetingPrepService] Processing document: ${doc.id} - ${doc.title}`);
         // Get document content
-        const documentContent = await documentService.getDocumentContent(doc.id, tokens);
+        console.log(`[MeetingPrepService] Fetching content for document ${doc.id}`);
+        const documentData = await documentService.getDocumentContent(doc.id, tokens);
         
-        if (!documentContent || !documentContent.content) {
+        console.log(`[MeetingPrepService] Document data received:`, {
+          id: documentData?.id,
+          hasContent: !!documentData?.content,
+          contentType: typeof documentData?.content
+        });
+        
+        if (!documentData || !documentData.content) {
+          console.log(`[MeetingPrepService] No content available for document ${doc.id}`);
           return {
             documentId: doc.id,
             title: doc.title,
@@ -68,12 +101,33 @@ async function prepareMeetingMaterials(meetingId, tokens) {
           };
         }
         
+        // Extract the document content text for analysis
+        // Handle both formats: either content is directly a string or it's an object with content property
+        let documentContent;
+        
+        if (typeof documentData.content === 'string') {
+          documentContent = documentData.content;
+        } else if (documentData.content && typeof documentData.content.content === 'string') {
+          documentContent = documentData.content.content;
+        } else {
+          // Fallback to empty string if no valid content format is found
+          console.log(`[MeetingPrepService] Warning: Document content has unexpected format for ${doc.id}`);
+          documentContent = 'No content available';
+        }
+        
+        console.log(`[MeetingPrepService] Document content prepared for analysis:`, {
+          length: documentContent.length,
+          preview: documentContent.substring(0, 100) + '...'
+        });
+        
         // Analyze document content
+        console.log(`[MeetingPrepService] Sending document ${doc.id} to OpenAI for analysis`);
         const analysis = await openaiService.analyzeDocumentForMeeting(
-          documentContent.content,
+          documentContent,
           doc.id,
           meetingId
         );
+        console.log(`[MeetingPrepService] Successfully received analysis for document ${doc.id}`);
         
         return {
           documentId: doc.id,
@@ -128,9 +182,11 @@ async function prepareMeetingMaterials(meetingId, tokens) {
       };
     }
     
-    // Cache the result
+    // Cache the results
+    console.log(`[MeetingPrepService] Caching preparation results for meeting ${meetingId}`);
     prepCache.set(cacheKey, combinedPrep);
     
+    console.log(`[MeetingPrepService] Successfully completed preparation for meeting ${meetingId}`);
     return combinedPrep;
   } catch (error) {
     console.error('Error preparing meeting materials:', error);
@@ -170,9 +226,20 @@ function getUserNotes(meetingId) {
   }
 }
 
+/**
+ * Check if preparation materials exist in cache for a meeting
+ * @param {string} meetingId - Meeting ID
+ * @returns {boolean} - Whether preparation materials exist
+ */
+function checkPrepExists(meetingId) {
+  const cacheKey = getPrepCacheKey(meetingId);
+  return prepCache.has(cacheKey);
+}
+
 module.exports = {
   prepareMeetingMaterials,
   saveUserNotes,
   getUserNotes,
-  clearPrepCache
+  clearPrepCache,
+  checkPrepExists
 };
