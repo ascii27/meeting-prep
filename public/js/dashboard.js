@@ -219,9 +219,9 @@ function setupMeetingCardExpansion() {
                 fetchDocumentsForEvent(eventId, documentsSection);
               }
               
-              // Fetch preparation materials for this event when expanded
-              if (eventId && preparationSection && typeof fetchPreparationMaterials === 'function') {
-                fetchPreparationMaterials(eventId, preparationSection);
+              // Initialize preparation section with a button to generate analysis
+              if (eventId && preparationSection && typeof initializePreparationSection === 'function') {
+                initializePreparationSection(eventId, preparationSection);
               }
             } else {
               // Hide the expanded details
