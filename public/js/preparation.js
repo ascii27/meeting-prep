@@ -112,10 +112,21 @@ function displayPreparationMaterials(data, container) {
   // Add summary section
   const summarySection = document.createElement('div');
   summarySection.className = 'prep-section summary-section';
-  summarySection.innerHTML = `
-    <h3>Meeting Summary</h3>
-    <div class="summary-content">${data.summary}</div>
-  `;
+  
+  // Create the header
+  const summaryHeader = document.createElement('h3');
+  summaryHeader.textContent = 'Meeting Summary';
+  summarySection.appendChild(summaryHeader);
+  
+  // Create the content container
+  const summaryContent = document.createElement('div');
+  summaryContent.className = 'summary-content';
+  
+  // Set the HTML content (already sanitized by marked library on the server)
+  summaryContent.innerHTML = data.summary;
+  
+  // Add the content to the section
+  summarySection.appendChild(summaryContent);
   
   // Add documents section
   const documentsSection = document.createElement('div');

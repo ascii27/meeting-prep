@@ -1,5 +1,13 @@
 const OpenAI = require('openai');
 const NodeCache = require('node-cache');
+const marked = require('marked');
+
+// Configure marked options
+marked.setOptions({
+  gfm: true,
+  breaks: true,
+  sanitize: true
+});
 
 // Initialize cache with 30 minute TTL by default
 const cache = new NodeCache({ stdTTL: 1800, checkperiod: 120 });
@@ -75,12 +83,16 @@ async function generateSummary(documentContent, documentId, meetingId) {
     });
     console.log(`[OpenAI Service] Received response from OpenAI API for summary generation`);
     
-    const summary = response.choices[0].message.content.trim();
+    const markdownSummary = response.choices[0].message.content.trim();
     
-    // Cache the result
-    cache.set(cacheKey, summary);
+    // Convert markdown to HTML
+    console.log(`[OpenAI Service] Converting markdown summary to HTML`);
+    const htmlSummary = marked.parse(markdownSummary);
     
-    return summary;
+    // Cache the HTML result
+    cache.set(cacheKey, htmlSummary);
+    
+    return htmlSummary;
   } catch (error) {
     console.error('Error generating summary:', error);
     throw new Error('Failed to generate document summary');
