@@ -18,6 +18,7 @@
     "express": "^5.1.0",
     "express-session": "^1.18.1",
     "googleapis": "^152.0.0",
+    "marked": "^16.0.0",
     "node-cache": "^5.1.2",
     "openai": "^5.9.0",
     "passport": "^0.7.0",
