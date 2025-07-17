@@ -123,7 +123,38 @@ function processEvents(events) {
   });
 }
 
+/**
+ * Fetches a specific calendar event by its ID
+ * @param {string} eventId - The ID of the event to fetch
+ * @param {Object} tokens - OAuth2 tokens from passport authentication
+ * @returns {Promise<Object>} - Promise resolving to the event object
+ */
+async function getEventById(eventId, tokens) {
+  try {
+    console.log(`[CalendarService] Fetching event by ID: ${eventId}`);
+    const calendar = createCalendarClient(tokens);
+    
+    const response = await calendar.events.get({
+      calendarId: 'primary',
+      eventId: eventId
+    });
+    
+    if (!response || !response.data) {
+      console.log(`[CalendarService] No event found with ID: ${eventId}`);
+      return null;
+    }
+    
+    // Process the single event using the same function we use for lists
+    const processedEvents = processEvents([response.data]);
+    return processedEvents[0];
+  } catch (error) {
+    console.error(`[CalendarService] Error fetching event ${eventId}:`, error);
+    return null;
+  }
+}
+
 module.exports = {
   getWeekEvents,
-  getWeekDateRange
+  getWeekDateRange,
+  getEventById
 };
