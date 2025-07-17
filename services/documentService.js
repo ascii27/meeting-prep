@@ -9,6 +9,21 @@ const { google } = require('googleapis');
 const documentCache = new Map();
 
 /**
+ * Clear document cache for a specific meeting
+ * @param {string} meetingId - Meeting ID to clear cache for
+ */
+function clearDocumentCache(meetingId) {
+  console.log(`[DocumentService] Clearing document cache for meeting: ${meetingId}`);
+  
+  // Since we don't have a direct mapping of meetingId to documentIds in the cache,
+  // we'll need to clear the entire document cache
+  // In a production environment, you might want to implement a more targeted approach
+  documentCache.clear();
+  
+  console.log(`[DocumentService] Document cache cleared`);
+}
+
+/**
  * Create a Google Docs client
  * @param {Object} tokens - OAuth tokens
  * @returns {Object} - Google Docs client
@@ -207,5 +222,6 @@ module.exports = {
   getDocumentById,        // Keep for backward compatibility
   getDocumentsForEvent,
   extractDocumentContent,
-  clearCache
+  clearCache,
+  clearDocumentCache      // New function to clear cache for a specific meeting
 };
