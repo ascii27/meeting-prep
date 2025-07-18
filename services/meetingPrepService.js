@@ -92,7 +92,37 @@ async function prepareMeetingMaterials(meetingId, tokens) {
     return cachedPrep;
   }
   
-  console.log(`[MeetingPrepService] No cached materials found, generating new analysis for meeting ${meetingId}`);
+  // Check database for existing summary
+  console.log(`[MeetingPrepService] Checking database for existing summary for meeting ${meetingId}`);
+  try {
+    const dbSummary = await dataStorageService.getMeetingSummary(meetingId);
+    if (dbSummary) {
+      console.log(`[MeetingPrepService] Found summary in database for meeting ${meetingId}`);
+      
+      // Get event to get document list
+      const event = await calendarService.getEventById(meetingId, tokens);
+      const documents = event ? await documentService.getDocumentsForEvent(event, tokens) : [];
+      
+      // Create preparation object from database summary
+      const dbPrep = {
+        summary: dbSummary.summary,
+        summaryHtml: dbSummary.summaryHtml,
+        topics: dbSummary.topics || [],
+        suggestions: dbSummary.suggestions || [],
+        documents: documents.map(doc => ({ id: doc.id, title: doc.title }))
+      };
+      
+      // Cache it for future requests
+      prepCache.set(cacheKey, dbPrep);
+      
+      return dbPrep;
+    }
+  } catch (dbError) {
+    console.error(`[MeetingPrepService] Error checking database for summary:`, dbError);
+    // Continue with generating new analysis
+  }
+  
+  console.log(`[MeetingPrepService] No existing materials found, generating new analysis for meeting ${meetingId}`);
   
   try {
     // Get documents for the meeting
