@@ -6,6 +6,7 @@
   <title>Meeting Prep Assistant - Dashboard</title>
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/preparation.css">
+  <link rel="stylesheet" href="/css/meeting-card.css">
 </head>
 <body>
   <header class="header">
@@ -64,9 +65,14 @@
                     <% } %>
                     <div class="meeting-attendees">
                       <% if (meeting.attendees.length <= 3) { %>
-                        <%= meeting.attendees.join(', ') %>
+                        <% meeting.attendees.forEach(attendee => { %>
+                          <span class="attendee-pill"><%= attendee %></span>
+                        <% }); %>
                       <% } else { %>
-                        <%= meeting.attendees.slice(0, 2).join(', ') %> +<%= meeting.attendees.length - 2 %> more
+                        <% meeting.attendees.slice(0, 2).forEach(attendee => { %>
+                          <span class="attendee-pill"><%= attendee %></span>
+                        <% }); %>
+                        <span class="attendee-pill more-attendees">+<%= meeting.attendees.length - 2 %> more</span>
                       <% } %>
                     </div>
                   </div>
@@ -89,11 +95,11 @@
                     <% if (meeting.attendees && meeting.attendees.length > 0) { %>
                       <div class="meeting-full-attendees">
                         <h5>Attendees:</h5>
-                        <ul>
+                        <div class="attendees-container">
                           <% meeting.attendees.forEach(attendee => { %>
-                            <li><%= attendee %></li>
+                            <span class="attendee-pill"><%= attendee %></span>
                           <% }); %>
-                        </ul>
+                        </div>
                       </div>
                     <% } %>
                     <div class="meeting-documents">
