@@ -83,7 +83,7 @@
                     <% if (meeting.description) { %>
                       <div class="meeting-description">
                         <h5>Description:</h5>
-                        <p><%= meeting.description %></p>
+                        <div class="description-content"><%- meeting.description %></div>
                       </div>
                     <% } %>
                     <% if (meeting.attendees && meeting.attendees.length > 0) { %>
