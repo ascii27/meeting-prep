@@ -127,8 +127,8 @@ router.get('/:meetingId/status', ensureAuth, async (req, res) => {
     const meetingId = req.params.meetingId;
     console.log(`[API] GET /api/preparation/${meetingId}/status - Checking if materials exist`);
     
-    // Check if preparation materials exist in cache
-    const exists = meetingPrepService.checkPrepExists(meetingId);
+    // Check if preparation materials exist in cache or database
+    const exists = await meetingPrepService.checkPrepExists(meetingId);
     
     console.log(`[API] Materials exist for meeting ${meetingId}: ${exists}`);
     res.json({ exists });
