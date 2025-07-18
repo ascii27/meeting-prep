@@ -270,9 +270,11 @@ a {
 }
 
 .meeting-time {
-  width: 120px;
+  width: 160px;
   font-size: 14px;
   color: #7f8c8d;
+  padding-right: 15px;
+  white-space: nowrap;
 }
 
 .meeting-details {
@@ -518,7 +520,9 @@ a {
   }
   
   .meeting-time {
+    width: 100%;
     margin-bottom: 10px;
+    padding-right: 0;
   }
   
   .meeting-status {
