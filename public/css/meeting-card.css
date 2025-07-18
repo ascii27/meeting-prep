@@ -31,3 +31,30 @@
   margin-top: 10px;
   padding-top: 10px;
 }
+
+/* Styles for HTML content in meeting descriptions */
+.description-content {
+  padding: 8px 0;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.description-content a {
+  color: #3498db;
+  text-decoration: underline;
+}
+
+.description-content ul, 
+.description-content ol {
+  margin-left: 20px;
+  margin-bottom: 10px;
+}
+
+.description-content p {
+  margin-bottom: 10px;
+}
+
+.description-content img {
+  max-width: 100%;
+  height: auto;
+}
