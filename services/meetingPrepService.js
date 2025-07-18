@@ -1,6 +1,8 @@
 const NodeCache = require('node-cache');
 const documentService = require('./documentService');
 const openaiService = require('./openaiService');
+const dataStorageService = require('./dataStorageService');
+const calendarService = require('./calendarService');
 
 // Initialize cache with 1 hour TTL by default
 const prepCache = new NodeCache({ stdTTL: 3600, checkperiod: 300 });
@@ -30,6 +32,10 @@ function clearPrepCache(meetingId, preserveDocumentCache = true) {
   console.log(`[MeetingPrepService] Clearing OpenAI cache for meeting ${meetingId}`);
   openaiService.clearMeetingCache(meetingId);
   
+  // Clear meeting summary cache in data storage service
+  console.log(`[MeetingPrepService] Clearing meeting summary cache in data storage service`);
+  dataStorageService.clearMeetingSummaryCache(meetingId);
+  
   // Optionally clear document cache (but by default we preserve it for manual analysis)
   if (!preserveDocumentCache) {
     console.log(`[MeetingPrepService] Clearing document cache for meeting ${meetingId}`);
@@ -49,6 +55,33 @@ function clearPrepCache(meetingId, preserveDocumentCache = true) {
  * @returns {Promise<Object>} - Meeting preparation materials
  */
 async function prepareMeetingMaterials(meetingId, tokens) {
+  try {
+    // Debug tokens
+    console.log(`[MeetingPrepService] Preparing materials for meeting ${meetingId} with tokens:`, {
+      hasAccessToken: !!tokens.accessToken,
+      hasRefreshToken: !!tokens.refreshToken,
+      user: tokens.user
+    });
+    
+    // Ensure we have user ID
+    if (!tokens.user || !tokens.user.id) {
+      console.error('[MeetingPrepService] Missing user ID in tokens');
+      tokens.user = tokens.user || {};
+      
+      // If we have a googleId in the tokens, use that as the user ID
+      if (tokens.googleId) {
+        console.log(`[MeetingPrepService] Using googleId ${tokens.googleId} as user ID`);
+        tokens.user.id = tokens.googleId;
+      } else {
+        console.log('[MeetingPrepService] No user ID found, using default');
+        tokens.user.id = 'default-user'; // Fallback to a default user ID
+      }
+    }
+  } catch (error) {
+    console.error('Error preparing meeting materials:', error);
+    throw new Error('Failed to prepare meeting materials');
+  }
+  
   console.log(`[MeetingPrepService] Preparing materials for meeting ${meetingId}`);
   const cacheKey = getPrepCacheKey(meetingId);
   
@@ -186,6 +219,26 @@ async function prepareMeetingMaterials(meetingId, tokens) {
     console.log(`[MeetingPrepService] Caching preparation results for meeting ${meetingId}`);
     prepCache.set(cacheKey, combinedPrep);
     
+    // Store in database via data storage service
+    try {
+      console.log(`[MeetingPrepService] Storing meeting summary in database for meeting ${meetingId}`);
+      // Get the full event details to store the meeting in the database
+      const event = await calendarService.getEventById(meetingId, tokens);
+      if (event) {
+        // Store the meeting in the database
+        console.log(`[MeetingPrepService] Storing meeting with user ID: ${tokens.user.id}`);
+        await dataStorageService.storeMeetingFromEvent(event, tokens.user.id);
+        
+        // Store the summary in the database
+        // Extract document IDs for reference
+        const documentIds = documents.map(doc => doc.id);
+        await dataStorageService.storeMeetingSummary(meetingId, combinedPrep, documentIds, tokens.user.id);
+      }
+    } catch (dbError) {
+      // Log error but continue - we still have the cache
+      console.error(`[MeetingPrepService] Error storing in database, continuing with cache only:`, dbError);
+    }
+    
     console.log(`[MeetingPrepService] Successfully completed preparation for meeting ${meetingId}`);
     return combinedPrep;
   } catch (error) {
@@ -198,12 +251,25 @@ async function prepareMeetingMaterials(meetingId, tokens) {
  * Store user notes for a meeting
  * @param {string} meetingId - Meeting ID
  * @param {string} notes - User notes
+ * @param {string} userId - User ID
  * @returns {boolean} - Success status
  */
-function saveUserNotes(meetingId, notes) {
+async function saveUserNotes(meetingId, notes, userId) {
   try {
+    // Store in cache
     const cacheKey = `notes:${meetingId}`;
     prepCache.set(cacheKey, notes);
+    
+    // Store in database if possible
+    if (userId) {
+      try {
+        await dataStorageService.storePreparationNote(meetingId, userId, notes);
+      } catch (dbError) {
+        console.error('Error saving notes to database:', dbError);
+        // Continue with cache only
+      }
+    }
+    
     return true;
   } catch (error) {
     console.error('Error saving user notes:', error);
@@ -214,12 +280,36 @@ function saveUserNotes(meetingId, notes) {
 /**
  * Get user notes for a meeting
  * @param {string} meetingId - Meeting ID
- * @returns {string|null} - User notes or null if not found
+ * @param {string} userId - User ID
+ * @returns {Promise<string|null>} - User notes or null if not found
  */
-function getUserNotes(meetingId) {
+async function getUserNotes(meetingId, userId) {
   try {
+    // First check cache
     const cacheKey = `notes:${meetingId}`;
-    return prepCache.get(cacheKey) || null;
+    const cachedNotes = prepCache.get(cacheKey);
+    if (cachedNotes) {
+      return cachedNotes;
+    }
+    
+    // If not in cache and we have a userId, check database
+    if (userId) {
+      try {
+        const notes = await dataStorageService.getPreparationNotes(meetingId, userId);
+        if (notes && notes.length > 0) {
+          // Use the most recent note
+          const latestNote = notes[0].noteText;
+          // Cache it for future requests
+          prepCache.set(cacheKey, latestNote);
+          return latestNote;
+        }
+      } catch (dbError) {
+        console.error('Error getting notes from database:', dbError);
+        // Continue with cache only
+      }
+    }
+    
+    return null;
   } catch (error) {
     console.error('Error getting user notes:', error);
     return null;

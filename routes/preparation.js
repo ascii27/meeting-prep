@@ -16,7 +16,10 @@ router.get('/:meetingId', ensureAuth, async (req, res) => {
     // Get user's OAuth tokens from session
     const tokens = {
       accessToken: req.user.accessToken,
-      refreshToken: req.user.refreshToken
+      refreshToken: req.user.refreshToken,
+      user: {
+        id: req.user.googleId
+      }
     };
     
     // Get preparation materials
@@ -26,7 +29,7 @@ router.get('/:meetingId', ensureAuth, async (req, res) => {
     console.log(`[API] Successfully retrieved preparation materials for meeting ${meetingId}`);
     
     // Get user notes if available
-    const userNotes = meetingPrepService.getUserNotes(meetingId);
+    const userNotes = await meetingPrepService.getUserNotes(meetingId, req.user.googleId);
     
     // Combine preparation materials with user notes
     const response = {
@@ -56,7 +59,10 @@ router.post('/:meetingId/analyze', ensureAuth, async (req, res) => {
     // Get user's OAuth tokens from session
     const tokens = {
       accessToken: req.user.accessToken,
-      refreshToken: req.user.refreshToken
+      refreshToken: req.user.refreshToken,
+      user: {
+        id: req.user.googleId
+      }
     };
     
     // Clear cache to force re-analysis but preserve document cache
@@ -96,7 +102,7 @@ router.post('/:meetingId/analyze', ensureAuth, async (req, res) => {
     const prepMaterials = await meetingPrepService.prepareMeetingMaterials(meetingId, tokens);
     
     // Get user notes if available
-    const userNotes = meetingPrepService.getUserNotes(meetingId);
+    const userNotes = await meetingPrepService.getUserNotes(meetingId, req.user.googleId);
     
     // Combine preparation materials with user notes
     const response = {
@@ -116,7 +122,7 @@ router.post('/:meetingId/analyze', ensureAuth, async (req, res) => {
  * @desc    Check if preparation materials exist for a meeting
  * @access  Private
  */
-router.get('/:meetingId/status', ensureAuth, (req, res) => {
+router.get('/:meetingId/status', ensureAuth, async (req, res) => {
   try {
     const meetingId = req.params.meetingId;
     console.log(`[API] GET /api/preparation/${meetingId}/status - Checking if materials exist`);
@@ -137,7 +143,7 @@ router.get('/:meetingId/status', ensureAuth, (req, res) => {
  * @desc    Save user notes for a meeting
  * @access  Private
  */
-router.post('/:meetingId/notes', ensureAuth, (req, res) => {
+router.post('/:meetingId/notes', ensureAuth, async (req, res) => {
   try {
     const meetingId = req.params.meetingId;
     const { notes } = req.body;
@@ -147,7 +153,7 @@ router.post('/:meetingId/notes', ensureAuth, (req, res) => {
     }
     
     // Save user notes
-    const success = meetingPrepService.saveUserNotes(meetingId, notes);
+    const success = await meetingPrepService.saveUserNotes(meetingId, notes, req.user.googleId);
     
     if (success) {
       res.json({ success: true, message: 'Notes saved successfully' });

@@ -1,0 +1,33 @@
+/* Meeting Card Styles */
+.meeting-card {
+  position: relative;
+  cursor: pointer;
+}
+
+/* This makes the expanded details a non-interactive part of the card for clicks */
+.meeting-expanded-details {
+  position: relative;
+  z-index: 2;
+  cursor: default;
+}
+
+/* Make all interactive elements inside the expanded details clickable */
+.meeting-expanded-details a,
+.meeting-expanded-details button,
+.meeting-documents a,
+.meeting-documents button,
+.preparation-section a,
+.preparation-section button,
+.meeting-description,
+.meeting-full-attendees {
+  cursor: pointer;
+  position: relative;
+  z-index: 3;
+}
+
+/* Ensure the expanded content is clearly separated visually */
+.meeting-expanded-details {
+  border-top: 1px solid #e0e0e0;
+  margin-top: 10px;
+  padding-top: 10px;
+}

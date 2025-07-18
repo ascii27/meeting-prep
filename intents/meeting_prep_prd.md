@@ -29,12 +29,7 @@ Professionals often spend significant time preparing for meetings by reviewing a
 - Provide preparation suggestions based on meeting agendas when available
 - Highlight action items or preparation tasks for the user
 
-### 4. User Management
-- Google authentication for secure access to calendar and document data
-- User profile management with preferences for meeting preparation
-- Data privacy controls for sensitive meeting information
-
-### 5. Data Storage
+### 4. Data Storage
 - Store meeting summaries and preparation notes for future reference
 - Save user preferences and settings
 - Maintain history of past meetings and preparations
