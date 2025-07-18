@@ -15,7 +15,7 @@
     </div>
     <div class="user-info">
       <div class="user-profile">
-        <img src="<%= profileImage %>" alt="Profile" class="profile-image">
+        <img src="<%= profileImage || '/img/default-profile.svg' %>" alt="Profile" class="profile-image" onerror="this.src='/img/default-profile.svg';">
         <div class="user-details">
           <p class="user-name"><%= name %></p>
           <p class="user-email"><%= email %></p>
