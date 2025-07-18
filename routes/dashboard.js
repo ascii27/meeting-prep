@@ -48,7 +48,10 @@ router.get('/', ensureAuth, async (req, res) => {
           endTime: new Date(event.end),
           timeRange: formatDateRange(event.start, event.end),
           location: event.location,
-          attendees: event.attendees.map(a => a.name || a.email),
+          attendees: event.attendees
+            .map(a => a.name || a.email)
+            // Filter out any attendee that matches the location (e.g., [Google Hangout])
+            .filter(attendee => !event.location || attendee !== event.location),
           status: event.preparationStatus,
           htmlLink: event.htmlLink,
           description: event.description
