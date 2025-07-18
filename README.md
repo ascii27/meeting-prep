@@ -19,6 +19,7 @@ An application that automatically prepares users for upcoming meetings by analyz
 - **Authentication**: Google OAuth 2.0
 - **APIs**: Google Calendar API, Google Docs API
 - **AI Integration**: OpenAI for document analysis
+- **Database**: PostgreSQL with Sequelize ORM
 - **Caching**: In-memory caching for API responses and AI-generated content
 
 ## Setup
@@ -46,9 +47,21 @@ An application that automatically prepares users for upcoming meetings by analyz
    - Create OAuth credentials (Web application)
    - Add the following redirect URI: `http://localhost:3000/auth/google/callback`
    - The application requests these scopes: profile, email, calendar.readonly, documents.readonly
-5. Run the application:
+5. Set up your PostgreSQL database and update the database configuration in `config/config.json`
+
+6. Run the application:
    ```
    npm run dev
+   ```
+
+   To reset the database structure (this will alter tables to match models):
+   ```
+   npm run dev:reset-db
+   ```
+   
+   To run a one-time database reset without starting the development server:
+   ```
+   npm run reset-db
    ```
 
 ## Development Roadmap

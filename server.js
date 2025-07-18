@@ -57,6 +57,9 @@ app.use((req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
+// Check for reset-db command-line argument
+const shouldResetDb = process.argv.includes('--reset-db');
+
 // Initialize database and start server
 async function startServer() {
   try {
@@ -64,13 +67,18 @@ async function startServer() {
     const dbConnected = await testConnection();
     
     if (dbConnected) {
-      console.log('Syncing database models...');
-      // Sync all models with the database
-      // In production, you might want to use migrations instead of sync
-      await sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
-      console.log('Database synced successfully');
+      if (shouldResetDb) {
+        console.log('⚠️ RESETTING DATABASE STRUCTURE - This will alter tables to match models');
+        await sequelize.sync({ alter: true });
+        console.log('✅ Database structure reset successfully');
+      } else {
+        console.log('Connecting to database without altering structure');
+        // Just authenticate without syncing/altering
+        await sequelize.authenticate();
+        console.log('✅ Database connection established successfully');
+      }
     } else {
-      console.warn('Database connection failed, continuing with in-memory storage only');
+      console.warn('⚠️ Database connection failed, continuing with in-memory storage only');
     }
     
     // Start the server
