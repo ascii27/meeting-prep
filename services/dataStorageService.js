@@ -53,12 +53,15 @@ async function storeMeetingSummary(meetingId, summary, documentIds = [], userId)
       return summary;
     }
     
-    // Store in database
-    const dbSummary = await meetingSummaryRepository.createFromAnalysis(
-      meeting.id,
-      summary,
-      documentIds
-    );
+    // Create the meeting summary in the database
+    const meetingSummary = await meetingSummaryRepository.create({
+      meetingId: meeting.id,
+      summaryText: summary.summary,
+      summaryHtml: summary.summaryHtml || '',
+      documentIds: documentIds,
+      topics: summary.topics || [],
+      suggestions: summary.suggestions || []
+    });
     
     // Store in cache
     cache.set(`summary:${meetingId}`, summary);
@@ -105,7 +108,9 @@ async function getMeetingSummary(meetingId) {
     // Create summary object from database record
     const summary = {
       summary: dbSummary.summaryText,
-      summaryHtml: dbSummary.summaryHtml
+      summaryHtml: dbSummary.summaryHtml,
+      topics: dbSummary.topics || [],
+      suggestions: dbSummary.suggestions || []
     };
     
     // Store in cache for future requests

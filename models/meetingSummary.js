@@ -43,6 +43,18 @@ const MeetingSummary = sequelize.define('MeetingSummary', {
     allowNull: true,
     defaultValue: [],
     field: 'document_ids'
+  },
+  topics: {
+    type: DataTypes.JSONB,
+    allowNull: true,
+    defaultValue: [],
+    field: 'topics'
+  },
+  suggestions: {
+    type: DataTypes.JSONB,
+    allowNull: true,
+    defaultValue: [],
+    field: 'suggestions'
   }
 }, {
   tableName: 'meeting_summaries',
