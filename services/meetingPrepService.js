@@ -347,13 +347,32 @@ async function getUserNotes(meetingId, userId) {
 }
 
 /**
- * Check if preparation materials exist in cache for a meeting
+ * Check if preparation materials exist for a meeting (in cache or database)
  * @param {string} meetingId - Meeting ID
- * @returns {boolean} - Whether preparation materials exist
+ * @returns {Promise<boolean>} - Whether preparation materials exist
  */
-function checkPrepExists(meetingId) {
+async function checkPrepExists(meetingId) {
+  // First check cache
   const cacheKey = getPrepCacheKey(meetingId);
-  return prepCache.has(cacheKey);
+  if (prepCache.has(cacheKey)) {
+    console.log(`[MeetingPrepService] Found preparation materials in cache for meeting ${meetingId}`);
+    return true;
+  }
+  
+  // If not in cache, check database
+  try {
+    console.log(`[MeetingPrepService] Checking database for meeting summary ${meetingId}`);
+    const dbSummary = await dataStorageService.getMeetingSummary(meetingId);
+    if (dbSummary) {
+      console.log(`[MeetingPrepService] Found preparation materials in database for meeting ${meetingId}`);
+      return true;
+    }
+  } catch (error) {
+    console.error(`[MeetingPrepService] Error checking database for meeting summary:`, error);
+  }
+  
+  console.log(`[MeetingPrepService] No preparation materials found for meeting ${meetingId}`);
+  return false;
 }
 
 module.exports = {
