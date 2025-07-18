@@ -59,7 +59,7 @@ router.get('/', ensureAuth, async (req, res) => {
     res.render('dashboard', {
       name: req.user.displayName,
       email: req.user.email,
-      profileImage: req.user.image,
+      profileImage: req.user.profilePicture,
       weekDays,
       weekDateRange,
       weekOffset
