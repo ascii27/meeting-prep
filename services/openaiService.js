@@ -67,7 +67,7 @@ async function generateSummary(documentContent, documentId, meetingId) {
       throw new Error('OpenAI client not initialized');
     }
     
-    console.log(`[OpenAI Service] Calling OpenAI API with model: ${process.env.OPENAI_MODEL || 'gpt-4'}, max_tokens: ${process.env.OPENAI_MAX_TOKENS || '500'}`);
+    console.log(`[OpenAI Service] Calling OpenAI API with model: ${process.env.OPENAI_MODEL || 'gpt-4'}`);
     const response = await openai.chat.completions.create({
       model: process.env.OPENAI_MODEL || 'gpt-4',
       messages: [
