@@ -10,10 +10,7 @@
  * @returns {string} - Formatted date string
  */
 function formatDate(date, options = {}) {
-  const defaultOptions = {
-    month: 'short',
-    day: 'numeric'
-  };
+  const defaultOptions = { };
   
   const mergedOptions = { ...defaultOptions, ...options };
   return new Intl.DateTimeFormat('en-US', mergedOptions).format(date);
@@ -139,7 +136,7 @@ function getWeekDays(weekOffset = 0) {
     
     weekDays.push({
       date,
-      formattedDate: formatDate(date),
+      formattedDate: formatDate(date, { day: 'numeric', month: 'long' }),
       dayName: formatDate(date, { weekday: 'long' }),
       dayNumber: date.getDate(),
       month: formatDate(date, { month: 'short' }),
