@@ -97,7 +97,7 @@ class DailyBriefingManager {
               <i class="fas fa-eye"></i> View
             </button>
             <button class="btn btn-sm btn-outline-danger delete-briefing-btn">
-              <i class="fas fa-trash"></i>
+              <i class="fas fa-trash"></i> Delete
             </button>
           </div>
         </div>

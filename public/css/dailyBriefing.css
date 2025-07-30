@@ -6,8 +6,10 @@
 /* Briefing Section in Day Cards */
 .briefing-section {
   border-top: 1px solid #e9ecef;
-  padding-top: 0.75rem;
+  padding: 0.75rem 30px 0 15px;
   margin-top: 0.75rem;
+  margin-left: -15px;
+  margin-right: -15px;
 }
 
 .briefing-completed {
@@ -25,6 +27,21 @@
 .briefing-actions {
   display: flex;
   gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.briefing-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  min-width: auto;
+}
+
+.briefing-actions .btn i {
+  margin-right: 0.25rem;
 }
 
 .briefing-processing {
