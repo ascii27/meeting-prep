@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { ensureAuth } = require('../middleware/auth');
 const dailyBriefingService = require('../services/dailyBriefingService');
 const { formatDate } = require('../utils/dateUtils');
 
@@ -7,19 +8,22 @@ const { formatDate } = require('../utils/dateUtils');
  * Generate a daily briefing for a specific date
  * POST /api/daily-briefing/generate
  */
-router.post('/generate', async (req, res) => {
+router.post('/generate', ensureAuth, async (req, res) => {
   try {
     const { date } = req.body;
-    const userId = req.session.userId;
-    const userTokens = req.session.tokens;
+    const userId = req.user.googleId;
+    const userTokens = {
+      accessToken: req.user.accessToken,
+      refreshToken: req.user.refreshToken
+    };
 
-    if (!userId) {
-      return res.status(401).json({ error: 'User not authenticated' });
-    }
-
-    if (!userTokens) {
-      return res.status(401).json({ error: 'User tokens not found. Please re-authenticate.' });
-    }
+    console.log('Daily Briefing Generate Request:', {
+      date,
+      userId: userId ? 'present' : 'missing',
+      userTokens: userTokens ? 'present' : 'missing',
+      sessionId: req.sessionID,
+      userGoogleId: req.user.googleId
+    });
 
     if (!date) {
       return res.status(400).json({ error: 'Date is required' });
@@ -73,14 +77,17 @@ router.post('/generate', async (req, res) => {
  * Get existing daily briefing for a specific date
  * GET /api/daily-briefing/:date
  */
-router.get('/:date', async (req, res) => {
+router.get('/:date', ensureAuth, async (req, res) => {
   try {
     const { date } = req.params;
-    const userId = req.session.userId;
+    const userId = req.user.googleId;
 
-    if (!userId) {
-      return res.status(401).json({ error: 'User not authenticated' });
-    }
+    console.log('Daily Briefing Get Request:', {
+      date,
+      userId: userId ? 'present' : 'missing',
+      sessionId: req.sessionID,
+      userGoogleId: req.user.googleId
+    });
 
     const briefing = await dailyBriefingService.getDailyBriefing(userId, date);
     
@@ -100,14 +107,10 @@ router.get('/:date', async (req, res) => {
  * Get daily briefings within a date range
  * GET /api/daily-briefing/range/:startDate/:endDate
  */
-router.get('/range/:startDate/:endDate', async (req, res) => {
+router.get('/range/:startDate/:endDate', ensureAuth, async (req, res) => {
   try {
     const { startDate, endDate } = req.params;
-    const userId = req.session.userId;
-
-    if (!userId) {
-      return res.status(401).json({ error: 'User not authenticated' });
-    }
+    const userId = req.user.googleId;
 
     const briefings = await dailyBriefingService.getDailyBriefingsInRange(
       userId, 
@@ -127,14 +130,10 @@ router.get('/range/:startDate/:endDate', async (req, res) => {
  * Delete a daily briefing
  * DELETE /api/daily-briefing/:date
  */
-router.delete('/:date', async (req, res) => {
+router.delete('/:date', ensureAuth, async (req, res) => {
   try {
     const { date } = req.params;
-    const userId = req.session.userId;
-
-    if (!userId) {
-      return res.status(401).json({ error: 'User not authenticated' });
-    }
+    const userId = req.user.googleId;
 
     const success = await dailyBriefingService.deleteDailyBriefing(userId, date);
     
@@ -154,14 +153,10 @@ router.delete('/:date', async (req, res) => {
  * Get briefings by status
  * GET /api/daily-briefing/status/:status
  */
-router.get('/status/:status', async (req, res) => {
+router.get('/status/:status', ensureAuth, async (req, res) => {
   try {
     const { status } = req.params;
-    const userId = req.session.userId;
-
-    if (!userId) {
-      return res.status(401).json({ error: 'User not authenticated' });
-    }
+    const userId = req.user.googleId;
 
     const briefings = await dailyBriefingService.getBriefingsByStatus(userId, status);
     res.json({ briefings });

@@ -139,15 +139,6 @@ class DailyBriefingManager {
       // Update UI to show generation in progress
       this.showGenerationProgress(briefingSection, date);
       
-      // Start Server-Sent Events connection
-      this.currentEventSource = new EventSource('/api/daily-briefing/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ date })
-      });
-
       // Use fetch for POST request with SSE response
       const response = await fetch('/api/daily-briefing/generate', {
         method: 'POST',
@@ -158,7 +149,8 @@ class DailyBriefingManager {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to start briefing generation');
+        const errorText = await response.text();
+        throw new Error(`Failed to start briefing generation: ${errorText}`);
       }
 
       // Handle Server-Sent Events
@@ -189,10 +181,6 @@ class DailyBriefingManager {
       this.showGenerationError(briefingSection, date, error.message);
     } finally {
       this.isGenerating = false;
-      if (this.currentEventSource) {
-        this.currentEventSource.close();
-        this.currentEventSource = null;
-      }
     }
   }
 
@@ -266,10 +254,6 @@ class DailyBriefingManager {
   }
 
   cancelGeneration() {
-    if (this.currentEventSource) {
-      this.currentEventSource.close();
-      this.currentEventSource = null;
-    }
     this.isGenerating = false;
     this.showSuccessMessage('Briefing generation cancelled.');
     this.checkExistingBriefings(); // Refresh status

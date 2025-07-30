@@ -153,8 +153,52 @@ async function getEventById(eventId, tokens) {
   }
 }
 
+/**
+ * Fetches calendar events for a specific date
+ * @param {string} userId - User ID (not used in current implementation but kept for API consistency)
+ * @param {string} date - Date in YYYY-MM-DD format
+ * @param {Object} tokens - OAuth2 tokens from passport authentication
+ * @returns {Promise<Array>} - Promise resolving to an array of calendar events for the date
+ */
+async function getEventsByDate(userId, date, tokens) {
+  try {
+    console.log(`[CalendarService] Fetching events for date: ${date}`);
+    
+    if (!tokens) {
+      console.error('[CalendarService] No tokens provided for getEventsByDate');
+      return [];
+    }
+
+    const calendar = createCalendarClient(tokens);
+    
+    // Create date range for the specific day
+    const startOfDay = new Date(date + 'T00:00:00.000Z');
+    const endOfDay = new Date(date + 'T23:59:59.999Z');
+    
+    console.log(`[CalendarService] Date range: ${startOfDay.toISOString()} to ${endOfDay.toISOString()}`);
+    
+    const response = await calendar.events.list({
+      calendarId: 'primary',
+      timeMin: startOfDay.toISOString(),
+      timeMax: endOfDay.toISOString(),
+      singleEvents: true,
+      orderBy: 'startTime',
+      maxResults: 50
+    });
+    
+    const events = response.data.items || [];
+    console.log(`[CalendarService] Found ${events.length} events for ${date}`);
+    
+    return processEvents(events);
+  } catch (error) {
+    console.error(`[CalendarService] Error fetching events for date ${date}:`, error);
+    return [];
+  }
+}
+
 module.exports = {
   getWeekEvents,
   getWeekDateRange,
-  getEventById
+  getEventById,
+  getEventsByDate
 };

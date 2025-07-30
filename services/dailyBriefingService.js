@@ -2,13 +2,15 @@ const DailyBriefingRepository = require('../repositories/dailyBriefingRepository
 const calendarService = require('./calendarService');
 const documentService = require('./documentService');
 const openaiService = require('./openaiService');
-const { MeetingSummary } = require('../models');
+const { MeetingSummary, Meeting } = require('../models');
+const meetingRepository = require('../repositories/meetingRepository');
 const { formatDate, isToday } = require('../utils/dateUtils');
 const { marked } = require('marked');
 
 class DailyBriefingService {
   constructor() {
     this.repository = new DailyBriefingRepository();
+    this.meetingRepository = meetingRepository;
   }
 
   /**
@@ -79,12 +81,12 @@ class DailyBriefingService {
           }
 
           try {
-            const summary = await this.processMeeting(meeting, userId);
+            const summary = await this.processMeeting(meeting, userId, userTokens);
             if (summary) {
               meetingSummaries.push(summary);
             }
           } catch (error) {
-            console.error(`[DailyBriefingService] Error processing meeting ${meeting.id}:`, error);
+            console.error(`[DailyBriefingService] Error processing meeting ${meeting.title || meeting.summary} (ID: ${meeting.id}):`, error);
             // Continue with other meetings even if one fails
           }
         }
@@ -129,25 +131,62 @@ class DailyBriefingService {
    * Process a single meeting - download documents and generate summary
    * @param {Object} meeting - Meeting object from calendar
    * @param {string} userId - User ID
+   * @param {Object} userTokens - OAuth2 tokens for document access
    * @returns {Promise<Object|null>} Meeting summary or null if no documents
    */
-  async processMeeting(meeting, userId) {
+  async processMeeting(meeting, userId, userTokens) {
     try {
-      console.log(`[DailyBriefingService] Processing meeting: ${meeting.summary}`);
+      console.log(`[DailyBriefingService] Processing meeting: ${meeting.title || meeting.summary}`);
+
+      // First, find the Meeting record by googleEventId
+      let meetingRecord = await this.meetingRepository.findByGoogleEventId(meeting.id);
+      
+      if (!meetingRecord) {
+        console.log(`[DailyBriefingService] No meeting record found for Google Event ID: ${meeting.id}. Creating new record.`);
+        
+        // Create a new meeting record
+        try {
+          const meetingData = {
+            googleEventId: meeting.id,
+            title: meeting.title || meeting.summary || 'Untitled Meeting',
+            description: meeting.description || '',
+            startTime: new Date(meeting.start),
+            endTime: new Date(meeting.end),
+            location: meeting.location || '',
+            userId: userId,
+            attendees: meeting.attendees || [],
+            attachments: meeting.attachments || []
+          };
+          
+          meetingRecord = await this.meetingRepository.createOrUpdateFromGoogleEvent(meeting, userId);
+          console.log(`[DailyBriefingService] Created new meeting record with ID: ${meetingRecord.id}`);
+        } catch (error) {
+          console.error(`[DailyBriefingService] Error creating meeting record:`, error);
+          return null;
+        }
+      }
+      
+      console.log(`[DailyBriefingService] Found meeting record with ID: ${meetingRecord.id}`);
 
       // Check if we already have a summary for this meeting
+      // First verify the meeting belongs to the user
+      if (meetingRecord.userId !== userId) {
+        console.log(`[DailyBriefingService] Meeting ${meetingRecord.id} does not belong to user ${userId}`);
+        return null;
+      }
+      
+      // Then find the summary without the problematic join
       const existingSummary = await MeetingSummary.findOne({
         where: { 
-          meetingId: meeting.id,
-          userId: userId 
+          meetingId: meetingRecord.id
         }
       });
 
       if (existingSummary) {
-        console.log(`[DailyBriefingService] Using existing summary for meeting ${meeting.id}`);
+        console.log(`[DailyBriefingService] Using existing summary for meeting ${meetingRecord.id}`);
         return {
-          meetingId: meeting.id,
-          meetingTitle: meeting.summary,
+          meetingId: meetingRecord.id,
+          meetingTitle: meeting.title || meeting.summary,
           summary: existingSummary.summaryText,
           keyTopics: existingSummary.keyTopics ? JSON.parse(existingSummary.keyTopics) : [],
           attendees: meeting.attendees || []
@@ -155,18 +194,34 @@ class DailyBriefingService {
       }
 
       // Download documents for this meeting
-      const documents = await documentService.fetchDocumentsForMeeting(meeting.id, userId);
+      const documents = await documentService.getDocumentsForEvent(meeting, userTokens);
       
       if (!documents || documents.length === 0) {
-        console.log(`[DailyBriefingService] No documents found for meeting ${meeting.id}`);
+        console.log(`[DailyBriefingService] No documents found for meeting ${meetingRecord.id}`);
         return null;
       }
 
-      // Generate AI summary for the meeting
-      const documentContents = documents.map(doc => ({
-        title: doc.title,
-        content: doc.content
-      }));
+      // Fetch content for each document
+      const documentContents = [];
+      for (const doc of documents) {
+        try {
+          const docContent = await documentService.getDocumentContent(doc.id, userTokens);
+          if (docContent && docContent.content) {
+            documentContents.push({
+              title: doc.title,
+              content: docContent.content
+            });
+          }
+        } catch (error) {
+          console.error(`[DailyBriefingService] Error fetching content for document ${doc.id}:`, error);
+          // Continue with other documents
+        }
+      }
+      
+      if (documentContents.length === 0) {
+        console.log(`[DailyBriefingService] No document content could be fetched for meeting ${meetingRecord.id}`);
+        return null;
+      }
 
       const aiAnalysis = await openaiService.generateMeetingSummary(
         meeting.summary || 'Meeting',
@@ -176,7 +231,7 @@ class DailyBriefingService {
       // Store the summary in the database
       const meetingSummary = await MeetingSummary.create({
         userId: userId,
-        meetingId: meeting.id,
+        meetingId: meetingRecord.id,
         meetingTitle: meeting.summary,
         summaryText: aiAnalysis.summary,
         summaryHtml: marked(aiAnalysis.summary),
@@ -185,11 +240,11 @@ class DailyBriefingService {
         documentCount: documents.length
       });
 
-      console.log(`[DailyBriefingService] Generated and stored summary for meeting ${meeting.id}`);
+      console.log(`[DailyBriefingService] Generated and stored summary for meeting ${meetingRecord.id}`);
 
       return {
-        meetingId: meeting.id,
-        meetingTitle: meeting.summary,
+        meetingId: meetingRecord.id,
+        meetingTitle: meeting.title || meeting.summary,
         summary: aiAnalysis.summary,
         keyTopics: aiAnalysis.keyTopics || [],
         attendees: meeting.attendees || [],
@@ -197,7 +252,7 @@ class DailyBriefingService {
       };
 
     } catch (error) {
-      console.error(`[DailyBriefingService] Error processing meeting ${meeting.id}:`, error);
+      console.error(`[DailyBriefingService] Error processing meeting ${meeting.title || meeting.summary} (ID: ${meeting.id}):`, error);
       throw error;
     }
   }

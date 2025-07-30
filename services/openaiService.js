@@ -1,6 +1,6 @@
 const OpenAI = require('openai');
 const NodeCache = require('node-cache');
-const marked = require('marked');
+const { marked } = require('marked');
 
 // Configure marked options
 marked.setOptions({
@@ -271,8 +271,182 @@ async function analyzeDocumentForMeeting(documentContent, documentId, meetingId)
   }
 }
 
+/**
+ * Generate a meeting summary from multiple documents
+ * @param {string} meetingTitle - Title of the meeting
+ * @param {Array} documentContents - Array of {title, content} objects
+ * @returns {Promise<Object>} Meeting summary with key topics and preparation suggestions
+ */
+async function generateMeetingSummary(meetingTitle, documentContents) {
+  if (!openai) {
+    throw new Error('OpenAI client not initialized');
+  }
+
+  try {
+    console.log(`[OpenAI Service] Generating meeting summary for: ${meetingTitle}`);
+    
+    // Combine all document contents
+    const combinedContent = documentContents.map(doc => 
+      `Document: ${doc.title}\n${doc.content}`
+    ).join('\n\n---\n\n');
+
+    const prompt = `You are an AI assistant helping to prepare for a meeting. Please analyze the following documents for the meeting "${meetingTitle}" and provide:
+
+1. A concise summary (2-3 paragraphs) of the key information
+2. A list of key topics that will likely be discussed
+3. Specific preparation suggestions for the attendee
+
+Documents:
+${combinedContent}
+
+Please format your response as JSON with the following structure:
+{
+  "summary": "Your summary here",
+  "keyTopics": ["topic1", "topic2", "topic3"],
+  "preparationSuggestions": ["suggestion1", "suggestion2", "suggestion3"]
+}`;
+
+    const response = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a helpful assistant that analyzes meeting documents and provides structured summaries in JSON format.'
+        },
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      max_tokens: 1000,
+      temperature: 0.3
+    });
+
+    const content = response.choices[0].message.content;
+    
+    try {
+      const parsed = JSON.parse(content);
+      console.log(`[OpenAI Service] Successfully generated meeting summary for: ${meetingTitle}`);
+      return parsed;
+    } catch (parseError) {
+      console.error('[OpenAI Service] Error parsing JSON response:', parseError);
+      // Fallback to basic summary
+      return {
+        summary: content,
+        keyTopics: [],
+        preparationSuggestions: []
+      };
+    }
+
+  } catch (error) {
+    console.error('[OpenAI Service] Error generating meeting summary:', error);
+    throw new Error('Failed to generate meeting summary');
+  }
+}
+
+/**
+ * Generate a comprehensive daily briefing from meeting summaries
+ * @param {Object} briefingContext - Context object with date, meetings, and summaries
+ * @returns {Promise<Object>} Daily briefing summary
+ */
+async function generateDailyBriefing(briefingContext) {
+  if (!openai) {
+    throw new Error('OpenAI client not initialized');
+  }
+
+  try {
+    console.log(`[OpenAI Service] Generating daily briefing for ${briefingContext.date}`);
+    
+    const { date, isToday, totalMeetings, meetingsWithDocuments, meetings, summaries } = briefingContext;
+    
+    // Create context summary
+    const meetingsList = meetings.map(meeting => 
+      `- ${meeting.title} (${meeting.startTime})`
+    ).join('\n');
+    
+    const summariesText = summaries.map(summary => 
+      `Meeting: ${summary.meetingTitle}\nSummary: ${summary.summary}\nKey Topics: ${summary.keyTopics.join(', ')}\n`
+    ).join('\n---\n');
+
+    const timeContext = isToday ? 'today' : `on ${date}`;
+    
+    const prompt = `You are an AI assistant creating a comprehensive daily briefing. Please analyze the following information about meetings ${timeContext} and create a unified briefing.
+
+Date: ${date}
+Total Meetings: ${totalMeetings}
+Meetings with Documents: ${meetingsWithDocuments}
+
+All Meetings:
+${meetingsList}
+
+Detailed Summaries (for meetings with documents):
+${summariesText}
+
+Please create a comprehensive daily briefing that:
+1. Provides an executive summary of the day's meetings
+2. Highlights key themes and connections across meetings
+3. Identifies important decisions or actions needed
+4. Suggests strategic preparation priorities
+
+Format your response as JSON:
+{
+  "summary": "Your comprehensive briefing summary here (3-4 paragraphs)"
+}`;
+
+    const response = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a strategic executive assistant that creates comprehensive daily briefings by analyzing multiple meetings and finding connections and priorities.'
+        },
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      max_tokens: 1200,
+      temperature: 0.4
+    });
+
+    const content = response.choices[0].message.content;
+    
+    try {
+      // Try to extract JSON from the content if it's not pure JSON
+      let jsonContent = content;
+      
+      // Check if the content might contain markdown or text before/after JSON
+      const jsonStartIndex = content.indexOf('{');
+      const jsonEndIndex = content.lastIndexOf('}');
+      
+      if (jsonStartIndex !== -1 && jsonEndIndex !== -1 && jsonEndIndex > jsonStartIndex) {
+        // Extract what looks like JSON
+        jsonContent = content.substring(jsonStartIndex, jsonEndIndex + 1);
+      }
+      
+      const parsed = JSON.parse(jsonContent);
+      console.log(`[OpenAI Service] Successfully generated daily briefing for ${date}`);
+      return parsed;
+    } catch (parseError) {
+      console.error('[OpenAI Service] Error parsing daily briefing JSON:', parseError);
+      console.log('[OpenAI Service] Raw content received:', content);
+      
+      // Fallback to basic summary
+      return {
+        summary: content
+      };
+    }
+
+  } catch (error) {
+    console.error('[OpenAI Service] Error generating daily briefing:', error);
+    throw new Error('Failed to generate daily briefing');
+  }
+}
+
 module.exports = {
   generateSummary,
   analyzeDocumentForMeeting,
+  generateMeetingSummary,
+  generateDailyBriefing,
   clearMeetingCache
 };
