@@ -27,10 +27,16 @@ class DailyBriefingManager {
       }
       
       if (e.target.classList.contains('view-briefing-btn')) {
+        console.log('👁️ View briefing button clicked!', e.target);
         const briefingSection = e.target.closest('.briefing-section');
+        console.log('📁 Found briefing section:', briefingSection);
         const date = briefingSection ? briefingSection.dataset.date : null;
+        console.log('📅 Extracted date:', date);
         if (date) {
+          console.log('🚀 Calling viewBriefing with date:', date);
           this.viewBriefing(date);
+        } else {
+          console.error('❌ No date found for view briefing button');
         }
       }
       
@@ -260,80 +266,224 @@ class DailyBriefingManager {
   }
 
   async viewBriefing(date) {
+    console.log('🔍 viewBriefing called with date:', date);
+    
     try {
+      console.log('📡 Fetching briefing from API:', `/api/daily-briefing/${date}`);
       const response = await fetch(`/api/daily-briefing/${date}`);
       
+      console.log('📡 API Response status:', response.status, response.statusText);
+      
       if (!response.ok) {
-        throw new Error('Failed to load briefing');
+        console.error('❌ API response not ok:', response.status, response.statusText);
+        throw new Error(`Failed to load briefing: ${response.status} ${response.statusText}`);
       }
       
-      const { briefing } = await response.json();
+      const responseData = await response.json();
+      console.log('📄 API Response data:', responseData);
+      
+      const { briefing } = responseData;
+      console.log('📋 Extracted briefing object:', briefing);
+      
+      if (!briefing) {
+        console.error('❌ No briefing object in response');
+        throw new Error('No briefing data received');
+      }
+      
+      console.log('🎭 Calling showBriefingModal with briefing');
       this.showBriefingModal(briefing);
       
     } catch (error) {
-      console.error('Error viewing briefing:', error);
+      console.error('❌ Error viewing briefing:', error);
       alert('Failed to load briefing. Please try again.');
     }
   }
 
   showBriefingModal(briefing) {
+    console.log('🎭 showBriefingModal called with briefing:', briefing);
+    
     const modal = document.createElement('div');
-    modal.className = 'modal fade';
+    modal.className = 'custom-modal-overlay';
+    console.log('📦 Created modal element with class:', modal.className);
+    
+    // Parse JSON strings if they exist
+    let peopleOverview = null;
+    let priorityPreparations = null;
+    
+    console.log('🔍 Parsing peopleOverview:', briefing.peopleOverview, 'Type:', typeof briefing.peopleOverview);
+    try {
+      if (briefing.peopleOverview && typeof briefing.peopleOverview === 'string') {
+        // Try JSON parse first, if that fails, treat as comma-separated string
+        try {
+          peopleOverview = JSON.parse(briefing.peopleOverview);
+          console.log('✅ Parsed peopleOverview as JSON:', peopleOverview);
+        } catch (jsonError) {
+          // Handle comma-separated string format
+          peopleOverview = briefing.peopleOverview.split(',').map(item => item.trim()).filter(item => item);
+          console.log('✅ Parsed peopleOverview as comma-separated string:', peopleOverview);
+        }
+      } else if (Array.isArray(briefing.peopleOverview)) {
+        peopleOverview = briefing.peopleOverview;
+        console.log('✅ Using peopleOverview as array:', peopleOverview);
+      }
+    } catch (e) {
+      console.warn('⚠️ Failed to parse peopleOverview:', e);
+    }
+    
+    console.log('🔍 Parsing priorityPreparations:', briefing.priorityPreparations, 'Type:', typeof briefing.priorityPreparations);
+    try {
+      if (briefing.priorityPreparations && typeof briefing.priorityPreparations === 'string') {
+        // Try JSON parse first, if that fails, treat as comma-separated string
+        try {
+          priorityPreparations = JSON.parse(briefing.priorityPreparations);
+          console.log('✅ Parsed priorityPreparations as JSON:', priorityPreparations);
+        } catch (jsonError) {
+          // Handle comma-separated string or single string format
+          if (briefing.priorityPreparations.includes(',')) {
+            priorityPreparations = briefing.priorityPreparations.split(',').map(item => item.trim()).filter(item => item);
+          } else {
+            priorityPreparations = [briefing.priorityPreparations.trim()];
+          }
+          console.log('✅ Parsed priorityPreparations as string:', priorityPreparations);
+        }
+      } else if (Array.isArray(briefing.priorityPreparations)) {
+        priorityPreparations = briefing.priorityPreparations;
+        console.log('✅ Using priorityPreparations as array:', priorityPreparations);
+      }
+    } catch (e) {
+      console.warn('⚠️ Failed to parse priorityPreparations:', e);
+    }
+    
     modal.innerHTML = `
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">
-              <i class="fas fa-calendar-day"></i>
-              Daily Briefing - ${new Date(briefing.briefingDate).toLocaleDateString()}
-            </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            <div class="briefing-content">
-              ${briefing.summaryHtml || '<p>No content available</p>'}
+        <div class="custom-modal-dialog">
+          <div class="custom-modal-content">
+            <div class="custom-modal-header">
+              <h3 class="custom-modal-title">
+                <i class="fas fa-calendar-day"></i>
+                Daily Briefing - ${new Date(briefing.briefingDate).toLocaleDateString()}
+              </h3>
+              <button type="button" class="custom-modal-close" aria-label="Close">&times;</button>
             </div>
-            
-            ${briefing.peopleOverview ? `
-              <div class="people-overview mt-4">
-                <h6><i class="fas fa-users"></i> Key People</h6>
-                <div class="people-list">
-                  ${briefing.peopleOverview.map(person => `
-                    <span class="badge bg-secondary me-2">${person}</span>
-                  `).join('')}
+            <div class="custom-modal-body">
+              <div class="briefing-content">
+                ${briefing.summaryHtml || '<p>No content available</p>'}
+              </div>
+              
+              ${peopleOverview && Array.isArray(peopleOverview) && peopleOverview.length > 0 ? `
+                <div class="people-overview">
+                  <h4><i class="fas fa-users"></i> Key People</h4>
+                  <div class="people-list">
+                    ${peopleOverview.map(person => `
+                      <span class="person-badge">${person}</span>
+                    `).join('')}
+                  </div>
                 </div>
-              </div>
-            ` : ''}
-            
-            ${briefing.priorityPreparations ? `
-              <div class="priority-preparations mt-4">
-                <h6><i class="fas fa-star"></i> Priority Preparations</h6>
-                <ul class="list-group list-group-flush">
-                  ${briefing.priorityPreparations.map(prep => `
-                    <li class="list-group-item">${prep}</li>
-                  `).join('')}
-                </ul>
-              </div>
-            ` : ''}
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-outline-danger delete-briefing-btn" data-date="${briefing.briefingDate}">
-              <i class="fas fa-trash"></i> Delete
-            </button>
+              ` : ''}
+              
+              ${priorityPreparations && Array.isArray(priorityPreparations) && priorityPreparations.length > 0 ? `
+                <div class="priority-preparations">
+                  <h4><i class="fas fa-star"></i> Priority Preparations</h4>
+                  <ul class="preparations-list">
+                    ${priorityPreparations.map(prep => `
+                      <li>${prep}</li>
+                    `).join('')}
+                  </ul>
+                </div>
+              ` : ''}
+            </div>
+            <div class="custom-modal-footer">
+              <button type="button" class="btn btn-secondary close-modal">Close</button>
+              <button type="button" class="btn btn-danger delete-briefing-btn" data-date="${briefing.briefingDate}">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </div>
           </div>
         </div>
-      </div>
     `;
     
-    document.body.appendChild(modal);
-    const bsModal = new bootstrap.Modal(modal);
-    bsModal.show();
+    console.log('📝 Generated modal HTML length:', modal.innerHTML.length);
+    console.log('📝 Modal HTML preview:', modal.innerHTML.substring(0, 200) + '...');
     
-    // Clean up modal when hidden
-    modal.addEventListener('hidden.bs.modal', () => {
-      document.body.removeChild(modal);
+    console.log('📦 Appending modal to document.body');
+    document.body.appendChild(modal);
+    
+    console.log('🔍 Modal appended, checking if it exists in DOM:', document.body.contains(modal));
+    console.log('🔍 Modal element:', modal);
+    
+    // Show modal with animation
+    console.log('⏰ Setting timeout to show modal with animation');
+    setTimeout(() => {
+      console.log('🎬 Adding "show" class to modal');
+      modal.classList.add('show');
+      console.log('🎬 Modal classes after adding show:', modal.className);
+    }, 10);
+    
+    // Close modal handlers
+    const closeModal = () => {
+      console.log('🚪 Closing modal');
+      modal.classList.remove('show');
+      setTimeout(() => {
+        if (document.body.contains(modal)) {
+          console.log('🗑️ Removing modal from DOM');
+          document.body.removeChild(modal);
+        }
+      }, 300);
+    };
+    
+    console.log('🔗 Setting up event handlers');
+    
+    const closeBtn = modal.querySelector('.custom-modal-close');
+    const closeModalBtn = modal.querySelector('.close-modal');
+    
+    console.log('🔗 Found close button:', closeBtn);
+    console.log('🔗 Found close modal button:', closeModalBtn);
+    console.log('🔗 Modal overlay element (main modal):', modal);
+    
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeModal);
+      console.log('✅ Added click handler to close button');
+    } else {
+      console.error('❌ Close button not found!');
+    }
+    
+    if (closeModalBtn) {
+      closeModalBtn.addEventListener('click', closeModal);
+      console.log('✅ Added click handler to close modal button');
+    } else {
+      console.error('❌ Close modal button not found!');
+    }
+    // Click outside modal to close
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        console.log('🚪 Overlay clicked, closing modal');
+        closeModal();
+      }
     });
+    
+    console.log('✅ Added overlay click handler to main modal element');
+    
+    // Handle escape key
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+        document.removeEventListener('keydown', handleEscape);
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+  }
+  
+  hideModal() {
+    const modal = document.querySelector('.custom-modal-overlay.show');
+    if (modal) {
+      console.log('🚪 hideModal called, removing modal');
+      modal.classList.remove('show');
+      setTimeout(() => {
+        if (document.body.contains(modal)) {
+          document.body.removeChild(modal);
+          console.log('🗑️ Modal removed from DOM');
+        }
+      }, 300);
+    }
   }
 
   async deleteBriefing(date) {
@@ -354,10 +504,10 @@ class DailyBriefingManager {
       await this.updateBriefingStatus(date);
       this.showSuccessMessage('Daily briefing deleted successfully.');
       
-      // Close modal if open
-      const modal = document.querySelector('.modal.show');
+      // Close custom modal if open
+      const modal = document.querySelector('.custom-modal-overlay.show');
       if (modal) {
-        bootstrap.Modal.getInstance(modal).hide();
+        this.hideModal();
       }
       
     } catch (error) {
@@ -367,35 +517,51 @@ class DailyBriefingManager {
   }
 
   showSuccessMessage(message) {
-    // Create toast notification
+    // Create custom toast notification
     const toast = document.createElement('div');
-    toast.className = 'toast align-items-center text-white bg-success border-0';
+    toast.className = 'custom-toast custom-toast-success';
     toast.innerHTML = `
-      <div class="d-flex">
-        <div class="toast-body">
-          <i class="fas fa-check-circle me-2"></i>
-          ${message}
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      <div class="custom-toast-content">
+        <i class="fas fa-check-circle"></i>
+        <span>${message}</span>
+        <button type="button" class="custom-toast-close">&times;</button>
       </div>
     `;
     
     // Add to toast container or create one
-    let toastContainer = document.querySelector('.toast-container');
+    let toastContainer = document.querySelector('.custom-toast-container');
     if (!toastContainer) {
       toastContainer = document.createElement('div');
-      toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+      toastContainer.className = 'custom-toast-container';
       document.body.appendChild(toastContainer);
     }
     
     toastContainer.appendChild(toast);
-    const bsToast = new bootstrap.Toast(toast);
-    bsToast.show();
     
-    // Clean up after toast is hidden
-    toast.addEventListener('hidden.bs.toast', () => {
-      toastContainer.removeChild(toast);
+    // Show toast with animation
+    setTimeout(() => {
+      toast.classList.add('show');
+    }, 100);
+    
+    // Add close button handler
+    const closeBtn = toast.querySelector('.custom-toast-close');
+    closeBtn.addEventListener('click', () => {
+      this.hideToast(toast, toastContainer);
     });
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      this.hideToast(toast, toastContainer);
+    }, 5000);
+  }
+  
+  hideToast(toast, container) {
+    toast.classList.remove('show');
+    setTimeout(() => {
+      if (container.contains(toast)) {
+        container.removeChild(toast);
+      }
+    }, 300);
   }
 }
 
