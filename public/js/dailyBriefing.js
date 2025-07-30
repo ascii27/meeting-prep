@@ -487,14 +487,20 @@ class DailyBriefingManager {
   }
 
   async deleteBriefing(date) {
+    console.log('🗑️ deleteBriefing called with date:', date);
+    
     if (!confirm('Are you sure you want to delete this daily briefing?')) {
+      console.log('❌ Delete cancelled by user');
       return;
     }
     
     try {
+      console.log('📡 Sending DELETE request to:', `/api/daily-briefing/${date}`);
       const response = await fetch(`/api/daily-briefing/${date}`, {
         method: 'DELETE'
       });
+      
+      console.log('📨 Delete response status:', response.status, response.statusText);
       
       if (!response.ok) {
         throw new Error('Failed to delete briefing');

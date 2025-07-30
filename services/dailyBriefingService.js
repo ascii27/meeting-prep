@@ -360,12 +360,23 @@ class DailyBriefingService {
 
   /**
    * Delete a daily briefing
-   * @param {string} briefingId - Briefing ID
+   * @param {string} userId - User ID (Google ID)
+   * @param {string} date - Briefing date (YYYY-MM-DD)
    * @returns {Promise<boolean>} Success status
    */
-  async deleteDailyBriefing(briefingId) {
+  async deleteDailyBriefing(userId, date) {
     try {
-      return await this.repository.deleteBriefing(briefingId);
+      // First find the briefing by userId and date
+      const briefing = await this.repository.findByUserIdAndDate(userId, date);
+      
+      if (!briefing) {
+        console.log(`[DailyBriefingService] No briefing found for user ${userId} on date ${date}`);
+        return false;
+      }
+      
+      // Delete the briefing using its UUID id
+      console.log(`[DailyBriefingService] Deleting briefing with ID: ${briefing.id}`);
+      return await this.repository.deleteBriefing(briefing.id);
     } catch (error) {
       console.error(`[DailyBriefingService] Error deleting daily briefing:`, error);
       throw error;
