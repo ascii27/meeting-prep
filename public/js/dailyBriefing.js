@@ -19,18 +19,27 @@ class DailyBriefingManager {
     // Generate briefing buttons
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains('generate-briefing-btn')) {
-        const date = e.target.dataset.date;
-        this.generateBriefing(date);
+        const briefingSection = e.target.closest('.briefing-section');
+        const date = briefingSection ? briefingSection.dataset.date : null;
+        if (date) {
+          this.generateBriefing(date);
+        }
       }
       
       if (e.target.classList.contains('view-briefing-btn')) {
-        const date = e.target.dataset.date;
-        this.viewBriefing(date);
+        const briefingSection = e.target.closest('.briefing-section');
+        const date = briefingSection ? briefingSection.dataset.date : null;
+        if (date) {
+          this.viewBriefing(date);
+        }
       }
       
       if (e.target.classList.contains('delete-briefing-btn')) {
-        const date = e.target.dataset.date;
-        this.deleteBriefing(date);
+        const briefingSection = e.target.closest('.briefing-section');
+        const date = briefingSection ? briefingSection.dataset.date : null;
+        if (date) {
+          this.deleteBriefing(date);
+        }
       }
     });
   }
@@ -38,10 +47,10 @@ class DailyBriefingManager {
   async checkExistingBriefings() {
     try {
       // Check for existing briefings for visible dates
-      const dateCards = document.querySelectorAll('.day-card');
+      const briefingSections = document.querySelectorAll('.briefing-section');
       
-      for (const card of dateCards) {
-        const date = card.dataset.date;
+      for (const section of briefingSections) {
+        const date = section.dataset.date;
         if (date) {
           await this.updateBriefingStatus(date);
         }
@@ -54,24 +63,23 @@ class DailyBriefingManager {
   async updateBriefingStatus(date) {
     try {
       const response = await fetch(`/api/daily-briefing/${date}`);
-      const card = document.querySelector(`[data-date="${date}"]`);
+      const briefingSection = document.querySelector(`.briefing-section[data-date="${date}"]`);
       
-      if (!card) return;
+      if (!briefingSection) return;
 
       if (response.ok) {
         const { briefing } = await response.json();
-        this.updateCardWithBriefing(card, briefing);
+        this.updateSectionWithBriefing(briefingSection, briefing);
       } else if (response.status === 404) {
-        this.updateCardWithoutBriefing(card, date);
+        this.updateSectionWithoutBriefing(briefingSection, date);
       }
     } catch (error) {
       console.error(`Error checking briefing status for ${date}:`, error);
-      this.updateCardWithoutBriefing(card, date);
+      this.updateSectionWithoutBriefing(briefingSection, date);
     }
   }
 
-  updateCardWithBriefing(card, briefing) {
-    const briefingSection = card.querySelector('.briefing-section') || this.createBriefingSection(card);
+  updateSectionWithBriefing(briefingSection, briefing) {
     
     if (briefing.status === 'completed') {
       briefingSection.innerHTML = `
@@ -79,10 +87,10 @@ class DailyBriefingManager {
           <i class="fas fa-check-circle text-success"></i>
           <span>Daily briefing ready</span>
           <div class="briefing-actions">
-            <button class="btn btn-sm btn-outline-primary view-briefing-btn" data-date="${briefing.briefingDate}">
+            <button class="btn btn-sm btn-outline-primary view-briefing-btn">
               <i class="fas fa-eye"></i> View
             </button>
-            <button class="btn btn-sm btn-outline-danger delete-briefing-btn" data-date="${briefing.briefingDate}">
+            <button class="btn btn-sm btn-outline-danger delete-briefing-btn">
               <i class="fas fa-trash"></i>
             </button>
           </div>
@@ -100,7 +108,7 @@ class DailyBriefingManager {
         <div class="briefing-failed">
           <i class="fas fa-exclamation-triangle text-warning"></i>
           <span>Generation failed</span>
-          <button class="btn btn-sm btn-outline-primary generate-briefing-btn" data-date="${briefing.briefingDate}">
+          <button class="btn btn-sm btn-outline-primary generate-briefing-btn">
             <i class="fas fa-redo"></i> Retry
           </button>
         </div>
@@ -108,23 +116,14 @@ class DailyBriefingManager {
     }
   }
 
-  updateCardWithoutBriefing(card, date) {
-    const briefingSection = card.querySelector('.briefing-section') || this.createBriefingSection(card);
-    
+  updateSectionWithoutBriefing(briefingSection, date) {
     briefingSection.innerHTML = `
       <div class="briefing-generate">
-        <button class="btn btn-sm btn-primary generate-briefing-btn" data-date="${date}">
+        <button class="btn btn-sm btn-primary generate-briefing-btn">
           <i class="fas fa-magic"></i> Generate Daily Briefing
         </button>
       </div>
     `;
-  }
-
-  createBriefingSection(card) {
-    const briefingSection = document.createElement('div');
-    briefingSection.className = 'briefing-section mt-3';
-    card.appendChild(briefingSection);
-    return briefingSection;
   }
 
   async generateBriefing(date) {
@@ -134,11 +133,11 @@ class DailyBriefingManager {
     }
 
     this.isGenerating = true;
-    const card = document.querySelector(`[data-date="${date}"]`);
+    const briefingSection = document.querySelector(`.briefing-section[data-date="${date}"]`);
     
     try {
       // Update UI to show generation in progress
-      this.showGenerationProgress(card, date);
+      this.showGenerationProgress(briefingSection, date);
       
       // Start Server-Sent Events connection
       this.currentEventSource = new EventSource('/api/daily-briefing/generate', {
@@ -177,7 +176,7 @@ class DailyBriefingManager {
           if (line.startsWith('data: ')) {
             try {
               const data = JSON.parse(line.slice(6));
-              this.handleProgressUpdate(card, data);
+              this.handleProgressUpdate(briefingSection, data);
             } catch (e) {
               console.error('Error parsing SSE data:', e);
             }
@@ -187,7 +186,7 @@ class DailyBriefingManager {
 
     } catch (error) {
       console.error('Error generating briefing:', error);
-      this.showGenerationError(card, date, error.message);
+      this.showGenerationError(briefingSection, date, error.message);
     } finally {
       this.isGenerating = false;
       if (this.currentEventSource) {
@@ -197,8 +196,7 @@ class DailyBriefingManager {
     }
   }
 
-  showGenerationProgress(card, date) {
-    const briefingSection = card.querySelector('.briefing-section') || this.createBriefingSection(card);
+  showGenerationProgress(briefingSection, date) {
     
     briefingSection.innerHTML = `
       <div class="briefing-generating">
@@ -217,19 +215,19 @@ class DailyBriefingManager {
     `;
   }
 
-  handleProgressUpdate(card, data) {
-    const progressBar = card.querySelector('.progress-bar');
-    const statusText = card.querySelector('.status-text');
+  handleProgressUpdate(briefingSection, data) {
+    const progressBar = briefingSection.querySelector('.progress-bar');
+    const statusText = briefingSection.querySelector('.status-text');
     
     if (!progressBar || !statusText) return;
 
     if (data.step === 'completed' && data.briefing) {
       // Generation completed successfully
-      this.updateCardWithBriefing(card, data.briefing);
+      this.updateSectionWithBriefing(briefingSection, data.briefing);
       this.showSuccessMessage('Daily briefing generated successfully!');
     } else if (data.step === 'error') {
       // Generation failed
-      this.showGenerationError(card, card.dataset.date, data.error);
+      this.showGenerationError(briefingSection, briefingSection.dataset.date, data.error);
     } else {
       // Update progress
       if (data.progress !== undefined) {
@@ -253,16 +251,14 @@ class DailyBriefingManager {
     }
   }
 
-  showGenerationError(card, date, errorMessage) {
-    const briefingSection = card.querySelector('.briefing-section') || this.createBriefingSection(card);
-    
+  showGenerationError(briefingSection, date, errorMessage) {
     briefingSection.innerHTML = `
       <div class="briefing-error">
         <div class="alert alert-danger">
           <i class="fas fa-exclamation-triangle"></i>
           <strong>Generation Failed:</strong> ${errorMessage}
         </div>
-        <button class="btn btn-sm btn-primary generate-briefing-btn" data-date="${date}">
+        <button class="btn btn-sm btn-primary generate-briefing-btn">
           <i class="fas fa-redo"></i> Try Again
         </button>
       </div>
