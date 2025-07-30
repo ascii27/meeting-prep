@@ -165,13 +165,31 @@ function getWeekDateRangeText(weekOffset = 0) {
   }
 }
 
+/**
+ * Checks if a date is today
+ * @param {string|Date} date - Date to check (string in YYYY-MM-DD format or Date object)
+ * @returns {boolean} - True if the date is today
+ */
+function isToday(date) {
+  const today = new Date();
+  const todayString = getLocalISODateString(today);
+  
+  if (typeof date === 'string') {
+    return date === todayString;
+  } else if (date instanceof Date) {
+    return getLocalISODateString(date) === todayString;
+  }
+  return false;
+}
+
 module.exports = {
   formatDate,
+  getLocalISODateString,
   formatTime,
   formatDateRange,
   isAllDayEvent,
   groupEventsByDay,
   getWeekDays,
   getWeekDateRangeText,
-  getLocalISODateString
+  isToday
 };

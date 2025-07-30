@@ -14,12 +14,12 @@ const DailyBriefing = sequelize.define('DailyBriefing', {
     primaryKey: true
   },
   userId: {
-    type: DataTypes.UUID,
+    type: DataTypes.STRING,
     allowNull: false,
     field: 'user_id',
     references: {
       model: User,
-      key: 'id'
+      key: 'google_id'
     }
   },
   briefingDate: {
@@ -80,7 +80,13 @@ const DailyBriefing = sequelize.define('DailyBriefing', {
 });
 
 // Define association with User
-DailyBriefing.belongsTo(User, { foreignKey: 'userId' });
-User.hasMany(DailyBriefing, { foreignKey: 'userId' });
+DailyBriefing.belongsTo(User, { 
+  foreignKey: 'userId',
+  targetKey: 'googleId'
+});
+User.hasMany(DailyBriefing, { 
+  foreignKey: 'userId',
+  sourceKey: 'googleId'
+});
 
 module.exports = DailyBriefing;
