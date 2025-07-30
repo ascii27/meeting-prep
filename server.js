@@ -49,6 +49,7 @@ app.use('/dashboard', require('./routes/dashboard'));
 app.use('/api/documents', require('./routes/documents'));
 app.use('/api/preparation', require('./routes/preparation'));
 app.use('/api/history', require('./routes/history'));
+app.use('/api/daily-briefing', require('./routes/dailyBriefing'));
 
 // 404 handler
 app.use((req, res) => {
