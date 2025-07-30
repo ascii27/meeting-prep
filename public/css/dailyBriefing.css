@@ -337,3 +337,229 @@
     transform: translateX(5px);
   }
 }
+
+/* Custom Modal Styles */
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.custom-modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.custom-modal-dialog {
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: scale(0.7);
+  transition: transform 0.3s ease;
+}
+
+.custom-modal-overlay.show .custom-modal-dialog {
+  transform: scale(1);
+}
+
+.custom-modal-content {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.custom-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.custom-modal-title {
+  margin: 0;
+  color: #495057;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.custom-modal-title i {
+  margin-right: 0.5rem;
+  color: #007bff;
+}
+
+.custom-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.custom-modal-close:hover {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+.custom-modal-body {
+  padding: 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.custom-modal-body .people-overview,
+.custom-modal-body .priority-preparations {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 0.375rem;
+}
+
+.custom-modal-body .people-overview {
+  background-color: #e7f3ff;
+  border-left: 4px solid #007bff;
+}
+
+.custom-modal-body .people-overview h4 {
+  color: #0056b3;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.custom-modal-body .people-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.custom-modal-body .person-badge {
+  background-color: #6c757d;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.custom-modal-body .priority-preparations {
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+}
+
+.custom-modal-body .priority-preparations h4 {
+  color: #856404;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.custom-modal-body .preparations-list {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.custom-modal-body .preparations-list li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.custom-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+}
+
+/* Custom Toast Styles */
+.custom-toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1060;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.custom-toast {
+  min-width: 300px;
+  max-width: 400px;
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.3s ease;
+}
+
+.custom-toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.custom-toast-success {
+  background-color: #198754;
+  color: white;
+  border-left: 4px solid #146c43;
+}
+
+.custom-toast-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.custom-toast-content i {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.custom-toast-content span {
+  flex: 1;
+  font-weight: 500;
+}
+
+.custom-toast-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.custom-toast-close:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
