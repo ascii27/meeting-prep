@@ -430,10 +430,32 @@ Format your response as JSON:
     
     // Parse the JSON response
     try {
-      const jsonResponse = JSON.parse(response.choices[0].message.content);
-      return jsonResponse;
+      // Log the raw response for debugging
+      console.log('[LiteLLM Service] Raw response content:', response.choices[0].message.content);
+      
+      // Clean the response content - remove any leading/trailing whitespace and markdown code blocks
+      let cleanedContent = response.choices[0].message.content.trim();
+      
+      // Remove markdown code blocks if present (```json and ```)
+      if (cleanedContent.startsWith('```json')) {
+        cleanedContent = cleanedContent.replace(/^```json\n/, '').replace(/```$/, '');
+      } else if (cleanedContent.startsWith('```')) {
+        cleanedContent = cleanedContent.replace(/^```\n/, '').replace(/```$/, '');
+      }
+      
+      // Parse the JSON response
+      const jsonResponse = JSON.parse(cleanedContent);
+      
+      // Ensure all expected properties exist
+      return {
+        summary: jsonResponse.summary || '',
+        peopleOverview: Array.isArray(jsonResponse.peopleOverview) ? jsonResponse.peopleOverview : [],
+        priorityPreparations: Array.isArray(jsonResponse.priorityPreparations) ? jsonResponse.priorityPreparations : []
+      };
     } catch (parseError) {
       console.error('[LiteLLM Service] Error parsing JSON response:', parseError);
+      console.error('[LiteLLM Service] Raw content that failed to parse:', response.choices[0].message.content);
+      
       // Fallback to a basic structure if JSON parsing fails
       return {
         summary: response.choices[0].message.content,
