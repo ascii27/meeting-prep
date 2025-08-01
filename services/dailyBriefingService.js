@@ -2,6 +2,7 @@ const DailyBriefingRepository = require('../repositories/dailyBriefingRepository
 const calendarService = require('./calendarService');
 const documentService = require('./documentService');
 const aiService = require('./aiService');
+const meetingPrepService = require('./meetingPrepService');
 const { MeetingSummary, Meeting } = require('../models');
 const meetingRepository = require('../repositories/meetingRepository');
 const { formatDate, isToday } = require('../utils/dateUtils');
@@ -201,15 +202,24 @@ class DailyBriefingService {
         return null;
       }
 
-      // Fetch content for each document
+      // Fetch content for each document using corrected extraction logic
+      console.log(`[DailyBriefingService] Fetching content for ${documents.length} documents`);
       const documentContents = [];
       for (const doc of documents) {
         try {
           const docContent = await documentService.getDocumentContent(doc.id, userTokens);
+          console.log(`[DailyBriefingService] Document content for ${doc.id}:`, typeof docContent, docContent ? Object.keys(docContent) : 'null');
+          
           if (docContent && docContent.content) {
+            // Ensure content is extracted as string, not object
+            const contentString = typeof docContent.content === 'string' 
+              ? docContent.content 
+              : JSON.stringify(docContent.content);
+            
+            console.log(`[DailyBriefingService] Adding document content - Title: ${doc.title}, Content type: ${typeof contentString}, Length: ${contentString.length}`);
             documentContents.push({
               title: doc.title,
-              content: docContent.content
+              content: contentString
             });
           }
         } catch (error) {
@@ -223,6 +233,9 @@ class DailyBriefingService {
         return null;
       }
 
+      console.log(`[DailyBriefingService] Calling AI analysis with ${documentContents.length} documents`);
+      console.log(`[DailyBriefingService] Document contents for AI:`, documentContents.map(doc => ({ title: doc.title, contentType: typeof doc.content, contentLength: doc.content.length })));
+      
       const aiAnalysis = await aiService.generateMeetingSummary(
         meeting.summary || 'Meeting',
         documentContents
