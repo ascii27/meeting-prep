@@ -1,6 +1,7 @@
 const OpenAI = require('openai');
 const NodeCache = require('node-cache');
 const { marked } = require('marked');
+const aiConfig = require('../config/aiConfig');
 
 // Configure marked options
 marked.setOptions({
@@ -12,14 +13,26 @@ marked.setOptions({
 // Initialize cache with 30 minute TTL by default
 const cache = new NodeCache({ stdTTL: 1800, checkperiod: 120 });
 
-// Initialize OpenAI client
+// OpenAI client will be initialized on demand
 let openai;
-try {
-  openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-} catch (error) {
-  console.error('Error initializing OpenAI client:', error);
+
+/**
+ * Get or initialize the OpenAI client
+ * @returns {OpenAI} OpenAI client instance
+ */
+function getOpenAIClient() {
+  if (!openai) {
+    try {
+      openai = new OpenAI({
+        apiKey: aiConfig.openai.apiKey,
+      });
+      console.log('[OpenAI Service] Successfully initialized OpenAI client');
+    } catch (error) {
+      console.error('[OpenAI Service] Error initializing OpenAI client:', error);
+      throw error;
+    }
+  }
+  return openai;
 }
 
 /**
@@ -63,13 +76,14 @@ async function generateSummary(documentContent, documentId, meetingId) {
   
   console.log(`[OpenAI Service] No cached summary found, calling OpenAI API`);
   try {
-    if (!openai) {
-      throw new Error('OpenAI client not initialized');
-    }
+    // Initialize OpenAI client using the lazy loading function
+    const client = getOpenAIClient();
     
-    console.log(`[OpenAI Service] Calling OpenAI API with model: ${process.env.OPENAI_MODEL || 'gpt-4'}`);
-    const response = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || 'gpt-4',
+    const model = aiConfig.openai.model || 'gpt-4';
+    console.log(`[OpenAI Service] Calling OpenAI API with model: ${model}`);
+    
+    const response = await getOpenAIClient().chat.completions.create({
+      model: model,
       messages: [
         {
           role: 'system',
@@ -79,7 +93,9 @@ async function generateSummary(documentContent, documentId, meetingId) {
           role: 'user',
           content: `Please summarize the following document content:\n\n${documentContent}`
         }
-      ]
+      ],
+      temperature: aiConfig.openai.temperature,
+      max_tokens: aiConfig.openai.maxTokens
     });
     console.log(`[OpenAI Service] Received response from OpenAI API for summary generation`);
     
@@ -116,23 +132,26 @@ async function extractKeyTopics(documentContent, documentId, meetingId) {
   }
   
   try {
-    if (!openai) {
-      throw new Error('OpenAI client not initialized');
-    }
+    // Initialize OpenAI client using the lazy loading function
+    const client = getOpenAIClient();
     
     console.log(`[OpenAI Service] Extracting key topics for document ${documentId} in meeting ${meetingId}`);
-    const response = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || 'gpt-4',
+    const model = aiConfig.openai.model || 'gpt-4';
+    
+    const response = await getOpenAIClient().chat.completions.create({
+      model: model,
       messages: [
         {
           role: 'system',
-          content: 'You are a helpful assistant that identifies key topics in documents for meeting preparation. Extract 3-5 main topics from the document.'
+          content: 'You are an expert at extracting key topics from documents. Please identify the main topics that will be discussed in this meeting document.'
         },
         {
           role: 'user',
-          content: `Please identify the key topics in the following document content. Return them as a JSON object with a 'topics' array of strings. Format your entire response as valid JSON and nothing else:\n\n${documentContent}`
+          content: `Please identify the key topics from the following document content:\n\n${documentContent}`
         }
-      ]
+      ],
+      max_tokens: 500,
+      temperature: 0.3
     });
     
     console.log(`[OpenAI Service] Received response from OpenAI API for key topics extraction`);
@@ -182,13 +201,14 @@ async function generatePreparationSuggestions(documentContent, documentId, meeti
   }
   
   try {
-    if (!openai) {
-      throw new Error('OpenAI client not initialized');
-    }
+    // Initialize OpenAI client using the lazy loading function
+    const client = getOpenAIClient();
     
     console.log(`[OpenAI Service] Generating preparation suggestions for document ${documentId} in meeting ${meetingId}`);
-    const response = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || 'gpt-4',
+    const model = aiConfig.openai.model || 'gpt-4';
+    
+    const response = await getOpenAIClient().chat.completions.create({
+      model: model,
       messages: [
         {
           role: 'system',
@@ -278,11 +298,10 @@ async function analyzeDocumentForMeeting(documentContent, documentId, meetingId)
  * @returns {Promise<Object>} Meeting summary with key topics and preparation suggestions
  */
 async function generateMeetingSummary(meetingTitle, documentContents) {
-  if (!openai) {
-    throw new Error('OpenAI client not initialized');
-  }
-
   try {
+    // Initialize OpenAI client using the lazy loading function
+    const client = getOpenAIClient();
+
     console.log(`[OpenAI Service] Generating meeting summary for: ${meetingTitle}`);
     
     // Combine all document contents
@@ -306,8 +325,8 @@ Please format your response as JSON with the following structure:
   "preparationSuggestions": ["suggestion1", "suggestion2", "suggestion3"]
 }`;
 
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+    const response = await getOpenAIClient().chat.completions.create({
+      model: aiConfig.openai.model || 'gpt-3.5-turbo',
       messages: [
         {
           role: 'system',
@@ -350,11 +369,10 @@ Please format your response as JSON with the following structure:
  * @returns {Promise<Object>} Daily briefing summary
  */
 async function generateDailyBriefing(briefingContext) {
-  if (!openai) {
-    throw new Error('OpenAI client not initialized');
-  }
-
   try {
+    // Initialize OpenAI client using the lazy loading function
+    const client = getOpenAIClient();
+
     console.log(`[OpenAI Service] Generating daily briefing for ${briefingContext.date}`);
     
     const { date, isToday, totalMeetings, meetingsWithDocuments, meetings, summaries } = briefingContext;
@@ -393,8 +411,8 @@ Format your response as JSON:
   "summary": "Your comprehensive briefing summary here (3-4 paragraphs)"
 }`;
 
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+    const response = await getOpenAIClient().chat.completions.create({
+      model: aiConfig.openai.model || 'gpt-3.5-turbo',
       messages: [
         {
           role: 'system',
