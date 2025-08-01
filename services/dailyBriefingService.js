@@ -1,7 +1,7 @@
 const DailyBriefingRepository = require('../repositories/dailyBriefingRepository');
 const calendarService = require('./calendarService');
 const documentService = require('./documentService');
-const openaiService = require('./openaiService');
+const aiService = require('./aiService');
 const { MeetingSummary, Meeting } = require('../models');
 const meetingRepository = require('../repositories/meetingRepository');
 const { formatDate, isToday } = require('../utils/dateUtils');
@@ -223,7 +223,7 @@ class DailyBriefingService {
         return null;
       }
 
-      const aiAnalysis = await openaiService.generateMeetingSummary(
+      const aiAnalysis = await aiService.generateMeetingSummary(
         meeting.summary || 'Meeting',
         documentContents
       );
@@ -285,7 +285,7 @@ class DailyBriefingService {
       };
 
       // Generate comprehensive briefing using AI
-      const comprehensiveBriefing = await openaiService.generateDailyBriefing(briefingContext);
+      const comprehensiveBriefing = await aiService.generateDailyBriefing(briefingContext);
 
       // Extract people overview
       const allAttendees = new Set();
