@@ -64,6 +64,7 @@ function extractDocumentIdFromUrl(url) {
  */
 async function getDocumentsForEvent(event, tokens) {
   console.log(`[DocumentService] Getting documents for event: ${event.id}`);
+  console.log(`[DocumentService] Event:`, event);
   if (!event) return [];
   
   const docs = [];
@@ -134,6 +135,7 @@ async function getDocumentContent(documentId, tokens) {
   // Check cache first
   if (documentCache.has(cacheKey)) {
     console.log(`[DocumentService] Using cached content for document: ${documentId}`);
+    console.log(`[DocumentService] Cached content:`, documentCache.get(cacheKey));
     return documentCache.get(cacheKey);
   }
   
@@ -155,10 +157,24 @@ async function getDocumentContent(documentId, tokens) {
     console.log(`[DocumentService] Document content preview: ${extractedContent.content.substring(0, 100)}...`);
     
     // Store the document data in a consistent format
+    // Ensure content is properly structured as a string, not an object
     const documentData = { 
       id: documentId, 
-      content: extractedContent // Keep the original structure with title and content
+      content: {
+        title: extractedContent.title,
+        content: extractedContent.content // This is a string
+      }
     };
+    
+    // Log the final document structure for debugging
+    console.log(`[DocumentService] Document structure:`, {
+      id: documentData.id,
+      contentType: typeof documentData.content,
+      hasTitle: !!documentData.content.title,
+      contentValueType: typeof documentData.content.content,
+      contentLength: documentData.content.content.length
+    });
+    
     documentCache.set(cacheKey, documentData);
     
     console.log(`[DocumentService] Successfully processed and cached document: ${documentId}`);
@@ -217,11 +233,40 @@ async function getDocumentById(documentId, tokens) {
   return getDocumentContent(documentId, tokens);
 }
 
+/**
+ * Refetch documents for an event, clearing cache first
+ * @param {Object} event - Calendar event object
+ * @param {Object} tokens - OAuth tokens
+ * @returns {Promise<Array>} - Array of document objects with fresh content
+ */
+async function refetchDocumentsForEvent(event, tokens) {
+  console.log(`[DocumentService] Refetching documents for event: ${event.id}`);
+  
+  // Clear document cache first
+  clearDocumentCache(event.id);
+  
+  // Get fresh documents
+  const documents = await getDocumentsForEvent(event, tokens);
+  
+  // Pre-fetch content for all documents to ensure cache is populated
+  if (documents && documents.length > 0) {
+    console.log(`[DocumentService] Pre-fetching fresh content for ${documents.length} documents`);
+    await Promise.all(documents.map(doc => 
+      getDocumentContent(doc.id, tokens)
+        .then(() => console.log(`[DocumentService] Successfully pre-fetched fresh content for document ${doc.id}`))
+        .catch(err => console.error(`[DocumentService] Error pre-fetching fresh content for document ${doc.id}:`, err))
+    ));
+  }
+  
+  return documents;
+}
+
 module.exports = {
   getDocumentContent,
   getDocumentById,        // Keep for backward compatibility
   getDocumentsForEvent,
   extractDocumentContent,
   clearCache,
-  clearDocumentCache      // New function to clear cache for a specific meeting
+  clearDocumentCache,     // Clear cache for a specific meeting
+  refetchDocumentsForEvent // New function to refetch documents with fresh content
 };

@@ -147,11 +147,14 @@ function displayPreparationMaterials(data, container) {
     <button id="save-notes-btn" class="save-notes-btn">Save Notes</button>
   `;
   
-  // Add refresh button
+  // Add refresh buttons
   const refreshSection = document.createElement('div');
   refreshSection.className = 'prep-section refresh-section';
   refreshSection.innerHTML = `
-    <button id="refresh-prep-btn" class="refresh-prep-btn">Refresh Analysis</button>
+    <div class="refresh-buttons">
+      <button id="refresh-docs-btn" class="refresh-docs-btn">Refetch Documents</button>
+      <button id="refresh-prep-btn" class="refresh-prep-btn">Refresh Analysis</button>
+    </div>
   `;
   
   // Append all sections to the preparation container
@@ -180,7 +183,13 @@ function setupPreparationEventListeners() {
   // Refresh analysis button
   const refreshPrepBtn = document.getElementById('refresh-prep-btn');
   if (refreshPrepBtn) {
-    refreshPrepBtn.addEventListener('click', refreshPreparationAnalysis);
+    refreshPrepBtn.addEventListener('click', () => refreshPreparationAnalysis(currentMeetingId));
+  }
+  
+  // Refetch documents button
+  const refreshDocsBtn = document.getElementById('refresh-docs-btn');
+  if (refreshDocsBtn) {
+    refreshDocsBtn.addEventListener('click', () => refreshPreparationAnalysis(currentMeetingId, null, true));
   }
 }
 
@@ -227,11 +236,21 @@ async function saveUserNotes() {
  * Refresh preparation analysis for a meeting
  * @param {string} meetingId - Meeting ID (optional, uses currentMeetingId if not provided)
  * @param {HTMLElement} container - Container to display preparation materials (optional)
+ * @param {boolean} refetchDocuments - Whether to refetch documents before analysis
  */
-async function refreshPreparationAnalysis(meetingId, container) {
+async function refreshPreparationAnalysis(meetingId, container, refetchDocuments = false) {
   // Use provided meetingId or fall back to currentMeetingId
-  const targetMeetingId = meetingId || currentMeetingId;
-  console.log(`[Client] refreshPreparationAnalysis called for meeting: ${targetMeetingId}`);
+  // Ensure we're not passing an event object as meetingId
+  let targetMeetingId;
+  if (typeof meetingId === 'object' && meetingId !== null) {
+    // If an event object was passed, ignore it and use currentMeetingId
+    console.log('[Client] Event object passed as meetingId, using currentMeetingId instead');
+    targetMeetingId = currentMeetingId;
+  } else {
+    targetMeetingId = meetingId || currentMeetingId;
+  }
+  
+  console.log(`[Client] refreshPreparationAnalysis called for meeting: ${targetMeetingId} (refetchDocuments: ${refetchDocuments})`);
   if (!targetMeetingId) {
     console.error('[Client] No meeting ID provided for analysis');
     return;
@@ -251,10 +270,10 @@ async function refreshPreparationAnalysis(meetingId, container) {
     // Show detailed loading state with steps
     container.innerHTML = `
       <div class="loading-preparation">
-        <h3>Preparing Meeting Analysis</h3>
+        <h3>${refetchDocuments ? 'Refetching Documents & Preparing Analysis' : 'Preparing Meeting Analysis'}</h3>
         <div class="loading-step current" id="step-documents">
           <span class="step-icon">📄</span>
-          <span class="step-text">Downloading meeting documents...</span>
+          <span class="step-text">${refetchDocuments ? 'Refetching meeting documents...' : 'Downloading meeting documents...'}</span>
         </div>
         <div class="loading-step" id="step-analysis">
           <span class="step-icon">🧠</span>
@@ -277,9 +296,9 @@ async function refreshPreparationAnalysis(meetingId, container) {
       setTimeout(() => { progressBar.style.width = '30%'; }, 1000);
     }
     
-    // Trigger analysis
-    console.log(`[Client] Sending POST request to /api/preparation/${targetMeetingId}/analyze`);
-    const response = await fetch(`/api/preparation/${targetMeetingId}/analyze`, {
+    // Trigger analysis with refetchDocuments parameter if needed
+    console.log(`[Client] Sending POST request to /api/preparation/${targetMeetingId}/analyze${refetchDocuments ? '?refetchDocuments=true' : ''}`);
+    const response = await fetch(`/api/preparation/${targetMeetingId}/analyze${refetchDocuments ? '?refetchDocuments=true' : ''}`, {
       method: 'POST'
     });
     
@@ -329,18 +348,32 @@ async function refreshPreparationAnalysis(meetingId, container) {
     }, 500);
   } catch (error) {
     console.error('Error generating analysis:', error);
+    // Create error message with appropriate retry options
+    const isRefetchAttempt = refetchDocuments === true;
+    
     container.innerHTML = `
       <div class="error-message">
-        <p>Failed to generate analysis: ${error.message}</p>
-        <button class="generate-analysis-button" onclick="refreshPreparationAnalysis('${targetMeetingId}', this.parentElement.parentElement)">
-          Try Again
-        </button>
+        <p>Failed to ${isRefetchAttempt ? 'refetch documents and generate' : 'generate'} analysis: ${error.message}</p>
+        <div class="error-actions">
+          <button class="generate-analysis-button" onclick="refreshPreparationAnalysis('${targetMeetingId}', this.parentElement.parentElement, ${isRefetchAttempt})">
+            Try Again
+          </button>
+          ${isRefetchAttempt ? `
+            <button class="generate-analysis-button secondary" onclick="refreshPreparationAnalysis('${targetMeetingId}', this.parentElement.parentElement, false)">
+              Try Without Refetching
+            </button>
+          ` : ''}
+        </div>
       </div>
     `;
   }
 }
 
+// Note: The standalone refetchDocuments function has been removed.
+// Document refetching is now handled by refreshPreparationAnalysis with refetchDocuments=true parameter
+
 // Export functions for use in other scripts
 window.fetchPreparationMaterials = fetchPreparationMaterials;
 window.initializePreparationSection = initializePreparationSection;
 window.refreshPreparationAnalysis = refreshPreparationAnalysis;
+window.refetchDocuments = refetchDocuments;

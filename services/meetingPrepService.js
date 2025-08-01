@@ -1,6 +1,6 @@
 const NodeCache = require('node-cache');
 const documentService = require('./documentService');
-const openaiService = require('./openaiService');
+const aiService = require('./aiService');
 const dataStorageService = require('./dataStorageService');
 const calendarService = require('./calendarService');
 
@@ -30,7 +30,7 @@ function clearPrepCache(meetingId, preserveDocumentCache = true) {
   
   // Clear OpenAI cache for this meeting
   console.log(`[MeetingPrepService] Clearing OpenAI cache for meeting ${meetingId}`);
-  openaiService.clearMeetingCache(meetingId);
+  aiService.clearMeetingCache(meetingId);
   
   // Clear meeting summary cache in data storage service
   console.log(`[MeetingPrepService] Clearing meeting summary cache in data storage service`);
@@ -52,9 +52,10 @@ function clearPrepCache(meetingId, preserveDocumentCache = true) {
  * Prepare meeting materials by analyzing associated documents
  * @param {string} meetingId - Meeting ID (event ID)
  * @param {Object} tokens - OAuth tokens
+ * @param {boolean} forceRefresh - Whether to force fresh analysis, skipping cache and database
  * @returns {Promise<Object>} - Meeting preparation materials
  */
-async function prepareMeetingMaterials(meetingId, tokens) {
+async function prepareMeetingMaterials(meetingId, tokens, forceRefresh = false) {
   try {
     // Debug tokens
     console.log(`[MeetingPrepService] Preparing materials for meeting ${meetingId} with tokens:`, {
@@ -82,44 +83,49 @@ async function prepareMeetingMaterials(meetingId, tokens) {
     throw new Error('Failed to prepare meeting materials');
   }
   
-  console.log(`[MeetingPrepService] Preparing materials for meeting ${meetingId}`);
+  console.log(`[MeetingPrepService] Preparing materials for meeting ${meetingId} (forceRefresh: ${forceRefresh})`);
   const cacheKey = getPrepCacheKey(meetingId);
   
-  // Check cache first
-  const cachedPrep = prepCache.get(cacheKey);
-  if (cachedPrep) {
-    console.log(`[MeetingPrepService] Using cached preparation materials for meeting ${meetingId}`);
-    return cachedPrep;
-  }
-  
-  // Check database for existing summary
-  console.log(`[MeetingPrepService] Checking database for existing summary for meeting ${meetingId}`);
-  try {
-    const dbSummary = await dataStorageService.getMeetingSummary(meetingId);
-    if (dbSummary) {
-      console.log(`[MeetingPrepService] Found summary in database for meeting ${meetingId}`);
-      
-      // Get event to get document list
-      const event = await calendarService.getEventById(meetingId, tokens);
-      const documents = event ? await documentService.getDocumentsForEvent(event, tokens) : [];
-      
-      // Create preparation object from database summary
-      const dbPrep = {
-        summary: dbSummary.summary,
-        summaryHtml: dbSummary.summaryHtml,
-        topics: dbSummary.topics || [],
-        suggestions: dbSummary.suggestions || [],
-        documents: documents.map(doc => ({ id: doc.id, title: doc.title }))
-      };
-      
-      // Cache it for future requests
-      prepCache.set(cacheKey, dbPrep);
-      
-      return dbPrep;
+  // Skip cache and database checks if forcing refresh
+  if (!forceRefresh) {
+    // Check cache first
+    const cachedPrep = prepCache.get(cacheKey);
+    if (cachedPrep) {
+      console.log(`[MeetingPrepService] Using cached preparation materials for meeting ${meetingId}`);
+      return cachedPrep;
     }
-  } catch (dbError) {
-    console.error(`[MeetingPrepService] Error checking database for summary:`, dbError);
-    // Continue with generating new analysis
+    
+    // Check database for existing summary
+    console.log(`[MeetingPrepService] Checking database for existing summary for meeting ${meetingId}`);
+    try {
+      const dbSummary = await dataStorageService.getMeetingSummary(meetingId);
+      if (dbSummary) {
+        console.log(`[MeetingPrepService] Found summary in database for meeting ${meetingId}`);
+        
+        // Get event to get document list
+        const event = await calendarService.getEventById(meetingId, tokens);
+        const documents = event ? await documentService.getDocumentsForEvent(event, tokens) : [];
+        
+        // Create preparation object from database summary
+        const dbPrep = {
+          summary: dbSummary.summary,
+          summaryHtml: dbSummary.summaryHtml,
+          topics: dbSummary.topics || [],
+          suggestions: dbSummary.suggestions || [],
+          documents: documents.map(doc => ({ id: doc.id, title: doc.title }))
+        };
+        
+        // Cache it for future requests
+        prepCache.set(cacheKey, dbPrep);
+        
+        return dbPrep;
+      }
+    } catch (dbError) {
+      console.log(`[MeetingPrepService] Error checking database for summary: ${dbError.message}`);
+      // Continue with fresh analysis if database check fails
+    }
+  } else {
+    console.log(`[MeetingPrepService] Skipping cache and database checks due to forceRefresh`);
   }
   
   console.log(`[MeetingPrepService] No existing materials found, generating new analysis for meeting ${meetingId}`);
@@ -152,7 +158,11 @@ async function prepareMeetingMaterials(meetingId, tokens) {
         console.log(`[MeetingPrepService] Document data received:`, {
           id: documentData?.id,
           hasContent: !!documentData?.content,
-          contentType: typeof documentData?.content
+          contentType: typeof documentData?.content,
+          contentStructure: documentData?.content ? Object.keys(documentData.content).join(',') : 'undefined',
+          contentValueType: documentData?.content?.content ? typeof documentData.content.content : 'undefined',
+          contentLength: documentData?.content?.content ? documentData.content.content.length : 0,
+          rawContentPreview: documentData?.content ? JSON.stringify(documentData.content).substring(0, 200) + '...' : 'undefined'
         });
         
         if (!documentData || !documentData.content) {
@@ -165,17 +175,33 @@ async function prepareMeetingMaterials(meetingId, tokens) {
         }
         
         // Extract the document content text for analysis
-        // Handle both formats: either content is directly a string or it's an object with content property
+        // The document content structure is: documentData.content = { title, content }
         let documentContent;
+        let documentTitle = doc.title; // Default to the doc title we already have
         
-        if (typeof documentData.content === 'string') {
-          documentContent = documentData.content;
-        } else if (documentData.content && typeof documentData.content.content === 'string') {
-          documentContent = documentData.content.content;
+        if (documentData.content) {
+          // If content is an object with a content property (expected format)
+          if (typeof documentData.content.content === 'string') {
+            documentContent = documentData.content.content;
+            // Update title if available
+            if (documentData.content.title) {
+              documentTitle = documentData.content.title;
+            }
+          } 
+          // If content is directly a string (unexpected but handle it)
+          else if (typeof documentData.content === 'string') {
+            documentContent = documentData.content;
+          }
+          // If content is something else entirely (like [object Object])
+          else {
+            console.log(`[MeetingPrepService] Warning: Document content has unexpected format for ${doc.id}:`, 
+              typeof documentData.content, JSON.stringify(documentData.content).substring(0, 100));
+            documentContent = `The provided document '${documentTitle}' appears to be missing or corrupted.`;
+          }
         } else {
-          // Fallback to empty string if no valid content format is found
-          console.log(`[MeetingPrepService] Warning: Document content has unexpected format for ${doc.id}`);
-          documentContent = 'No content available';
+          // No content at all
+          console.log(`[MeetingPrepService] Warning: No document content available for ${doc.id}`);
+          documentContent = `No content available for document '${documentTitle}'.`;
         }
         
         console.log(`[MeetingPrepService] Document content prepared for analysis:`, {
@@ -184,8 +210,15 @@ async function prepareMeetingMaterials(meetingId, tokens) {
         });
         
         // Analyze document content
-        console.log(`[MeetingPrepService] Sending document ${doc.id} to OpenAI for analysis`);
-        const analysis = await openaiService.analyzeDocumentForMeeting(
+        console.log(`[MeetingPrepService] Sending document ${doc.id} to AI for analysis`);
+        console.log(`[MeetingPrepService] Content being sent to AI:`, {
+          type: typeof documentContent,
+          length: documentContent ? documentContent.length : 0,
+          preview: documentContent ? documentContent.substring(0, 100) + '...' : 'null',
+          isString: typeof documentContent === 'string'
+        });
+        
+        const analysis = await aiService.analyzeDocumentForMeeting(
           documentContent,
           doc.id,
           meetingId
@@ -194,7 +227,7 @@ async function prepareMeetingMaterials(meetingId, tokens) {
         
         return {
           documentId: doc.id,
-          title: doc.title,
+          title: documentTitle, // Use the potentially updated title from document content
           analysis
         };
       })
@@ -212,17 +245,41 @@ async function prepareMeetingMaterials(meetingId, tokens) {
       };
     }
     
-    // Combine analyses from multiple documents if needed
-    let combinedPrep;
+    // Process document analyses into a combined result
+    console.log(`[MeetingPrepService] Combining analyses for ${documentAnalyses.length} documents`);
+    
+    // Extract document titles for reference
+    const documentTitles = documentAnalyses
+      .filter(doc => doc && doc.title)
+      .map(doc => doc.title);
+    
+    // Combine all document analyses
+    const combinedAnalysis = {
+      summary: '',
+      topics: [],
+      suggestions: [],
+      documents: documentAnalyses.map(doc => ({
+        id: doc.documentId,
+        title: doc.title
+      }))
+    };
+    
+    // Log the document analyses structure for debugging
+    console.log(`[MeetingPrepService] Document analyses structure:`, 
+      documentAnalyses.map(doc => ({
+        id: doc.documentId,
+        title: doc.title,
+        hasAnalysis: !!doc.analysis,
+        analysisSummaryLength: doc.analysis?.summary?.length || 0
+      })));
+    
+    // Combine insights from multiple documents if needed
     if (validAnalyses.length === 1) {
       // Single document case
       const doc = validAnalyses[0];
-      combinedPrep = {
-        summary: doc.analysis.summary,
-        topics: doc.analysis.topics,
-        suggestions: doc.analysis.suggestions,
-        documents: documents.map(doc => ({ id: doc.id, title: doc.title }))
-      };
+      combinedAnalysis.summary = doc.analysis.summary;
+      combinedAnalysis.topics = doc.analysis.topics;
+      combinedAnalysis.suggestions = doc.analysis.suggestions;
     } else {
       // Multiple documents case - combine insights
       const allTopics = validAnalyses.flatMap(doc => doc.analysis.topics);
@@ -237,17 +294,14 @@ async function prepareMeetingMaterials(meetingId, tokens) {
         `${doc.title}: ${doc.analysis.summary}`
       ).join('\n\n');
       
-      combinedPrep = {
-        summary: documentSummaries,
-        topics: uniqueTopics,
-        suggestions: uniqueSuggestions,
-        documents: documents.map(doc => ({ id: doc.id, title: doc.title }))
-      };
+      combinedAnalysis.summary = documentSummaries;
+      combinedAnalysis.topics = uniqueTopics;
+      combinedAnalysis.suggestions = uniqueSuggestions;
     }
     
     // Cache the results
     console.log(`[MeetingPrepService] Caching preparation results for meeting ${meetingId}`);
-    prepCache.set(cacheKey, combinedPrep);
+    prepCache.set(cacheKey, combinedAnalysis);
     
     // Store in database via data storage service
     try {
@@ -262,7 +316,7 @@ async function prepareMeetingMaterials(meetingId, tokens) {
         // Store the summary in the database
         // Extract document IDs for reference
         const documentIds = documents.map(doc => doc.id);
-        await dataStorageService.storeMeetingSummary(meetingId, combinedPrep, documentIds, tokens.user.id);
+        await dataStorageService.storeMeetingSummary(meetingId, combinedAnalysis, documentIds, tokens.user.id);
       }
     } catch (dbError) {
       // Log error but continue - we still have the cache
@@ -270,7 +324,7 @@ async function prepareMeetingMaterials(meetingId, tokens) {
     }
     
     console.log(`[MeetingPrepService] Successfully completed preparation for meeting ${meetingId}`);
-    return combinedPrep;
+    return combinedAnalysis;
   } catch (error) {
     console.error('Error preparing meeting materials:', error);
     throw new Error('Failed to prepare meeting materials');

@@ -54,7 +54,10 @@ router.get('/:meetingId', ensureAuth, async (req, res) => {
 router.post('/:meetingId/analyze', ensureAuth, async (req, res) => {
   try {
     const meetingId = req.params.meetingId;
-    console.log(`[API] POST /api/preparation/${meetingId}/analyze - Triggering document analysis`);
+    // Check if we should refetch documents (clear document cache)
+    const refetchDocuments = req.query.refetchDocuments === 'true';
+    
+    console.log(`[API] POST /api/preparation/${meetingId}/analyze - Triggering document analysis (refetchDocuments: ${refetchDocuments})`);
     
     // Get user's OAuth tokens from session
     const tokens = {
@@ -65,12 +68,11 @@ router.post('/:meetingId/analyze', ensureAuth, async (req, res) => {
       }
     };
     
-    // Clear cache to force re-analysis but preserve document cache
-    // We'll explicitly refresh documents below
-    meetingPrepService.clearPrepCache(meetingId, true);
+    // Clear preparation cache to force re-analysis
+    // If refetchDocuments is true, we'll also clear document cache
+    meetingPrepService.clearPrepCache(meetingId, !refetchDocuments);
     
-    // First, explicitly fetch all documents for the meeting to ensure we have the latest
-    console.log(`[API] Fetching all documents for meeting ${meetingId}`);
+    // Get the calendar and document services
     const calendarService = require('../services/calendarService');
     const documentService = require('../services/documentService');
     
@@ -80,26 +82,33 @@ router.post('/:meetingId/analyze', ensureAuth, async (req, res) => {
       throw new Error('Meeting event not found');
     }
     
-    // Force refresh document cache by clearing it first
-    console.log(`[API] Clearing document cache to force refresh`);
-    documentService.clearDocumentCache(meetingId);
+    let documents;
     
-    // Get all documents and their content (this will populate the cache)
-    const documents = await documentService.getDocumentsForEvent(event, tokens);
-    console.log(`[API] Found ${documents ? documents.length : 0} documents for meeting ${meetingId}`);
-    
-    if (documents && documents.length > 0) {
-      console.log(`[API] Pre-fetching content for all ${documents.length} documents`);
-      await Promise.all(documents.map(doc => 
-        documentService.getDocumentContent(doc.id, tokens)
-          .then(content => console.log(`[API] Successfully pre-fetched content for document ${doc.id}`))
-          .catch(err => console.error(`[API] Error pre-fetching content for document ${doc.id}:`, err))
-      ));
+    // If refetchDocuments is true, use the refetchDocumentsForEvent function
+    if (refetchDocuments) {
+      console.log(`[API] Refetching documents for meeting ${meetingId}`);
+      documents = await documentService.refetchDocumentsForEvent(event, tokens);
+      console.log(`[API] Refetched ${documents ? documents.length : 0} documents with fresh content`);
+    } else {
+      // Otherwise, just get the documents normally (may use cache)
+      console.log(`[API] Fetching documents for meeting ${meetingId} (using cache if available)`);
+      documents = await documentService.getDocumentsForEvent(event, tokens);
+      console.log(`[API] Found ${documents ? documents.length : 0} documents for meeting ${meetingId}`);
+      
+      // Pre-fetch content for all documents (this will populate the cache)
+      if (documents && documents.length > 0) {
+        console.log(`[API] Pre-fetching content for all ${documents.length} documents`);
+        await Promise.all(documents.map(doc => 
+          documentService.getDocumentContent(doc.id, tokens)
+            .then(content => console.log(`[API] Successfully pre-fetched content for document ${doc.id}`))
+            .catch(err => console.error(`[API] Error pre-fetching content for document ${doc.id}:`, err))
+        ));
+      }
     }
     
     // Now that we've pre-fetched all documents, generate the analysis
-    console.log(`[API] All documents fetched, generating analysis`);
-    const prepMaterials = await meetingPrepService.prepareMeetingMaterials(meetingId, tokens);
+    console.log(`[API] All documents fetched, generating analysis with forceRefresh`);
+    const prepMaterials = await meetingPrepService.prepareMeetingMaterials(meetingId, tokens, true);
     
     // Get user notes if available
     const userNotes = await meetingPrepService.getUserNotes(meetingId, req.user.googleId);
