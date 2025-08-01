@@ -32,8 +32,19 @@ An intelligent application that automatically prepares users for upcoming meetin
 - **Database**: PostgreSQL with Sequelize ORM
 - **Authentication**: Google OAuth 2.0 with Passport.js
 - **APIs**: Google Calendar API, Google Docs API
-- **AI Integration**: OpenAI GPT-4 for document analysis and daily briefings
+- **AI Integration**: LiteLLM with support for multiple providers (OpenAI GPT-4, Anthropic Claude, etc.)
 - **Real-Time Updates**: Server-Sent Events (SSE) for progress tracking
+
+### **LLM Integration**
+
+The application supports multiple LLM providers through a flexible service architecture:
+
+- **Service Selection**: Choose between OpenAI direct integration or LiteLLM for multi-provider support
+- **Provider Flexibility**: Use LiteLLM to access OpenAI, Anthropic, and other providers
+- **Fallback Chains**: Automatic fallback to alternative models if primary model fails (with LiteLLM)
+- **Service Router**: Centralized AI service router that directs requests to the appropriate service
+- **Clean Separation**: OpenAI and LiteLLM services operate independently for better maintainability
+- **Unified API**: Consistent interface for all AI operations regardless of the underlying provider
 
 ### **Frontend Technologies**
 - **Templates**: EJS templating engine
@@ -50,6 +61,12 @@ An intelligent application that automatically prepares users for upcoming meetin
 
 ## Setup
 
+### Prerequisites
+- Node.js (v14 or higher)
+- PostgreSQL database
+- Google Cloud project with Calendar and Docs APIs enabled
+- LLM provider API keys (OpenAI required, Anthropic optional)
+
 1. Clone the repository
 2. Install dependencies:
    ```
@@ -61,11 +78,30 @@ An intelligent application that automatically prepares users for upcoming meetin
    GOOGLE_CLIENT_ID=your_client_id
    GOOGLE_CLIENT_SECRET=your_client_secret
    SESSION_SECRET=your_session_secret
+   
+   # AI Service Configuration
+   AI_SERVICE=openai                # Options: 'openai' or 'litellm'
+   
+   # OpenAI Configuration
    OPENAI_API_KEY=your_openai_api_key
    OPENAI_MODEL=gpt-4
-   OPENAI_MAX_TOKENS=500
-   OPENAI_TEMPERATURE=0.3
+   OPENAI_MAX_TOKENS=1000
+   OPENAI_TEMPERATURE=0.7
+   
+   # LiteLLM Configuration
+   LLM_PROVIDER_DEFAULT=openai      # Default provider for LiteLLM
+   ANTHROPIC_API_KEY=your_anthropic_api_key  # Optional
+   LLM_TEMPERATURE=0.7
+   LLM_MAX_TOKENS=1000
+   LLM_MODEL_MAPPING={"gpt-4":"claude-2","gpt-3.5-turbo":"claude-instant-1"}
+   
+   # Database Configuration
+   DB_NAME=meeting_prep
+   DB_USER=postgres
+   DB_PASSWORD=your_db_password
+   DB_HOST=localhost
    ```
+
 4. Set up Google OAuth credentials in the Google Cloud Console:
    - Create a project in Google Cloud Console
    - Enable the Google Calendar API and Google Docs API
@@ -73,6 +109,7 @@ An intelligent application that automatically prepares users for upcoming meetin
    - Create OAuth credentials (Web application)
    - Add the following redirect URI: `http://localhost:3000/auth/google/callback`
    - The application requests these scopes: profile, email, calendar.readonly, documents.readonly
+
 5. Set up your PostgreSQL database and update the database configuration in `config/config.json`
 
 6. Run the application:

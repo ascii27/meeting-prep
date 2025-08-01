@@ -74,4 +74,54 @@ router.get('/documents/:documentId', ensureAuth, async (req, res) => {
   }
 });
 
+/**
+ * @desc    Refetch documents for a specific event (clear cache and get fresh content)
+ * @route   POST /api/documents/events/:eventId/refetch
+ * @access  Private
+ */
+router.post('/events/:eventId/refetch', ensureAuth, async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    console.log(`[API] POST /api/documents/events/${eventId}/refetch - Refetching documents`);
+    
+    // Get the event from the session or fetch it
+    const events = req.session.events || [];
+    const event = events.find(e => e.id === eventId);
+    
+    if (!event) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Event not found' 
+      });
+    }
+    
+    // Get user's OAuth tokens from session
+    const tokens = {
+      accessToken: req.user.accessToken,
+      refreshToken: req.user.refreshToken,
+      user: {
+        id: req.user.googleId
+      }
+    };
+    
+    // Refetch documents for the event (clears cache and gets fresh content)
+    const documents = await documentService.refetchDocumentsForEvent(event, tokens);
+    
+    console.log(`[API] Successfully refetched ${documents.length} documents for event: ${eventId}`);
+    
+    res.json({
+      success: true,
+      message: `Successfully refetched ${documents.length} documents`,
+      data: documents
+    });
+  } catch (error) {
+    console.error('Error refetching documents for event:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to refetch documents',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
 module.exports = router;
