@@ -16,7 +16,9 @@ jest.mock('../../../services/calendarService', () => ({
   getEventsByDate: jest.fn()
 }));
 jest.mock('../../../services/documentService', () => ({
-  fetchDocumentsForMeeting: jest.fn()
+  getDocumentsForEvent: jest.fn(),
+  getDocumentContent: jest.fn(),
+  fetchDocumentsForMeeting: jest.fn() // Keep for backward compatibility
 }));
 jest.mock('../../../services/openaiService', () => ({
   generateMeetingSummary: jest.fn(),
@@ -40,10 +42,17 @@ jest.mock('../../../utils/dateUtils', () => ({
   formatDate: jest.fn((date) => date),
   isToday: jest.fn(() => false)
 }));
+jest.mock('../../../repositories/meetingRepository', () => ({
+  findByGoogleEventId: jest.fn(),
+  create: jest.fn(),
+  createOrUpdateFromGoogleEvent: jest.fn(),
+  findByUserId: jest.fn()
+}));
 
 // Import after mocking
 const dailyBriefingService = require('../../../services/dailyBriefingService');
 const DailyBriefingRepository = require('../../../repositories/dailyBriefingRepository');
+const meetingRepository = require('../../../repositories/meetingRepository');
 const calendarService = require('../../../services/calendarService');
 const documentService = require('../../../services/documentService');
 const openaiService = require('../../../services/openaiService');
@@ -61,6 +70,11 @@ describe('DailyBriefingService', () => {
     
     // Setup mock progress callback
     mockProgressCallback = jest.fn();
+    
+    // Setup meetingRepository mocks
+    meetingRepository.findByGoogleEventId.mockResolvedValue(null);
+    meetingRepository.create.mockResolvedValue({ id: 'mock-meeting-id' });
+    meetingRepository.createOrUpdateFromGoogleEvent.mockResolvedValue({ id: 'mock-meeting-id', userId: 'test-user-id' });
   });
 
   describe('generateDailyBriefing', () => {
@@ -246,6 +260,7 @@ describe('DailyBriefingService', () => {
 
   describe('processMeeting', () => {
     const userId = uuidv4();
+    const userTokens = { access_token: 'mock-token', refresh_token: 'mock-refresh' };
     const meeting = {
       id: 'meeting-1',
       summary: 'Team Meeting',
@@ -253,42 +268,66 @@ describe('DailyBriefingService', () => {
     };
 
     test('should return existing summary if found', async () => {
+      const meetingRecord = {
+        id: 'mock-meeting-id',
+        userId: userId,
+        googleEventId: meeting.id
+      };
+      
       const existingSummary = {
-        meetingId: meeting.id,
+        meetingId: meetingRecord.id,
         summaryText: 'Existing summary',
         keyTopics: JSON.stringify(['topic1', 'topic2'])
       };
 
+      meetingRepository.findByGoogleEventId.mockResolvedValue(meetingRecord);
       MeetingSummary.findOne.mockResolvedValue(existingSummary);
 
-      const result = await dailyBriefingService.processMeeting(meeting, userId);
+      const result = await dailyBriefingService.processMeeting(meeting, userId, userTokens);
 
       expect(result).toEqual({
-        meetingId: meeting.id,
+        meetingId: meetingRecord.id,
         meetingTitle: meeting.summary,
         summary: existingSummary.summaryText,
         keyTopics: ['topic1', 'topic2'],
         attendees: meeting.attendees
       });
       expect(MeetingSummary.findOne).toHaveBeenCalledWith({
-        where: { meetingId: meeting.id, userId }
+        where: { meetingId: meetingRecord.id }
       });
     });
 
     test('should return null when no documents found', async () => {
+      const meetingRecord = {
+        id: 'mock-meeting-id',
+        userId: userId,
+        googleEventId: meeting.id
+      };
+      
+      meetingRepository.findByGoogleEventId.mockResolvedValue(meetingRecord);
       MeetingSummary.findOne.mockResolvedValue(null);
-      documentService.fetchDocumentsForMeeting.mockResolvedValue([]);
+      documentService.getDocumentsForEvent.mockResolvedValue([]);
 
-      const result = await dailyBriefingService.processMeeting(meeting, userId);
+      const result = await dailyBriefingService.processMeeting(meeting, userId, userTokens);
 
       expect(result).toBeNull();
-      expect(documentService.fetchDocumentsForMeeting).toHaveBeenCalledWith(meeting.id, userId);
+      expect(documentService.getDocumentsForEvent).toHaveBeenCalledWith(meeting, userTokens);
     });
 
     test('should generate and store new summary when documents found', async () => {
+      const meetingRecord = {
+        id: 'mock-meeting-id',
+        userId: userId,
+        googleEventId: meeting.id
+      };
+      
       const documents = [
-        { title: 'Doc 1', content: 'Document content' }
+        { id: 'doc-1', title: 'Doc 1' }
       ];
+
+      const documentContent = {
+        content: 'Document content'
+      };
 
       const aiAnalysis = {
         summary: 'AI generated summary',
@@ -301,15 +340,17 @@ describe('DailyBriefingService', () => {
         summaryText: aiAnalysis.summary
       };
 
+      meetingRepository.findByGoogleEventId.mockResolvedValue(meetingRecord);
       MeetingSummary.findOne.mockResolvedValue(null);
-      documentService.fetchDocumentsForMeeting.mockResolvedValue(documents);
+      documentService.getDocumentsForEvent.mockResolvedValue(documents);
+      documentService.getDocumentContent.mockResolvedValue(documentContent);
       openaiService.generateMeetingSummary.mockResolvedValue(aiAnalysis);
       MeetingSummary.create.mockResolvedValue(createdSummary);
 
-      const result = await dailyBriefingService.processMeeting(meeting, userId);
+      const result = await dailyBriefingService.processMeeting(meeting, userId, userTokens);
 
       expect(result).toEqual({
-        meetingId: meeting.id,
+        meetingId: meetingRecord.id,
         meetingTitle: meeting.summary,
         summary: aiAnalysis.summary,
         keyTopics: aiAnalysis.keyTopics,
@@ -377,14 +418,22 @@ describe('DailyBriefingService', () => {
 
   describe('deleteDailyBriefing', () => {
     test('should delete briefing successfully', async () => {
-      const briefingId = uuidv4();
+      const userId = uuidv4();
+      const date = '2025-07-29';
+      const briefing = {
+        id: uuidv4(),
+        userId,
+        briefingDate: date
+      };
       
+      mockRepository.findByUserIdAndDate.mockResolvedValue(briefing);
       mockRepository.deleteBriefing.mockResolvedValue(true);
 
-      const result = await dailyBriefingService.deleteDailyBriefing(briefingId);
+      const result = await dailyBriefingService.deleteDailyBriefing(userId, date);
 
       expect(result).toBe(true);
-      expect(mockRepository.deleteBriefing).toHaveBeenCalledWith(briefingId);
+      expect(mockRepository.findByUserIdAndDate).toHaveBeenCalledWith(userId, date);
+      expect(mockRepository.deleteBriefing).toHaveBeenCalledWith(briefing.id);
     });
   });
 
