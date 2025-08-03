@@ -1,20 +1,11 @@
-const NodeCache = require('node-cache');
+const cacheService = require('./cacheService');
 const documentService = require('./documentService');
 const aiService = require('./aiService');
 const dataStorageService = require('./dataStorageService');
 const calendarService = require('./calendarService');
 
-// Initialize cache with 1 hour TTL by default
-const prepCache = new NodeCache({ stdTTL: 3600, checkperiod: 300 });
-
-/**
- * Generate a cache key for meeting preparation data
- * @param {string} meetingId - Meeting ID
- * @returns {string} - Cache key
- */
-function getPrepCacheKey(meetingId) {
-  return `prep:${meetingId}`;
-}
+// Use centralized cache key generation
+const cacheKeys = cacheService.keys();
 
 /**
  * Clear preparation cache for a meeting
@@ -25,8 +16,8 @@ function clearPrepCache(meetingId, preserveDocumentCache = true) {
   console.log(`[MeetingPrepService] Clearing preparation cache for meeting ${meetingId}`);
   
   // Clear preparation cache for this meeting
-  const cacheKey = getPrepCacheKey(meetingId);
-  prepCache.del(cacheKey);
+  const cacheKey = cacheKeys.meetingPrep(meetingId);
+  cacheService.del(cacheKey);
   
   // Clear OpenAI cache for this meeting
   console.log(`[MeetingPrepService] Clearing OpenAI cache for meeting ${meetingId}`);
@@ -84,12 +75,12 @@ async function prepareMeetingMaterials(meetingId, tokens, forceRefresh = false) 
   }
   
   console.log(`[MeetingPrepService] Preparing materials for meeting ${meetingId} (forceRefresh: ${forceRefresh})`);
-  const cacheKey = getPrepCacheKey(meetingId);
+  const cacheKey = cacheKeys.meetingPrep(meetingId);
   
   // Skip cache and database checks if forcing refresh
   if (!forceRefresh) {
     // Check cache first
-    const cachedPrep = prepCache.get(cacheKey);
+    const cachedPrep = cacheService.get(cacheKey);
     if (cachedPrep) {
       console.log(`[MeetingPrepService] Using cached preparation materials for meeting ${meetingId}`);
       return cachedPrep;
@@ -116,7 +107,7 @@ async function prepareMeetingMaterials(meetingId, tokens, forceRefresh = false) 
         };
         
         // Cache it for future requests
-        prepCache.set(cacheKey, dbPrep);
+        cacheService.set(cacheKey, dbPrep, 'MEETING_PREP');
         
         return dbPrep;
       }
@@ -268,6 +259,7 @@ async function prepareMeetingMaterials(meetingId, tokens, forceRefresh = false) 
     // Combine all document analyses
     const combinedAnalysis = {
       summary: '',
+      summaryHtml: '',
       topics: [],
       suggestions: [],
       documents: documentAnalyses.map(doc => ({
@@ -313,7 +305,7 @@ async function prepareMeetingMaterials(meetingId, tokens, forceRefresh = false) 
     
     // Cache the results
     console.log(`[MeetingPrepService] Caching preparation results for meeting ${meetingId}`);
-    prepCache.set(cacheKey, combinedAnalysis);
+    cacheService.set(cacheKey, combinedAnalysis, 'MEETING_PREP');
     
     // Store in database via data storage service
     try {
@@ -354,7 +346,7 @@ async function saveUserNotes(meetingId, notes, userId) {
   try {
     // Store in cache
     const cacheKey = `notes:${meetingId}`;
-    prepCache.set(cacheKey, notes);
+    cacheService.set(cacheKey, notes, 'USER_NOTES');
     
     // Store in database if possible
     if (userId) {
@@ -383,7 +375,7 @@ async function getUserNotes(meetingId, userId) {
   try {
     // First check cache
     const cacheKey = `notes:${meetingId}`;
-    const cachedNotes = prepCache.get(cacheKey);
+    const cachedNotes = cacheService.get(cacheKey);
     if (cachedNotes) {
       return cachedNotes;
     }
@@ -396,7 +388,7 @@ async function getUserNotes(meetingId, userId) {
           // Use the most recent note
           const latestNote = notes[0].noteText;
           // Cache it for future requests
-          prepCache.set(cacheKey, latestNote);
+          cacheService.set(cacheKey, latestNote, 'USER_NOTES');
           return latestNote;
         }
       } catch (dbError) {
@@ -419,8 +411,8 @@ async function getUserNotes(meetingId, userId) {
  */
 async function checkPrepExists(meetingId) {
   // First check cache
-  const cacheKey = getPrepCacheKey(meetingId);
-  if (prepCache.has(cacheKey)) {
+  const cacheKey = cacheKeys.meetingPrep(meetingId);
+  if (cacheService.has(cacheKey)) {
     console.log(`[MeetingPrepService] Found preparation materials in cache for meeting ${meetingId}`);
     return true;
   }
