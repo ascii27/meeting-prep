@@ -63,9 +63,13 @@ function extractDocumentIdFromUrl(url) {
  * @returns {Promise<Array>} - Array of document objects
  */
 async function getDocumentsForEvent(event, tokens) {
+  if (!event) {
+    console.log(`[DocumentService] No event provided`);
+    return [];
+  }
+  
   console.log(`[DocumentService] Getting documents for event: ${event.id}`);
   console.log(`[DocumentService] Event:`, event);
-  if (!event) return [];
   
   const docs = [];
   

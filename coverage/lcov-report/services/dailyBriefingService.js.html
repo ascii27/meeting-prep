@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">8.1% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>12/148</span>
+                <span class='fraction'>0/148</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">6.66% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/15</span>
+                <span class='fraction'>0/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">8.51% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>12/141</span>
+                <span class='fraction'>0/141</span>
             </div>
         
             
@@ -477,20 +477,20 @@
 <a name='L412'></a><a href='#L412'>412</a>
 <a name='L413'></a><a href='#L413'>413</a>
 <a name='L414'></a><a href='#L414'>414</a>
-<a name='L415'></a><a href='#L415'>415</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L415'></a><a href='#L415'>415</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -890,21 +890,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const DailyBriefingRepository = require('../repositories/dailyBriefingRepository');
-const calendarService = require('./calendarService');
-const documentService = require('./documentService');
-const aiService = require('./aiService');
-const meetingPrepService = require('./meetingPrepService');
-const { MeetingSummary, Meeting } = require('../models');
-const meetingRepository = require('../repositories/meetingRepository');
-const { formatDate, isToday } = require('../utils/dateUtils');
-const { marked } = require('marked');
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const DailyBriefingRepository = <span class="cstat-no" title="statement not covered" >require('../repositories/dailyBriefingRepository');</span>
+const calendarService = <span class="cstat-no" title="statement not covered" >require('./calendarService');</span>
+const documentService = <span class="cstat-no" title="statement not covered" >require('./documentService');</span>
+const aiService = <span class="cstat-no" title="statement not covered" >require('./aiService');</span>
+const meetingPrepService = <span class="cstat-no" title="statement not covered" >require('./meetingPrepService');</span>
+const { MeetingSummary, Meeting } = <span class="cstat-no" title="statement not covered" >require('../models');</span>
+const meetingRepository = <span class="cstat-no" title="statement not covered" >require('../repositories/meetingRepository');</span>
+const { formatDate, isToday } = <span class="cstat-no" title="statement not covered" >require('../utils/dateUtils');</span>
+const { marked } = <span class="cstat-no" title="statement not covered" >require('marked');</span>
 &nbsp;
 class DailyBriefingService {
-  constructor() {
-    this.repository = new DailyBriefingRepository();
-    this.meetingRepository = meetingRepository;
+<span class="fstat-no" title="function not covered" >  co</span>nstructor() {
+<span class="cstat-no" title="statement not covered" >    this.repository = new DailyBriefingRepository();</span>
+<span class="cstat-no" title="statement not covered" >    this.meetingRepository = meetingRepository;</span>
   }
 &nbsp;
   /**
@@ -1304,7 +1304,7 @@ class DailyBriefingService {
   }
 }
 &nbsp;
-module.exports = new DailyBriefingService();
+<span class="cstat-no" title="statement not covered" >module.exports = new DailyBriefingService();</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1312,7 +1312,7 @@ module.exports = new DailyBriefingService();
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-03T01:31:26.148Z
+                at 2025-08-03T05:26:10.182Z
             </div>
         <script src="../prettify.js"></script>
         <script>

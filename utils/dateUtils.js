@@ -10,10 +10,21 @@
  * @returns {string} - Formatted date string
  */
 function formatDate(date, options = {}) {
-  const defaultOptions = { };
+  const defaultOptions = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  };
   
   const mergedOptions = { ...defaultOptions, ...options };
-  return new Intl.DateTimeFormat('en-US', mergedOptions).format(date);
+  
+  // Filter out undefined values to allow proper customization
+  const filteredOptions = Object.fromEntries(
+    Object.entries(mergedOptions).filter(([key, value]) => value !== undefined)
+  );
+  
+  return new Intl.DateTimeFormat('en-US', filteredOptions).format(date);
 }
 
 /**
@@ -23,9 +34,11 @@ function formatDate(date, options = {}) {
  * @returns {string} - ISO date string in local timezone (YYYY-MM-DD)
  */
 function getLocalISODateString(date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  // Use UTC methods to avoid timezone conversion issues
+  // This ensures consistent date grouping regardless of local timezone
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(date.getUTCDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
 

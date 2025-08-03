@@ -50,7 +50,7 @@ describe('Date Utilities', () => {
     it('should format date with custom options', () => {
       const date = new Date('2025-07-15T12:00:00Z');
       // Only include weekday
-      expect(formatDate(date, { weekday: 'long', month: undefined, day: undefined })).toBe('Tuesday');
+      expect(formatDate(date, { weekday: 'long', year: undefined, month: undefined, day: undefined })).toBe('Tuesday');
     });
   });
 

@@ -463,6 +463,7 @@ Format your response as JSON:
 
 module.exports = {
   generateSummary,
+  extractKeyTopics,
   analyzeDocumentForMeeting,
   generateMeetingSummary,
   generateDailyBriefing,
