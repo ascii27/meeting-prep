@@ -1,4 +1,3 @@
-const { jest } = require('@jest/globals');
 const meetingPrepService = require('../../../services/meetingPrepService');
 
 // Mock the document service
@@ -13,21 +12,39 @@ jest.mock('../../../services/openaiService', () => ({
   clearMeetingCache: jest.fn()
 }));
 
-// Mock node-cache
-jest.mock('node-cache', () => {
-  return jest.fn().mockImplementation(() => {
-    const cache = {};
-    return {
-      get: jest.fn((key) => cache[key]),
-      set: jest.fn((key, value) => { cache[key] = value; }),
-      del: jest.fn((key) => { delete cache[key]; })
-    };
-  });
-});
+// Mock calendarService
+jest.mock('../../../services/calendarService', () => ({
+  getEventById: jest.fn()
+}));
+
+// Mock dataStorageService
+jest.mock('../../../services/dataStorageService', () => ({
+  getMeetingSummary: jest.fn(),
+  storePreparationNote: jest.fn(),
+  getPreparationNotes: jest.fn(),
+  clearMeetingSummaryCache: jest.fn(),
+  storeMeetingFromEvent: jest.fn(),
+  storeMeetingSummary: jest.fn()
+}));
+
+// Mock the centralized cache service
+jest.mock('../../../services/cacheService', () => ({
+  get: jest.fn(),
+  set: jest.fn(),
+  del: jest.fn(),
+  has: jest.fn(),
+  keys: jest.fn(() => ({
+    meetingPrep: (meetingId) => `prep:${meetingId}`,
+    userNotes: (meetingId) => `notes:${meetingId}`
+  }))
+}));
 
 describe('Meeting Preparation Service', () => {
   const documentService = require('../../../services/documentService');
   const openaiService = require('../../../services/openaiService');
+  const calendarService = require('../../../services/calendarService');
+  const dataStorageService = require('../../../services/dataStorageService');
+  const cacheService = require('../../../services/cacheService');
   
   beforeEach(() => {
     // Clear all mocks before each test
@@ -37,9 +54,6 @@ describe('Meeting Preparation Service', () => {
   describe('prepareMeetingMaterials', () => {
     it('should return cached preparation if available', async () => {
       // Set up the cache mock to return cached preparation
-      const NodeCache = require('node-cache');
-      const mockCache = NodeCache.mock.instances[0];
-      
       const cachedPrep = {
         summary: 'Cached summary',
         topics: ['Topic 1', 'Topic 2'],
@@ -47,7 +61,7 @@ describe('Meeting Preparation Service', () => {
         documents: [{ id: 'doc1', title: 'Document 1' }]
       };
       
-      mockCache.get.mockReturnValue(cachedPrep);
+      cacheService.get.mockReturnValue(cachedPrep);
       
       // Call the function
       const result = await meetingPrepService.prepareMeetingMaterials('meeting1', { accessToken: 'token' });
@@ -60,8 +74,18 @@ describe('Meeting Preparation Service', () => {
     });
     
     it('should handle case with no documents', async () => {
+      // Mock calendar service to return an event
+      const mockEvent = { id: 'meeting1', summary: 'Test Meeting' };
+      calendarService.getEventById.mockResolvedValue(mockEvent);
+      
       // Mock document service to return no documents
       documentService.getDocumentsForEvent.mockResolvedValue([]);
+      
+      // Mock cache to return null (no cached data)
+      cacheService.get.mockReturnValue(null);
+      
+      // Mock dataStorageService to return null (no database data)
+      dataStorageService.getMeetingSummary.mockResolvedValue(null);
       
       // Call the function
       const result = await meetingPrepService.prepareMeetingMaterials('meeting1', { accessToken: 'token' });
@@ -74,14 +98,22 @@ describe('Meeting Preparation Service', () => {
         documents: []
       });
       
-      // Verify document service was called
-      expect(documentService.getDocumentsForEvent).toHaveBeenCalledWith(
-        { id: 'meeting1' },
-        { accessToken: 'token' }
-      );
+      // Verify services were called
+      expect(calendarService.getEventById).toHaveBeenCalledWith('meeting1', { accessToken: 'token', user: { id: 'default-user' } });
+      expect(documentService.getDocumentsForEvent).toHaveBeenCalledWith(mockEvent, { accessToken: 'token', user: { id: 'default-user' } });
     });
     
     it('should process a single document', async () => {
+      // Mock calendar service to return an event
+      const mockEvent = { id: 'meeting1', summary: 'Test Meeting' };
+      calendarService.getEventById.mockResolvedValue(mockEvent);
+      
+      // Mock cache to return null (no cached data)
+      cacheService.get.mockReturnValue(null);
+      
+      // Mock dataStorageService to return null (no database data)
+      dataStorageService.getMeetingSummary.mockResolvedValue(null);
+      
       // Mock document service to return one document
       documentService.getDocumentsForEvent.mockResolvedValue([
         { id: 'doc1', title: 'Document 1' }
@@ -106,6 +138,7 @@ describe('Meeting Preparation Service', () => {
       // Check the result
       expect(result).toEqual({
         summary: 'Test summary',
+        summaryHtml: '',
         topics: ['Topic 1', 'Topic 2'],
         suggestions: ['Suggestion 1', 'Suggestion 2'],
         documents: [{ id: 'doc1', title: 'Document 1' }]
@@ -113,13 +146,13 @@ describe('Meeting Preparation Service', () => {
       
       // Verify services were called correctly
       expect(documentService.getDocumentsForEvent).toHaveBeenCalledWith(
-        { id: 'meeting1' },
-        { accessToken: 'token' }
+        { id: 'meeting1', summary: 'Test Meeting' },
+        { accessToken: 'token', user: { id: 'default-user' } }
       );
       
       expect(documentService.getDocumentContent).toHaveBeenCalledWith(
         'doc1',
-        { accessToken: 'token' }
+        { accessToken: 'token', user: { id: 'default-user' } }
       );
       
       expect(openaiService.analyzeDocumentForMeeting).toHaveBeenCalledWith(
@@ -130,6 +163,16 @@ describe('Meeting Preparation Service', () => {
     });
     
     it('should combine insights from multiple documents', async () => {
+      // Mock calendar service to return an event
+      const mockEvent = { id: 'meeting1', summary: 'Test Meeting' };
+      calendarService.getEventById.mockResolvedValue(mockEvent);
+      
+      // Mock cache to return null (no cached data)
+      cacheService.get.mockReturnValue(null);
+      
+      // Mock dataStorageService to return null (no database data)
+      dataStorageService.getMeetingSummary.mockResolvedValue(null);
+      
       // Mock document service to return multiple documents
       documentService.getDocumentsForEvent.mockResolvedValue([
         { id: 'doc1', title: 'Document 1' },
@@ -177,14 +220,23 @@ describe('Meeting Preparation Service', () => {
   });
   
   describe('saveUserNotes and getUserNotes', () => {
-    it('should save and retrieve user notes', () => {
+    it('should save and retrieve user notes', async () => {
+      // Mock cache to return the saved notes when getUserNotes calls get
+      cacheService.get.mockReturnValue('Test notes');
+      
       // Save notes
-      const saveResult = meetingPrepService.saveUserNotes('meeting1', 'Test notes');
+      const saveResult = await meetingPrepService.saveUserNotes('meeting1', 'Test notes');
       expect(saveResult).toBe(true);
       
+      // Verify cache.set was called
+      expect(cacheService.set).toHaveBeenCalledWith('notes:meeting1', 'Test notes', 'USER_NOTES');
+      
       // Get notes
-      const notes = meetingPrepService.getUserNotes('meeting1');
+      const notes = await meetingPrepService.getUserNotes('meeting1');
       expect(notes).toBe('Test notes');
+      
+      // Verify cache.get was called
+      expect(cacheService.get).toHaveBeenCalledWith('notes:meeting1');
     });
   });
   
@@ -197,9 +249,7 @@ describe('Meeting Preparation Service', () => {
       expect(openaiService.clearMeetingCache).toHaveBeenCalledWith('meeting1');
       
       // Verify prep cache was cleared
-      const NodeCache = require('node-cache');
-      const mockCache = NodeCache.mock.instances[0];
-      expect(mockCache.del).toHaveBeenCalledWith('prep:meeting1');
+      expect(cacheService.del).toHaveBeenCalledWith('prep:meeting1');
     });
   });
 });
