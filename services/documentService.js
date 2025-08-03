@@ -86,37 +86,9 @@ async function getDocumentsForEvent(event, tokens) {
     });
   }
   
-  // If no documents found, check for recently accessed documents in the cache
+  // Only return documents that are actually attached to this specific event
   if (docs.length === 0) {
-    console.log(`[DocumentService] No attachments found for event: ${event.id}, checking cache for recently accessed documents`);
-    
-    // Get all keys from the document cache
-    const cachedDocIds = Array.from(documentCache.keys());
-    
-    if (cachedDocIds.length > 0) {
-      console.log(`[DocumentService] Found ${cachedDocIds.length} recently accessed documents in cache`);
-      
-      // Use the most recently accessed document
-      const docId = cachedDocIds[cachedDocIds.length - 1];
-      const cachedDoc = documentCache.get(docId);
-      
-      if (cachedDoc) {
-        console.log(`[DocumentService] Using recently accessed document: ${docId} for meeting ${event.id}`);
-        
-        // Extract title from the cached document content
-        const title = cachedDoc.content && cachedDoc.content.title ? 
-          cachedDoc.content.title : 'Recently Accessed Document';
-        
-        docs.push({
-          id: docId,
-          title: title,
-          url: `https://docs.google.com/document/d/${docId}/edit`
-        });
-      }
-    } else {
-      console.log(`[DocumentService] No recently accessed documents found in cache for event: ${event.id}`);
-      console.log(`[DocumentService] Consider implementing additional document sources like shared drives or recent docs`);
-    }
+    console.log(`[DocumentService] No attachments found for event: ${event.id}`);
   }
   
   return docs;
