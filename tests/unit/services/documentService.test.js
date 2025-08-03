@@ -78,8 +78,14 @@ describe('Document Service', () => {
       // Call the function
       const result = await documentService.getDocumentById('test-doc-id', mockTokens);
       
-      // Verify the result
-      expect(result).toEqual(mockDocument);
+      // Verify the result - the service returns a processed format
+      expect(result).toEqual({
+        id: 'test-doc-id',
+        content: {
+          title: 'Test Document',
+          content: 'Test content'
+        }
+      });
       expect(mockDocsClient.documents.get).toHaveBeenCalledTimes(1);
       expect(mockDocsClient.documents.get).toHaveBeenCalledWith({
         documentId: 'test-doc-id'
