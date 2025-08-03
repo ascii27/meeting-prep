@@ -134,7 +134,13 @@ function displayPreparationMaterials(data, container) {
   documentsSection.innerHTML = `
     <h3>Related Documents</h3>
     <ul class="documents-list">
-      ${data.documents.map(doc => `<li>${doc.title}</li>`).join('')}
+      ${data.documents.map(doc => {
+        if (doc.url) {
+          return `<li><a href="${doc.url}" target="_blank" rel="noopener noreferrer">${doc.title}</a></li>`;
+        } else {
+          return `<li>${doc.title}</li>`;
+        }
+      }).join('')}
     </ul>
   `;
   
