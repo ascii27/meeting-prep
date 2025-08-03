@@ -131,9 +131,21 @@ async function prepareMeetingMaterials(meetingId, tokens, forceRefresh = false) 
   console.log(`[MeetingPrepService] No existing materials found, generating new analysis for meeting ${meetingId}`);
   
   try {
-    // Get documents for the meeting
+    // Get the full event object with attachments
+    console.log(`[MeetingPrepService] Fetching full event details for meeting ${meetingId}`);
+    const event = await calendarService.getEventById(meetingId, tokens);
+    if (!event) {
+      console.log(`[MeetingPrepService] Event not found: ${meetingId}`);
+      return {
+        summary: "Meeting event not found.",
+        topics: [],
+        suggestions: ["Verify the meeting ID and try again."],
+        documents: []
+      };
+    }
+    
+    // Get documents for the meeting using the full event object
     console.log(`[MeetingPrepService] Fetching documents for meeting ${meetingId}`);
-    const event = { id: meetingId }; // Minimal event object with ID
     const documents = await documentService.getDocumentsForEvent(event, tokens);
     console.log(`[MeetingPrepService] Found ${documents ? documents.length : 0} documents for meeting ${meetingId}`);
     
