@@ -1,4 +1,3 @@
-const { jest } = require('@jest/globals');
 const openaiService = require('../../../services/openaiService');
 
 // Mock the OpenAI module
