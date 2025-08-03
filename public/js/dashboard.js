@@ -94,13 +94,19 @@ function displayDocuments(documents, container) {
     docItem.className = 'document-item';
     
     const docLink = document.createElement('a');
-    docLink.href = '#';
+    docLink.href = doc.url || '#';
     docLink.textContent = doc.title;
     docLink.setAttribute('data-doc-id', doc.id);
-    docLink.addEventListener('click', function(e) {
-      e.preventDefault();
-      fetchDocumentContent(doc.id, container);
-    });
+    docLink.target = '_blank';
+    docLink.rel = 'noopener noreferrer';
+    
+    // If no URL is available, fall back to showing content inline
+    if (!doc.url) {
+      docLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        fetchDocumentContent(doc.id, container);
+      });
+    }
     
     docItem.appendChild(docLink);
     docList.appendChild(docItem);
