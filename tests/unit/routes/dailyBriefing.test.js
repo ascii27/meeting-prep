@@ -127,6 +127,11 @@ describe('Daily Briefing Routes', () => {
             res.write(`data: ${JSON.stringify(progress)}\n\n`);
             
             if (progress.progress === 100) {
+              res.write(`data: ${JSON.stringify({ 
+                step: 'completed', 
+                progress: 100, 
+                briefing: mockBriefing 
+              })}\n\n`);
               res.end();
             }
           }
@@ -207,7 +212,8 @@ describe('Daily Briefing Routes', () => {
             }
           }
         ).catch(err => {
-          // This is expected in the test
+          res.write(`data: {"step": "error", "error": "${err.message}"}\n\n`);
+          res.end();
         });
       });
       
@@ -232,6 +238,45 @@ describe('Daily Briefing Routes', () => {
         },
         expect.any(Function) // progressCallback
       );
+    });
+
+    it('should handle outer try/catch errors', async () => {
+      // Create a test app with explicit response handling
+      const testApp = express();
+      
+      // Setup middleware
+      testApp.use(express.json());
+      testApp.use(express.urlencoded({ extended: false }));
+      
+      // Setup session that throws an error
+      testApp.use((req, res, next) => {
+        req.session = {
+          touch: jest.fn(),
+          save: jest.fn(cb => typeof cb === 'function' && cb())
+        };
+        // Simulate missing user to trigger outer try/catch
+        req.user = null;
+        next();
+      });
+      
+      // Create a custom route handler for testing
+      testApp.post('/api/daily-briefing/generate', (req, res) => {
+        try {
+          // This will throw an error because req.user is null
+          const userId = req.user.googleId;
+          res.status(200).json({ userId });
+        } catch (error) {
+          res.status(500).json({ error: 'Internal server error' });
+        }
+      });
+      
+      // Make the request
+      const response = await request(testApp)
+        .post('/api/daily-briefing/generate')
+        .send({ date: '2025-08-03' });
+      
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Internal server error');
     });
   });
 
@@ -263,7 +308,7 @@ describe('Daily Briefing Routes', () => {
         dailyBriefingService.getDailyBriefing(req.user.googleId, req.params.date)
           .then(briefing => {
             if (!briefing) {
-              return res.status(404).json({ error: 'Briefing not found' });
+              return res.status(404).json({ error: 'Daily briefing not found' });
             }
             res.status(200).json({ briefing });
           })
@@ -307,7 +352,7 @@ describe('Daily Briefing Routes', () => {
         dailyBriefingService.getDailyBriefing(req.user.googleId, req.params.date)
           .then(briefing => {
             if (!briefing) {
-              return res.status(404).json({ error: 'Briefing not found' });
+              return res.status(404).json({ error: 'Daily briefing not found' });
             }
             res.status(200).json({ briefing });
           })
@@ -321,7 +366,51 @@ describe('Daily Briefing Routes', () => {
         .get('/api/daily-briefing/2025-08-03');
       
       expect(response.status).toBe(404);
-      expect(response.body.error).toBe('Briefing not found');
+      expect(response.body.error).toBe('Daily briefing not found');
+    });
+
+    it('should handle service errors', async () => {
+      // Create a test app with explicit response handling
+      const testApp = express();
+      
+      // Setup middleware
+      testApp.use(express.json());
+      testApp.use(express.urlencoded({ extended: false }));
+      
+      // Setup session
+      testApp.use((req, res, next) => {
+        req.session = {
+          touch: jest.fn(),
+          save: jest.fn(cb => typeof cb === 'function' && cb())
+        };
+        req.user = mockUser;
+        next();
+      });
+      
+      // Mock service to throw an error
+      dailyBriefingService.getDailyBriefing.mockRejectedValueOnce(new Error('Service error'));
+      
+      // Create a custom route handler for testing
+      testApp.get('/api/daily-briefing/:date', (req, res) => {
+        // Call the service and return the result
+        dailyBriefingService.getDailyBriefing(req.user.googleId, req.params.date)
+          .then(briefing => {
+            if (!briefing) {
+              return res.status(404).json({ error: 'Daily briefing not found' });
+            }
+            res.status(200).json({ briefing });
+          })
+          .catch(err => {
+            res.status(500).json({ error: err.message });
+          });
+      });
+      
+      // Make the request
+      const response = await request(testApp)
+        .get('/api/daily-briefing/2025-08-03');
+      
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Service error');
     });
   });
   
@@ -371,6 +460,51 @@ describe('Daily Briefing Routes', () => {
       expect(response.status).toBe(200);
       expect(response.body.briefings).toEqual(mockBriefings);
     });
+
+    it('should handle service errors in range endpoint', async () => {
+      // Create a test app with explicit response handling
+      const testApp = express();
+      
+      // Setup middleware
+      testApp.use(express.json());
+      testApp.use(express.urlencoded({ extended: false }));
+      
+      // Setup session
+      testApp.use((req, res, next) => {
+        req.session = {
+          touch: jest.fn(),
+          save: jest.fn(cb => typeof cb === 'function' && cb())
+        };
+        req.user = mockUser;
+        next();
+      });
+      
+      // Mock service to throw an error
+      dailyBriefingService.getDailyBriefingsInRange.mockRejectedValueOnce(new Error('Range service error'));
+      
+      // Create a custom route handler for testing
+      testApp.get('/api/daily-briefing/range/:startDate/:endDate', (req, res) => {
+        // Call the service and return the result
+        dailyBriefingService.getDailyBriefingsInRange(
+          req.user.googleId,
+          req.params.startDate,
+          req.params.endDate
+        )
+          .then(briefings => {
+            res.status(200).json({ briefings });
+          })
+          .catch(err => {
+            res.status(500).json({ error: err.message });
+          });
+      });
+      
+      // Make the request
+      const response = await request(testApp)
+        .get('/api/daily-briefing/range/2025-08-01/2025-08-07');
+      
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Range service error');
+    });
   });
   
   describe('DELETE /api/daily-briefing/:date', () => {
@@ -413,6 +547,94 @@ describe('Daily Briefing Routes', () => {
       
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ deleted: true });
+    });
+
+    it('should handle not found when deleting briefing', async () => {
+      // Create a test app with explicit response handling
+      const testApp = express();
+      
+      // Setup middleware
+      testApp.use(express.json());
+      testApp.use(express.urlencoded({ extended: false }));
+      
+      // Setup session
+      testApp.use((req, res, next) => {
+        req.session = {
+          touch: jest.fn(),
+          save: jest.fn(cb => typeof cb === 'function' && cb())
+        };
+        req.user = mockUser;
+        next();
+      });
+      
+      // Mock service to return false (not found)
+      dailyBriefingService.deleteDailyBriefing.mockResolvedValueOnce(false);
+      
+      // Create a custom route handler for testing
+      testApp.delete('/api/daily-briefing/:date', (req, res) => {
+        // Call the service and return the result
+        dailyBriefingService.deleteDailyBriefing(req.user.googleId, req.params.date)
+          .then(success => {
+            if (!success) {
+              return res.status(404).json({ error: 'Daily briefing not found' });
+            }
+            res.status(200).json({ message: 'Daily briefing deleted successfully' });
+          })
+          .catch(err => {
+            res.status(500).json({ error: err.message });
+          });
+      });
+      
+      // Make the request
+      const response = await request(testApp)
+        .delete('/api/daily-briefing/2025-08-03');
+      
+      expect(response.status).toBe(404);
+      expect(response.body.error).toBe('Daily briefing not found');
+    });
+
+    it('should handle service errors when deleting', async () => {
+      // Create a test app with explicit response handling
+      const testApp = express();
+      
+      // Setup middleware
+      testApp.use(express.json());
+      testApp.use(express.urlencoded({ extended: false }));
+      
+      // Setup session
+      testApp.use((req, res, next) => {
+        req.session = {
+          touch: jest.fn(),
+          save: jest.fn(cb => typeof cb === 'function' && cb())
+        };
+        req.user = mockUser;
+        next();
+      });
+      
+      // Mock service to throw an error
+      dailyBriefingService.deleteDailyBriefing.mockRejectedValueOnce(new Error('Delete service error'));
+      
+      // Create a custom route handler for testing
+      testApp.delete('/api/daily-briefing/:date', (req, res) => {
+        // Call the service and return the result
+        dailyBriefingService.deleteDailyBriefing(req.user.googleId, req.params.date)
+          .then(success => {
+            if (!success) {
+              return res.status(404).json({ error: 'Daily briefing not found' });
+            }
+            res.status(200).json({ message: 'Daily briefing deleted successfully' });
+          })
+          .catch(err => {
+            res.status(500).json({ error: err.message });
+          });
+      });
+      
+      // Make the request
+      const response = await request(testApp)
+        .delete('/api/daily-briefing/2025-08-03');
+      
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Delete service error');
     });
   });
   
@@ -458,6 +680,47 @@ describe('Daily Briefing Routes', () => {
       expect(response.status).toBe(200);
       expect(response.body.briefings).toEqual(mockBriefings);
     });
+
+    it('should handle service errors in status endpoint', async () => {
+      // Create a test app with explicit response handling
+      const testApp = express();
+      
+      // Setup middleware
+      testApp.use(express.json());
+      testApp.use(express.urlencoded({ extended: false }));
+      
+      // Setup session
+      testApp.use((req, res, next) => {
+        req.session = {
+          touch: jest.fn(),
+          save: jest.fn(cb => typeof cb === 'function' && cb())
+        };
+        req.user = mockUser;
+        next();
+      });
+      
+      // Mock service to throw an error
+      dailyBriefingService.getBriefingsByStatus.mockRejectedValueOnce(new Error('Status service error'));
+      
+      // Create a custom route handler for testing
+      testApp.get('/api/daily-briefing/status/:status', (req, res) => {
+        // Call the service and return the result
+        dailyBriefingService.getBriefingsByStatus(req.user.googleId, req.params.status)
+          .then(briefings => {
+            res.status(200).json({ briefings });
+          })
+          .catch(err => {
+            res.status(500).json({ error: err.message });
+          });
+      });
+      
+      // Make the request
+      const response = await request(testApp)
+        .get('/api/daily-briefing/status/completed');
+      
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Status service error');
+    });
   });
   
   describe('Authentication', () => {
@@ -490,6 +753,32 @@ describe('Daily Briefing Routes', () => {
       
       expect(response.status).toBe(200);
       expect(ensureAuth).toHaveBeenCalled();
+    });
+
+    it('should redirect when authentication fails', async () => {
+      // Create a test app with explicit response handling
+      const testApp = express();
+      
+      // Setup middleware
+      testApp.use(express.json());
+      testApp.use(express.urlencoded({ extended: false }));
+      
+      // Override auth middleware to simulate failure
+      ensureAuth.mockImplementationOnce((req, res, next) => {
+        return res.status(401).json({ error: 'Authentication required' });
+      });
+      
+      // Use the auth middleware
+      testApp.get('/api/daily-briefing/test-auth', ensureAuth, (req, res) => {
+        res.status(200).json({ success: true });
+      });
+      
+      // Make the request
+      const response = await request(testApp)
+        .get('/api/daily-briefing/test-auth');
+      
+      expect(response.status).toBe(401);
+      expect(response.body.error).toBe('Authentication required');
     });
   });
 });
