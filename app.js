@@ -42,7 +42,7 @@ app.use(passport.session());
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
 app.use('/dashboard', require('./routes/dashboard'));
-app.use('/preparation', require('./routes/preparation'));
+app.use('/api/preparation', require('./routes/preparation'));
 app.use('/history', require('./routes/history'));
 app.use('/api/documents', require('./routes/documents'));
 app.use('/api/daily-briefing', require('./routes/dailyBriefing'));
