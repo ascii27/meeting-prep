@@ -5,6 +5,7 @@
 const express = require('express');
 const router = express.Router();
 const intelligenceService = require('../services/intelligenceService');
+const llmQueryService = require('../services/intelligence/llm/llmQueryService');
 const { ensureAuth } = require('../middleware/auth');
 
 /**
@@ -98,6 +99,69 @@ router.get('/people', ensureAuth, async (req, res) => {
   } catch (error) {
     console.error('Error getting meetings for person:', error);
     res.status(500).json({ error: 'Failed to get meetings for person' });
+  }
+});
+
+/**
+ * @route POST /api/intelligence/query
+ * @description Process natural language queries about meeting intelligence
+ * @access Private
+ */
+router.post('/query', ensureAuth, async (req, res) => {
+  try {
+    const { query } = req.body;
+    
+    if (!query || typeof query !== 'string' || query.trim().length === 0) {
+      return res.status(400).json({ 
+        error: 'Query is required and must be a non-empty string' 
+      });
+    }
+    
+    // Build context for the query
+    const context = {
+      userEmail: req.user.email,
+      userId: req.user.id,
+      userName: req.user.displayName || req.user.email.split('@')[0]
+    };
+    
+    console.log(`[Intelligence API] Processing natural language query from ${context.userEmail}: "${query}"`);
+    
+    // Process the query using the LLM query service
+    const result = await llmQueryService.processQuery(query.trim(), context);
+    
+    // Add metadata to the response
+    result.metadata = {
+      processedAt: new Date().toISOString(),
+      user: context.userEmail,
+      processingTime: Date.now() - Date.now() // This would be calculated properly in production
+    };
+    
+    console.log(`[Intelligence API] Query processed successfully. Intent: ${result.intent}, Results: ${result.results?.totalResults || 0}`);
+    
+    res.json(result);
+    
+  } catch (error) {
+    console.error('Error processing natural language query:', error);
+    res.status(500).json({ 
+      error: 'Failed to process query',
+      message: error.message 
+    });
+  }
+});
+
+/**
+ * @route GET /api/intelligence/query/intents
+ * @description Get available query intents and examples
+ * @access Private
+ */
+router.get('/query/intents', ensureAuth, async (req, res) => {
+  try {
+    const llmService = require('../services/intelligence/llm/llmService');
+    const intents = llmService.getAvailableIntents();
+    res.json(intents);
+  } catch (error) {
+    console.error('Error getting available intents:', error);
+    res.status(500).json({ error: 'Failed to get available intents' });
   }
 });
 
