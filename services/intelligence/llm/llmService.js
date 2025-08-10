@@ -57,15 +57,21 @@ Always be helpful, accurate, and concise in your responses.`;
       let response;
       
       if (service === 'litellm') {
-        const completion = await litellmService.completion({
-          model: aiConfig.litellm.fallbackModels[0] || 'gpt-4',
+        const model = aiConfig.litellm.fallbackModels[0] || 'gpt-4';
+        
+        // Use max_completion_tokens for newer models (gpt-5, gpt-5-mini), max_tokens for older ones
+        const tokenParam = model.includes('gpt-5') ? 'max_completion_tokens' : 'max_tokens';
+        const requestParams = {
+          model: model,
           messages: [
             { role: 'system', content: this.systemPrompt },
             { role: 'user', content: prompt }
           ],
           temperature: 0.3,
-          max_tokens: 1000
-        });
+          [tokenParam]: 1000
+        };
+        
+        const completion = await litellmService.completion(requestParams);
         response = completion.choices[0].message.content;
       } else {
         response = await openaiService.generateResponse([
@@ -106,16 +112,24 @@ Always be helpful, accurate, and concise in your responses.`;
       let response;
       
       if (service === 'litellm') {
-        const completion = await litellmService.completion({
-          model: aiConfig.litellm.fallbackModels[0] || 'gpt-4',
+        const model = aiConfig.litellm.fallbackModels[0] || 'gpt-4';
+        
+        // Use max_completion_tokens for newer models (gpt-5, gpt-5-mini), max_tokens for older ones
+        const tokenParam = model.includes('gpt-5') ? 'max_completion_tokens' : 'max_tokens';
+        const requestParams = {
+          model: model,
           messages: [
             { role: 'system', content: this.systemPrompt },
             { role: 'user', content: prompt }
           ],
           temperature: 0.7,
-          max_tokens: 1500
-        });
+          [tokenParam]: 1500
+        };
+        
+        const completion = await litellmService.completion(requestParams);
+        console.log(`[LLMService] Raw completion response:`, JSON.stringify(completion, null, 2));
         response = completion.choices[0].message.content;
+        console.log(`[LLMService] Extracted content:`, response);
       } else {
         response = await openaiService.generateResponse([
           { role: 'system', content: this.systemPrompt },
@@ -126,7 +140,14 @@ Always be helpful, accurate, and concise in your responses.`;
         });
       }
 
-      console.log(`[LLMService] Generated response (${response.length} characters)`);
+      console.log(`[LLMService] Generated response (${response ? response.length : 0} characters)`);
+      
+      // Handle empty responses
+      if (!response || response.trim().length === 0) {
+        console.warn(`[LLMService] Empty response received, providing fallback`);
+        return "I found the information you requested, but I'm having trouble generating a response right now. Please try rephrasing your question.";
+      }
+      
       return response;
       
     } catch (error) {

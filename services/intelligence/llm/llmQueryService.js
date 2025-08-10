@@ -1,8 +1,8 @@
 /**
- * LLM Query Service for Meeting Intelligence
- * Translates natural language queries into Neo4j graph database queries
+ * LLM Query Service
+ * Handles translation of natural language queries into Neo4j Cypher queries
  */
-
+const neo4j = require('neo4j-driver');
 const llmService = require('./llmService');
 const graphDatabaseService = require('../graph/graphDatabaseService');
 
@@ -121,7 +121,7 @@ class LLMQueryService {
     
     // Add RETURN and ordering
     cypher += ` RETURN DISTINCT m ORDER BY m.startTime DESC LIMIT $limit`;
-    params.limit = parameters.limit || 10;
+    params.limit = neo4j.int(parseInt(parameters.limit) || 10);
     
     console.log(`[LLMQueryService] Executing Cypher: ${cypher}`);
     console.log(`[LLMQueryService] Parameters:`, params);
@@ -172,7 +172,7 @@ class LLMQueryService {
     }
     
     cypher += ` RETURN p, count(m) as meetingCount ORDER BY meetingCount DESC LIMIT $limit`;
-    params.limit = parameters.limit || 10;
+    params.limit = neo4j.int(parseInt(parameters.limit) || 10);
     
     const result = await graphDatabaseService.executeQuery(cypher, params);
     const participants = result.records.map(record => ({
@@ -230,7 +230,7 @@ class LLMQueryService {
     }
     
     cypher += ` RETURN DISTINCT d, m.title as meetingTitle, m.startTime as meetingDate ORDER BY m.startTime DESC LIMIT $limit`;
-    params.limit = parameters.limit || 10;
+    params.limit = neo4j.int(parseInt(parameters.limit) || 10);
     
     const result = await graphDatabaseService.executeQuery(cypher, params);
     const documents = result.records.map(record => ({
@@ -287,7 +287,7 @@ class LLMQueryService {
       ORDER BY collaborationCount DESC 
       LIMIT $limit
     `;
-    params.limit = parameters.limit || 20;
+    params.limit = neo4j.int(parseInt(parameters.limit) || 20);
     
     const result = await graphDatabaseService.executeQuery(cypher, params);
     const relationships = result.records.map(record => ({
