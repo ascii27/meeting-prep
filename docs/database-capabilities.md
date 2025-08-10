@@ -117,27 +117,44 @@ ORDER BY meetingCount DESC
 
 **Example Cypher Pattern**:
 ```cypher
-MATCH (d:Document)<-[:HAS_DOCUMENT]-(m:Meeting)
-WHERE d.title CONTAINS $keyword
-RETURN d, m
+MATCH (m:Meeting)-[:ATTENDED|ORGANIZED]-(p:Person)
+WHERE p.email = $personEmail OR p.name = $personName
+AND m.startTime >= $startTime AND m.startTime <= $endTime
+AND toLower(m.title) CONTAINS toLower($keywords)
+OPTIONAL MATCH (m)-[:HAS_DOCUMENT]->(d:Document)
+RETURN m, collect(d) as documents
 ORDER BY m.startTime DESC
 ```
 
 #### get_meeting_content
 **Purpose**: Retrieve and analyze actual meeting document content
 **Capabilities**:
-- Find meetings with associated documents
-- Fetch full document content from Google Docs
+- Find meetings with associated documents using HAS_DOCUMENT relationships
+- Return full document content stored in Neo4j
 - Extract meeting summaries and key points
 - Analyze what was discussed in meetings
 - Identify action items and decisions made
 - Filter by participants, timeframe, or meeting keywords
 
+**CRITICAL REQUIREMENTS**:
+- MUST specify "person name/email" parameter to filter by person (e.g., "Snehal", "Hitesh")
+- MUST specify "timeframe" parameter for date filtering (e.g., "2025-08-08", "last week")
+- MUST specify "meeting title keywords" for meeting type filtering (e.g., "1:1", "sync", "standup")
+- Returns meetings that match ALL specified criteria AND have documents linked
+
+**Parameter Format**:
+```json
+{
+  "person name/email": "Snehal",
+  "timeframe": "2025-08-08", 
+  "meeting title keywords": "1:1"
+}
+```
+
 **Use Cases**:
-- "What was discussed in my 1:1 with [person]?"
-- "What were the action items from the [meeting name]?"
-- "Summarize the key decisions from meetings last week"
-- "What topics were covered in [department] meetings?"
+- "What was discussed in my 1:1 with Snehal?" → person="Snehal", keywords="1:1"
+- "What were the action items from the team sync last week?" → timeframe="last week", keywords="sync"
+- "Summarize my meetings with Hitesh yesterday" → person="Hitesh", timeframe="yesterday"
 
 **Example Cypher Pattern**:
 ```cypher

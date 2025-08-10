@@ -1175,9 +1175,23 @@ class LLMQueryService {
     const conditions = [];
     const params = {};
     
-    console.log('[LLMQueryService] Getting meeting content for analysis');
+    console.log('[LLMQueryService] ===== GETTING MEETING CONTENT FOR ANALYSIS =====');
     console.log('[LLMQueryService] Parsed entities:', JSON.stringify(entities, null, 2));
     console.log('[LLMQueryService] Parameters:', JSON.stringify(parameters, null, 2));
+    
+    // Parse person from parameters if not in entities
+    const personName = parameters['person name/email'] || parameters.person;
+    const timeframe = parameters.timeframe;
+    const meetingKeywords = parameters['meeting title keywords'];
+    
+    // Create proper entities object from parameters
+    const normalizedEntities = {
+      people: personName ? [personName] : (entities.people || []),
+      timeframe: timeframe || entities.timeframe,
+      meetings: meetingKeywords ? [meetingKeywords] : (entities.meetings || [])
+    };
+    
+    console.log('[LLMQueryService] Normalized entities:', JSON.stringify(normalizedEntities, null, 2));
     
     // First, let's check if there are any meetings that match the criteria (with or without documents)
     let testCypher = `MATCH (m:Meeting)`;
@@ -1185,15 +1199,15 @@ class LLMQueryService {
     const testParams = {};
     
     // Add person filter if specified
-    if (entities.people && entities.people.length > 0) {
+    if (normalizedEntities.people && normalizedEntities.people.length > 0) {
       testCypher += `-[:ATTENDED|ORGANIZED]-(p:Person)`;
       testConditions.push(`p.email IN $people OR p.name IN $people`);
-      testParams.people = entities.people;
+      testParams.people = normalizedEntities.people;
     }
     
     // Add timeframe filter
-    if (entities.timeframe) {
-      const timeFilter = this.parseTimeframe(entities.timeframe);
+    if (normalizedEntities.timeframe) {
+      const timeFilter = this.parseTimeframe(normalizedEntities.timeframe);
       if (timeFilter) {
         testConditions.push(`m.startTime >= $startTime AND m.startTime <= $endTime`);
         testParams.startTime = timeFilter.start;
@@ -1229,15 +1243,15 @@ class LLMQueryService {
     let cypher = `MATCH (m:Meeting)`;
     
     // Add person filter if specified
-    if (entities.people && entities.people.length > 0) {
+    if (normalizedEntities.people && normalizedEntities.people.length > 0) {
       cypher += `-[:ATTENDED|ORGANIZED]-(p:Person)`;
       conditions.push(`p.email IN $people OR p.name IN $people`);
-      params.people = entities.people;
+      params.people = normalizedEntities.people;
     }
     
     // Add timeframe filter
-    if (entities.timeframe) {
-      const timeFilter = this.parseTimeframe(entities.timeframe);
+    if (normalizedEntities.timeframe) {
+      const timeFilter = this.parseTimeframe(normalizedEntities.timeframe);
       if (timeFilter) {
         conditions.push(`m.startTime >= $startTime AND m.startTime <= $endTime`);
         params.startTime = timeFilter.start;
@@ -1246,9 +1260,9 @@ class LLMQueryService {
     }
     
     // Add meeting title filter if specified
-    if (entities.meetings && entities.meetings.length > 0) {
+    if (normalizedEntities.meetings && normalizedEntities.meetings.length > 0) {
       conditions.push(`any(meeting IN $meetings WHERE toLower(m.title) CONTAINS toLower(meeting))`);
-      params.meetings = entities.meetings;
+      params.meetings = normalizedEntities.meetings;
     }
     
     if (conditions.length > 0) {
