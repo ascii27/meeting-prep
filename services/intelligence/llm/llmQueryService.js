@@ -9,11 +9,22 @@ const graphDatabaseService = require('../graph/graphDatabaseService');
 class LLMQueryService {
   constructor() {
     this.queryHandlers = {
+      // Core query types
       find_meetings: this.handleFindMeetings.bind(this),
       get_participants: this.handleGetParticipants.bind(this),
       find_documents: this.handleFindDocuments.bind(this),
       analyze_relationships: this.handleAnalyzeRelationships.bind(this),
-      general_query: this.handleGeneralQuery.bind(this)
+      general_query: this.handleGeneralQuery.bind(this),
+      
+      // Advanced organizational intelligence queries
+      analyze_collaboration: this.handleAnalyzeCollaboration.bind(this),
+      find_frequent_collaborators: this.handleFindFrequentCollaborators.bind(this),
+      analyze_meeting_patterns: this.handleAnalyzeMeetingPatterns.bind(this),
+      get_department_insights: this.handleGetDepartmentInsights.bind(this),
+      analyze_topic_trends: this.handleAnalyzeTopicTrends.bind(this),
+      find_meeting_conflicts: this.handleFindMeetingConflicts.bind(this),
+      get_productivity_insights: this.handleGetProductivityInsights.bind(this),
+      analyze_communication_flow: this.handleAnalyzeCommunicationFlow.bind(this)
     };
   }
 
@@ -366,46 +377,130 @@ class LLMQueryService {
   }
 
   /**
-   * Parse timeframe strings into date ranges
+   * Enhanced timeframe parsing with support for natural language expressions
    * @param {string} timeframe - Natural language timeframe
-   * @returns {Object|null} - Start and end dates
+   * @returns {Object|null} - Start and end dates with metadata
    */
   parseTimeframe(timeframe) {
     const now = new Date();
-    const timeframeLower = timeframe.toLowerCase();
+    const timeframeLower = timeframe.toLowerCase().trim();
     
-    if (timeframeLower.includes('today')) {
+    // Today variations
+    if (timeframeLower.match(/\b(today|this day)\b/)) {
       const start = new Date(now);
       start.setHours(0, 0, 0, 0);
       const end = new Date(now);
       end.setHours(23, 59, 59, 999);
-      return { start: start.toISOString(), end: end.toISOString() };
+      return { start: start.toISOString(), end: end.toISOString(), type: 'day', description: 'today' };
     }
     
-    if (timeframeLower.includes('yesterday')) {
+    // Yesterday variations
+    if (timeframeLower.match(/\b(yesterday|last day)\b/)) {
       const start = new Date(now);
       start.setDate(start.getDate() - 1);
       start.setHours(0, 0, 0, 0);
       const end = new Date(start);
       end.setHours(23, 59, 59, 999);
-      return { start: start.toISOString(), end: end.toISOString() };
+      return { start: start.toISOString(), end: end.toISOString(), type: 'day', description: 'yesterday' };
     }
     
-    if (timeframeLower.includes('last week')) {
+    // This week variations
+    if (timeframeLower.match(/\b(this week|current week)\b/)) {
+      const start = new Date(now);
+      const dayOfWeek = start.getDay();
+      const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Monday as start of week
+      start.setDate(start.getDate() + mondayOffset);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(now);
+      end.setHours(23, 59, 59, 999);
+      return { start: start.toISOString(), end: end.toISOString(), type: 'week', description: 'this week' };
+    }
+    
+    // Last week variations
+    if (timeframeLower.match(/\b(last week|previous week|past week)\b/)) {
       const start = new Date(now);
       start.setDate(start.getDate() - 7);
       start.setHours(0, 0, 0, 0);
-      return { start: start.toISOString(), end: now.toISOString() };
+      return { start: start.toISOString(), end: now.toISOString(), type: 'week', description: 'last 7 days' };
     }
     
-    if (timeframeLower.includes('last month')) {
+    // This month variations
+    if (timeframeLower.match(/\b(this month|current month)\b/)) {
+      const start = new Date(now.getFullYear(), now.getMonth(), 1);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(now);
+      end.setHours(23, 59, 59, 999);
+      return { start: start.toISOString(), end: end.toISOString(), type: 'month', description: 'this month' };
+    }
+    
+    // Last month variations
+    if (timeframeLower.match(/\b(last month|previous month|past month)\b/)) {
       const start = new Date(now);
       start.setMonth(start.getMonth() - 1);
       start.setHours(0, 0, 0, 0);
-      return { start: start.toISOString(), end: now.toISOString() };
+      return { start: start.toISOString(), end: now.toISOString(), type: 'month', description: 'last 30 days' };
     }
     
-    // Add more timeframe parsing as needed
+    // Recent/lately variations (default to last 7 days)
+    if (timeframeLower.match(/\b(recent|recently|lately|past few days)\b/)) {
+      const start = new Date(now);
+      start.setDate(start.getDate() - 7);
+      start.setHours(0, 0, 0, 0);
+      return { start: start.toISOString(), end: now.toISOString(), type: 'recent', description: 'recent (last 7 days)' };
+    }
+    
+    // Specific day patterns (e.g., "Monday", "last Friday")
+    const dayMatch = timeframeLower.match(/\b(last\s+)?(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/);
+    if (dayMatch) {
+      const isLast = !!dayMatch[1];
+      const dayName = dayMatch[2];
+      const targetDay = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'].indexOf(dayName);
+      
+      const start = new Date(now);
+      const currentDay = start.getDay();
+      let daysBack = currentDay - targetDay;
+      
+      if (isLast || daysBack <= 0) {
+        daysBack += 7;
+      }
+      
+      start.setDate(start.getDate() - daysBack);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(start);
+      end.setHours(23, 59, 59, 999);
+      
+      return { 
+        start: start.toISOString(), 
+        end: end.toISOString(), 
+        type: 'day', 
+        description: `${isLast ? 'last ' : ''}${dayName}` 
+      };
+    }
+    
+    // Number-based patterns (e.g., "last 3 days", "past 2 weeks")
+    const numberMatch = timeframeLower.match(/\b(last|past)\s+(\d+)\s+(day|days|week|weeks|month|months)\b/);
+    if (numberMatch) {
+      const number = parseInt(numberMatch[2]);
+      const unit = numberMatch[3];
+      const start = new Date(now);
+      
+      if (unit.startsWith('day')) {
+        start.setDate(start.getDate() - number);
+      } else if (unit.startsWith('week')) {
+        start.setDate(start.getDate() - (number * 7));
+      } else if (unit.startsWith('month')) {
+        start.setMonth(start.getMonth() - number);
+      }
+      
+      start.setHours(0, 0, 0, 0);
+      return { 
+        start: start.toISOString(), 
+        end: now.toISOString(), 
+        type: unit.startsWith('day') ? 'days' : unit.startsWith('week') ? 'weeks' : 'months',
+        description: `last ${number} ${unit}` 
+      };
+    }
+    
     return null;
   }
 
@@ -447,6 +542,602 @@ class LLMQueryService {
     }
     
     return suggestions;
+  }
+
+  /**
+   * Analyze collaboration patterns between people
+   * @param {Object} parsedQuery - Parsed query object
+   * @param {Object} context - Additional context
+   * @returns {Promise<Object>} - Collaboration analysis results
+   */
+  async handleAnalyzeCollaboration(parsedQuery, context) {
+    const { entities, parameters } = parsedQuery;
+    const params = {};
+    
+    let cypher = `
+      MATCH (p1:Person)-[:ATTENDED|ORGANIZED]->(m:Meeting)<-[:ATTENDED|ORGANIZED]-(p2:Person)
+      WHERE p1.email <> p2.email
+    `;
+    
+    // Add person filter if specified
+    if (entities.people && entities.people.length > 0) {
+      cypher += ` AND (p1.email IN $people OR p2.email IN $people)`;
+      params.people = entities.people;
+    }
+    
+    // Add timeframe filter
+    if (entities.timeframe) {
+      const timeFilter = this.parseTimeframe(entities.timeframe);
+      if (timeFilter) {
+        cypher += ` AND m.startTime >= $startTime AND m.startTime <= $endTime`;
+        params.startTime = timeFilter.start;
+        params.endTime = timeFilter.end;
+      }
+    }
+    
+    cypher += `
+      WITH p1, p2, count(DISTINCT m) as collaborationCount,
+           collect(DISTINCT m.title) as meetingTitles
+      WHERE collaborationCount >= 2
+      RETURN p1.name as person1, p1.email as email1,
+             p2.name as person2, p2.email as email2,
+             collaborationCount, meetingTitles
+      ORDER BY collaborationCount DESC
+      LIMIT $limit
+    `;
+    
+    params.limit = neo4j.int(parseInt(parameters.limit) || 20);
+    
+    const result = await graphDatabaseService.executeQuery(cypher, params);
+    const collaborations = result.records.map(record => ({
+      person1: { name: record.get('person1'), email: record.get('email1') },
+      person2: { name: record.get('person2'), email: record.get('email2') },
+      collaborationCount: record.get('collaborationCount').toNumber(),
+      meetingTitles: record.get('meetingTitles')
+    }));
+    
+    return {
+      type: 'collaboration_analysis',
+      totalResults: collaborations.length,
+      data: collaborations,
+      insights: {
+        strongestCollaboration: collaborations[0],
+        averageCollaborations: collaborations.reduce((sum, c) => sum + c.collaborationCount, 0) / collaborations.length
+      }
+    };
+  }
+
+  /**
+   * Find frequent collaborators for a specific person
+   * @param {Object} parsedQuery - Parsed query object
+   * @param {Object} context - Additional context
+   * @returns {Promise<Object>} - Frequent collaborators results
+   */
+  async handleFindFrequentCollaborators(parsedQuery, context) {
+    const { entities, parameters } = parsedQuery;
+    const targetPerson = entities.people?.[0] || context.userEmail;
+    
+    const cypher = `
+      MATCH (target:Person {email: $targetPerson})-[:ATTENDED|ORGANIZED]->(m:Meeting)<-[:ATTENDED|ORGANIZED]-(collaborator:Person)
+      WHERE target.email <> collaborator.email
+      WITH collaborator, count(DISTINCT m) as meetingCount,
+           collect(DISTINCT m.title)[0..5] as recentMeetings
+      WHERE meetingCount >= 3
+      RETURN collaborator.name as name, collaborator.email as email,
+             meetingCount, recentMeetings
+      ORDER BY meetingCount DESC
+      LIMIT $limit
+    `;
+    
+    const params = {
+      targetPerson,
+      limit: neo4j.int(parseInt(parameters.limit) || 10)
+    };
+    
+    const result = await graphDatabaseService.executeQuery(cypher, params);
+    const collaborators = result.records.map(record => ({
+      name: record.get('name'),
+      email: record.get('email'),
+      meetingCount: record.get('meetingCount').toNumber(),
+      recentMeetings: record.get('recentMeetings')
+    }));
+    
+    return {
+      type: 'frequent_collaborators',
+      totalResults: collaborators.length,
+      data: collaborators,
+      targetPerson
+    };
+  }
+
+  /**
+   * Analyze meeting patterns and trends
+   * @param {Object} parsedQuery - Parsed query object
+   * @param {Object} context - Additional context
+   * @returns {Promise<Object>} - Meeting patterns analysis
+   */
+  async handleAnalyzeMeetingPatterns(parsedQuery, context) {
+    const { entities, parameters } = parsedQuery;
+    const params = {};
+    
+    // Get meeting frequency by day of week
+    let cypher = `
+      MATCH (m:Meeting)
+    `;
+    
+    // Add timeframe filter
+    if (entities.timeframe) {
+      const timeFilter = this.parseTimeframe(entities.timeframe);
+      if (timeFilter) {
+        cypher += ` WHERE m.startTime >= $startTime AND m.startTime <= $endTime`;
+        params.startTime = timeFilter.start;
+        params.endTime = timeFilter.end;
+      }
+    }
+    
+    cypher += `
+      WITH m, 
+           CASE datetime(m.startTime).dayOfWeek
+             WHEN 1 THEN 'Monday'
+             WHEN 2 THEN 'Tuesday'
+             WHEN 3 THEN 'Wednesday'
+             WHEN 4 THEN 'Thursday'
+             WHEN 5 THEN 'Friday'
+             WHEN 6 THEN 'Saturday'
+             WHEN 7 THEN 'Sunday'
+           END as dayOfWeek,
+           datetime(m.startTime).hour as hour
+      RETURN dayOfWeek, hour, count(m) as meetingCount
+      ORDER BY dayOfWeek, hour
+    `;
+    
+    const result = await graphDatabaseService.executeQuery(cypher, params);
+    const patterns = result.records.map(record => ({
+      dayOfWeek: record.get('dayOfWeek'),
+      hour: record.get('hour').toNumber(),
+      meetingCount: record.get('meetingCount').toNumber()
+    }));
+    
+    // Analyze patterns
+    const dayTotals = {};
+    const hourTotals = {};
+    
+    patterns.forEach(p => {
+      dayTotals[p.dayOfWeek] = (dayTotals[p.dayOfWeek] || 0) + p.meetingCount;
+      hourTotals[p.hour] = (hourTotals[p.hour] || 0) + p.meetingCount;
+    });
+    
+    const busiestDay = Object.keys(dayTotals).reduce((a, b) => dayTotals[a] > dayTotals[b] ? a : b);
+    const busiestHour = Object.keys(hourTotals).reduce((a, b) => hourTotals[a] > hourTotals[b] ? a : b);
+    
+    return {
+      type: 'meeting_patterns',
+      totalResults: patterns.length,
+      data: patterns,
+      insights: {
+        busiestDay,
+        busiestHour: parseInt(busiestHour),
+        dayTotals,
+        hourTotals
+      }
+    };
+  }
+
+  /**
+   * Get department-specific insights
+   * @param {Object} parsedQuery - Parsed query object
+   * @param {Object} context - Additional context
+   * @returns {Promise<Object>} - Department insights
+   */
+  async handleGetDepartmentInsights(parsedQuery, context) {
+    const { entities, parameters } = parsedQuery;
+    const params = {};
+    
+    let cypher = `
+      MATCH (p:Person)-[:ATTENDED|ORGANIZED]->(m:Meeting)
+    `;
+    
+    // Add department filter if specified
+    if (entities.departments && entities.departments.length > 0) {
+      cypher += ` WHERE p.department IN $departments`;
+      params.departments = entities.departments;
+    }
+    
+    // Add timeframe filter
+    if (entities.timeframe) {
+      const timeFilter = this.parseTimeframe(entities.timeframe);
+      if (timeFilter) {
+        const whereClause = params.departments ? ' AND' : ' WHERE';
+        cypher += `${whereClause} m.startTime >= $startTime AND m.startTime <= $endTime`;
+        params.startTime = timeFilter.start;
+        params.endTime = timeFilter.end;
+      }
+    }
+    
+    cypher += `
+      WITH p.department as department, count(DISTINCT m) as meetingCount,
+           count(DISTINCT p) as peopleCount,
+           avg(duration.inSeconds(datetime(m.startTime), datetime(m.endTime)).totalSeconds / 3600.0) as avgMeetingHours
+      WHERE department IS NOT NULL
+      RETURN department, meetingCount, peopleCount, avgMeetingHours
+      ORDER BY meetingCount DESC
+    `;
+    
+    const result = await graphDatabaseService.executeQuery(cypher, params);
+    const departments = result.records.map(record => ({
+      department: record.get('department'),
+      meetingCount: record.get('meetingCount').toNumber(),
+      peopleCount: record.get('peopleCount').toNumber(),
+      avgMeetingHours: record.get('avgMeetingHours') ? parseFloat(record.get('avgMeetingHours').toFixed(2)) : 0
+    }));
+    
+    return {
+      type: 'department_insights',
+      totalResults: departments.length,
+      data: departments,
+      insights: {
+        mostActiveDepartment: departments[0]?.department,
+        totalDepartments: departments.length
+      }
+    };
+  }
+
+  /**
+   * Analyze topic trends over time
+   * @param {Object} parsedQuery - Parsed query object
+   * @param {Object} context - Additional context
+   * @returns {Promise<Object>} - Topic trends analysis
+   */
+  async handleAnalyzeTopicTrends(parsedQuery, context) {
+    const { entities, parameters } = parsedQuery;
+    const params = {};
+    
+    let cypher = `
+      MATCH (m:Meeting)-[:DISCUSSED]->(t:Topic)
+    `;
+    
+    // Add timeframe filter
+    if (entities.timeframe) {
+      const timeFilter = this.parseTimeframe(entities.timeframe);
+      if (timeFilter) {
+        cypher += ` WHERE m.startTime >= $startTime AND m.startTime <= $endTime`;
+        params.startTime = timeFilter.start;
+        params.endTime = timeFilter.end;
+      }
+    }
+    
+    cypher += `
+      WITH t.name as topic, 
+           count(DISTINCT m) as mentionCount,
+           collect(DISTINCT date(datetime(m.startTime))) as mentionDates
+      WHERE mentionCount >= 2
+      RETURN topic, mentionCount, mentionDates
+      ORDER BY mentionCount DESC
+      LIMIT $limit
+    `;
+    
+    params.limit = neo4j.int(parseInt(parameters.limit) || 15);
+    
+    const result = await graphDatabaseService.executeQuery(cypher, params);
+    const topics = result.records.map(record => ({
+      topic: record.get('topic'),
+      mentionCount: record.get('mentionCount').toNumber(),
+      mentionDates: record.get('mentionDates')
+    }));
+    
+    return {
+      type: 'topic_trends',
+      totalResults: topics.length,
+      data: topics,
+      insights: {
+        trendingTopic: topics[0]?.topic,
+        totalTopics: topics.length
+      }
+    };
+  }
+
+  /**
+   * Find meeting conflicts and scheduling issues
+   * @param {Object} parsedQuery - Parsed query object
+   * @param {Object} context - Additional context
+   * @returns {Promise<Object>} - Meeting conflicts analysis
+   */
+  async handleFindMeetingConflicts(parsedQuery, context) {
+    const { entities, parameters } = parsedQuery;
+    const targetPerson = entities.people?.[0] || context.userEmail;
+    
+    const cypher = `
+      MATCH (p:Person {email: $targetPerson})-[:ATTENDED|ORGANIZED]->(m1:Meeting),
+            (p)-[:ATTENDED|ORGANIZED]->(m2:Meeting)
+      WHERE m1 <> m2 
+        AND datetime(m1.startTime) < datetime(m2.endTime)
+        AND datetime(m2.startTime) < datetime(m1.endTime)
+        AND m1.startTime >= $recentDate
+      RETURN m1.title as meeting1, m1.startTime as start1, m1.endTime as end1,
+             m2.title as meeting2, m2.startTime as start2, m2.endTime as end2
+      ORDER BY m1.startTime DESC
+      LIMIT $limit
+    `;
+    
+    const recentDate = new Date();
+    recentDate.setDate(recentDate.getDate() - 30); // Last 30 days
+    
+    const params = {
+      targetPerson,
+      recentDate: recentDate.toISOString(),
+      limit: neo4j.int(parseInt(parameters.limit) || 20)
+    };
+    
+    const result = await graphDatabaseService.executeQuery(cypher, params);
+    const conflicts = result.records.map(record => ({
+      meeting1: {
+        title: record.get('meeting1'),
+        startTime: record.get('start1'),
+        endTime: record.get('end1')
+      },
+      meeting2: {
+        title: record.get('meeting2'),
+        startTime: record.get('start2'),
+        endTime: record.get('end2')
+      }
+    }));
+    
+    return {
+      type: 'meeting_conflicts',
+      totalResults: conflicts.length,
+      data: conflicts,
+      targetPerson
+    };
+  }
+
+  /**
+   * Get productivity insights based on meeting patterns
+   * @param {Object} parsedQuery - Parsed query object
+   * @param {Object} context - Additional context
+   * @returns {Promise<Object>} - Productivity insights
+   */
+  async handleGetProductivityInsights(parsedQuery, context) {
+    const { entities, parameters } = parsedQuery;
+    const targetPerson = entities.people?.[0] || context.userEmail;
+    
+    const cypher = `
+      MATCH (p:Person {email: $targetPerson})-[:ATTENDED|ORGANIZED]->(m:Meeting)
+      WHERE m.startTime >= $startDate
+      WITH m, 
+           duration.inSeconds(datetime(m.startTime), datetime(m.endTime)).totalSeconds / 3600.0 as durationHours,
+           datetime(m.startTime).hour as hour,
+           datetime(m.startTime).dayOfWeek as dayOfWeek
+      RETURN 
+        count(m) as totalMeetings,
+        sum(durationHours) as totalMeetingHours,
+        avg(durationHours) as avgMeetingDuration,
+        collect(DISTINCT hour) as meetingHours,
+        collect(DISTINCT dayOfWeek) as meetingDays
+    `;
+    
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 30); // Last 30 days
+    
+    const params = {
+      targetPerson,
+      startDate: startDate.toISOString()
+    };
+    
+    const result = await graphDatabaseService.executeQuery(cypher, params);
+    const record = result.records[0];
+    
+    if (!record) {
+      return {
+        type: 'productivity_insights',
+        totalResults: 0,
+        data: {},
+        targetPerson
+      };
+    }
+    
+    const insights = {
+      totalMeetings: record.get('totalMeetings').toNumber(),
+      totalMeetingHours: parseFloat(record.get('totalMeetingHours').toFixed(2)),
+      avgMeetingDuration: parseFloat(record.get('avgMeetingDuration').toFixed(2)),
+      meetingHours: record.get('meetingHours').map(h => h.toNumber()),
+      meetingDays: record.get('meetingDays').map(d => d.toNumber()),
+      meetingsPerDay: parseFloat((record.get('totalMeetings').toNumber() / 30).toFixed(2)),
+      focusTimePercentage: parseFloat((((24 * 30) - record.get('totalMeetingHours')) / (24 * 30) * 100).toFixed(1))
+    };
+    
+    return {
+      type: 'productivity_insights',
+      totalResults: 1,
+      data: insights,
+      targetPerson
+    };
+  }
+
+  /**
+   * Analyze communication flow patterns
+   * @param {Object} parsedQuery - Parsed query object
+   * @param {Object} context - Additional context
+   * @returns {Promise<Object>} - Communication flow analysis
+   */
+  async handleAnalyzeCommunicationFlow(parsedQuery, context) {
+    const { entities, parameters } = parsedQuery;
+    const params = {};
+    
+    let cypher = `
+      MATCH (organizer:Person)-[:ORGANIZED]->(m:Meeting)<-[:ATTENDED]-(attendee:Person)
+      WHERE organizer.email <> attendee.email
+    `;
+    
+    // Add timeframe filter
+    if (entities.timeframe) {
+      const timeFilter = this.parseTimeframe(entities.timeframe);
+      if (timeFilter) {
+        cypher += ` AND m.startTime >= $startTime AND m.startTime <= $endTime`;
+        params.startTime = timeFilter.start;
+        params.endTime = timeFilter.end;
+      }
+    }
+    
+    cypher += `
+      WITH organizer, attendee, count(DISTINCT m) as meetingsOrganized
+      WHERE meetingsOrganized >= 2
+      RETURN organizer.name as organizerName, organizer.email as organizerEmail,
+             attendee.name as attendeeName, attendee.email as attendeeEmail,
+             meetingsOrganized
+      ORDER BY meetingsOrganized DESC
+      LIMIT $limit
+    `;
+    
+    params.limit = neo4j.int(parseInt(parameters.limit) || 20);
+    
+    const result = await graphDatabaseService.executeQuery(cypher, params);
+    const flows = result.records.map(record => ({
+      organizer: {
+        name: record.get('organizerName'),
+        email: record.get('organizerEmail')
+      },
+      attendee: {
+        name: record.get('attendeeName'),
+        email: record.get('attendeeEmail')
+      },
+      meetingsOrganized: record.get('meetingsOrganized').toNumber()
+    }));
+    
+    // Analyze communication patterns
+    const organizerStats = {};
+    flows.forEach(flow => {
+      const email = flow.organizer.email;
+      if (!organizerStats[email]) {
+        organizerStats[email] = {
+          name: flow.organizer.name,
+          email: email,
+          totalMeetingsOrganized: 0,
+          uniqueAttendees: new Set()
+        };
+      }
+      organizerStats[email].totalMeetingsOrganized += flow.meetingsOrganized;
+      organizerStats[email].uniqueAttendees.add(flow.attendee.email);
+    });
+    
+    const topOrganizers = Object.values(organizerStats)
+      .map(stats => ({
+        ...stats,
+        uniqueAttendees: stats.uniqueAttendees.size
+      }))
+      .sort((a, b) => b.totalMeetingsOrganized - a.totalMeetingsOrganized)
+      .slice(0, 5);
+    
+    return {
+      type: 'communication_flow',
+      totalResults: flows.length,
+      data: flows,
+      insights: {
+        topOrganizers,
+        totalFlows: flows.length
+      }
+    };
+  }
+
+  /**
+   * Enhanced fuzzy search for people, topics, and meeting titles
+   * @param {string} searchTerm - Search term
+   * @param {string} searchType - Type of search (people, topics, meetings)
+   * @returns {Promise<Array>} - Fuzzy search results
+   */
+  async fuzzySearch(searchTerm, searchType = 'all') {
+    const results = [];
+    const searchTermLower = searchTerm.toLowerCase();
+    
+    // Search people
+    if (searchType === 'all' || searchType === 'people') {
+      const peopleQuery = `
+        MATCH (p:Person)
+        WHERE toLower(p.name) CONTAINS $searchTerm 
+           OR toLower(p.email) CONTAINS $searchTerm
+        RETURN 'person' as type, p.name as name, p.email as email, p.department as department
+        LIMIT 10
+      `;
+      
+      const peopleResult = await graphDatabaseService.executeQuery(peopleQuery, { searchTerm: searchTermLower });
+      results.push(...peopleResult.records.map(record => ({
+        type: 'person',
+        name: record.get('name'),
+        email: record.get('email'),
+        department: record.get('department'),
+        relevance: this.calculateRelevance(searchTermLower, record.get('name').toLowerCase())
+      })));
+    }
+    
+    // Search meetings
+    if (searchType === 'all' || searchType === 'meetings') {
+      const meetingsQuery = `
+        MATCH (m:Meeting)
+        WHERE toLower(m.title) CONTAINS $searchTerm
+           OR toLower(m.description) CONTAINS $searchTerm
+        RETURN 'meeting' as type, m.title as title, m.startTime as startTime, m.description as description
+        LIMIT 10
+      `;
+      
+      const meetingsResult = await graphDatabaseService.executeQuery(meetingsQuery, { searchTerm: searchTermLower });
+      results.push(...meetingsResult.records.map(record => ({
+        type: 'meeting',
+        title: record.get('title'),
+        startTime: record.get('startTime'),
+        description: record.get('description'),
+        relevance: this.calculateRelevance(searchTermLower, record.get('title').toLowerCase())
+      })));
+    }
+    
+    // Search topics
+    if (searchType === 'all' || searchType === 'topics') {
+      const topicsQuery = `
+        MATCH (t:Topic)
+        WHERE toLower(t.name) CONTAINS $searchTerm
+        RETURN 'topic' as type, t.name as name
+        LIMIT 10
+      `;
+      
+      const topicsResult = await graphDatabaseService.executeQuery(topicsQuery, { searchTerm: searchTermLower });
+      results.push(...topicsResult.records.map(record => ({
+        type: 'topic',
+        name: record.get('name'),
+        relevance: this.calculateRelevance(searchTermLower, record.get('name').toLowerCase())
+      })));
+    }
+    
+    // Sort by relevance and return top results
+    return results.sort((a, b) => b.relevance - a.relevance).slice(0, 15);
+  }
+
+  /**
+   * Calculate relevance score for fuzzy matching
+   * @param {string} searchTerm - Search term
+   * @param {string} target - Target string to match against
+   * @returns {number} - Relevance score (0-1)
+   */
+  calculateRelevance(searchTerm, target) {
+    if (target.includes(searchTerm)) {
+      // Exact substring match gets high score
+      const position = target.indexOf(searchTerm);
+      const lengthRatio = searchTerm.length / target.length;
+      const positionScore = 1 - (position / target.length);
+      return 0.7 + (0.2 * lengthRatio) + (0.1 * positionScore);
+    }
+    
+    // Calculate word-based similarity
+    const searchWords = searchTerm.split(' ');
+    const targetWords = target.split(' ');
+    let matchingWords = 0;
+    
+    searchWords.forEach(searchWord => {
+      targetWords.forEach(targetWord => {
+        if (targetWord.includes(searchWord) || searchWord.includes(targetWord)) {
+          matchingWords++;
+        }
+      });
+    });
+    
+    return matchingWords / Math.max(searchWords.length, targetWords.length);
   }
 }
 
