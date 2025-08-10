@@ -1,6 +1,9 @@
 /**
- * LLM Service for Meeting Intelligence
- * Handles natural language query processing and response generation
+ * Enhanced LLM Service for Meeting Intelligence - Step 5.2
+ * Handles natural language query processing with advanced capabilities:
+ * - Complex query translation and optimization
+ * - Context-aware conversation management
+ * - Organizational intelligence integration
  */
 
 const aiConfig = require('../../../config/aiConfig');
@@ -9,20 +12,29 @@ const litellmService = require('../../litellmService');
 
 class LLMService {
   constructor() {
-    this.systemPrompt = `You are an intelligent assistant for a meeting intelligence platform. 
-You help users query information about meetings, participants, documents, and organizational relationships.
+    // Enhanced conversation management
+    this.conversationHistory = new Map(); // Store conversation context per user
+    this.queryOptimizationRules = this.initializeOptimizationRules();
+    
+    this.systemPrompt = `You are an advanced intelligent assistant for a meeting intelligence platform with organizational intelligence capabilities.
+You help users query information about meetings, participants, documents, organizational relationships, and collaboration patterns.
 
-Your capabilities include:
+Your enhanced capabilities include:
 - Analyzing meeting data and participant relationships
 - Finding documents associated with meetings
 - Tracking meeting patterns and frequencies
 - Understanding organizational context and hierarchies
+- Analyzing cross-department collaboration
+- Providing organizational insights and statistics
+- Generating context-aware follow-up suggestions
 
 You have access to a Neo4j graph database with the following node types:
-- Person: Meeting participants with properties like name, email, role
+- Person: Meeting participants with properties like name, email, role, department
 - Meeting: Calendar events with properties like title, date, duration, location
 - Document: Files associated with meetings with properties like title, content, url
 - Topic: Discussion subjects extracted from meetings and documents
+- Organization: Company entities with domain, name, industry
+- Department: Organizational units with code, name, description
 
 Relationship types include:
 - ATTENDED: Person participated in Meeting
@@ -30,18 +42,159 @@ Relationship types include:
 - HAS_DOCUMENT: Meeting has associated Document
 - DISCUSSED: Topic was covered in Meeting
 - COLLABORATES_WITH: People work together regularly
+- BELONGS_TO: Person belongs to Department
+- REPORTS_TO: Person reports to another Person
+- HAS_DEPARTMENT: Organization has Department
+- PARENT_DEPARTMENT: Department hierarchy relationships
 
 When processing queries, you should:
-1. Understand the user's intent and extract key entities (people, dates, topics, etc.)
-2. Translate the natural language query into appropriate database queries
-3. Provide clear, actionable responses based on the data
-4. Suggest follow-up questions when relevant
+1. Understand complex, multi-part queries and break them down into components
+2. Extract key entities (people, dates, topics, departments, organizations)
+3. Consider conversation context and previous queries
+4. Optimize query parameters based on data patterns
+5. Translate queries into appropriate database operations
+6. Provide clear, actionable responses with insights
+7. Suggest relevant follow-up questions based on results
+8. Handle organizational intelligence queries (hierarchy, collaboration, statistics)
 
-Always be helpful, accurate, and concise in your responses.`;
+Always be helpful, accurate, and provide context-aware responses.`;
   }
 
   /**
-   * Process a natural language query about meeting intelligence
+   * Initialize query optimization rules for Step 5.2
+   * @returns {Object} - Optimization rules
+   */
+  initializeOptimizationRules() {
+    return {
+      timeRangeDefaults: {
+        'recent': 30, // days
+        'last month': 30,
+        'last week': 7,
+        'yesterday': 1,
+        'today': 0
+      },
+      resultLimits: {
+        'meetings': 20,
+        'participants': 50,
+        'documents': 15,
+        'collaborations': 25
+      },
+      priorityKeywords: {
+        'urgent': { boost: 1.5, sort: 'priority' },
+        'important': { boost: 1.3, sort: 'priority' },
+        'recent': { sort: 'date_desc' },
+        'frequent': { sort: 'frequency_desc' }
+      }
+    };
+  }
+
+  /**
+   * Get conversation context for a user (Step 5.2 enhancement)
+   * @param {string} userEmail - User's email
+   * @returns {Object} - Conversation context
+   */
+  getConversationContext(userEmail) {
+    if (!userEmail) return { queries: [], topics: [], entities: {} };
+    
+    if (!this.conversationHistory.has(userEmail)) {
+      this.conversationHistory.set(userEmail, {
+        queries: [],
+        topics: [],
+        entities: {},
+        lastActivity: Date.now()
+      });
+    }
+    
+    return this.conversationHistory.get(userEmail);
+  }
+
+  /**
+   * Update conversation context with new query (Step 5.2 enhancement)
+   * @param {string} userEmail - User's email
+   * @param {string} query - Original query
+   * @param {Object} processedQuery - Processed query object
+   */
+  updateConversationContext(userEmail, query, processedQuery) {
+    if (!userEmail) return;
+    
+    const context = this.getConversationContext(userEmail);
+    
+    // Add query to history (keep last 10)
+    context.queries.unshift({
+      original: query,
+      intent: processedQuery.intent,
+      entities: processedQuery.entities,
+      timestamp: Date.now()
+    });
+    if (context.queries.length > 10) {
+      context.queries = context.queries.slice(0, 10);
+    }
+    
+    // Update topics and entities
+    if (processedQuery.entities) {
+      Object.keys(processedQuery.entities).forEach(key => {
+        if (!context.entities[key]) context.entities[key] = new Set();
+        if (Array.isArray(processedQuery.entities[key])) {
+          processedQuery.entities[key].forEach(val => context.entities[key].add(val));
+        } else {
+          context.entities[key].add(processedQuery.entities[key]);
+        }
+      });
+    }
+    
+    context.lastActivity = Date.now();
+  }
+
+  /**
+   * Optimize query based on patterns and context (Step 5.2 enhancement)
+   * @param {Object} query - Processed query
+   * @param {Object} context - Request context
+   * @returns {Object} - Optimized query
+   */
+  optimizeQuery(query, context) {
+    const optimized = { ...query };
+    
+    // Apply time range optimization
+    if (!optimized.parameters.timeRange && query.originalQuery) {
+      const timeKeywords = Object.keys(this.queryOptimizationRules.timeRangeDefaults);
+      const foundKeyword = timeKeywords.find(keyword => 
+        query.originalQuery.toLowerCase().includes(keyword)
+      );
+      if (foundKeyword) {
+        optimized.parameters.timeRange = this.queryOptimizationRules.timeRangeDefaults[foundKeyword];
+      }
+    }
+    
+    // Apply result limit optimization
+    if (!optimized.parameters.limit) {
+      const intentType = query.intent.split('_')[1] || 'meetings';
+      optimized.parameters.limit = this.queryOptimizationRules.resultLimits[intentType] || 10;
+    }
+    
+    // Apply priority-based sorting
+    const priorityKeywords = Object.keys(this.queryOptimizationRules.priorityKeywords);
+    const foundPriority = priorityKeywords.find(keyword => 
+      query.originalQuery.toLowerCase().includes(keyword)
+    );
+    if (foundPriority) {
+      const rule = this.queryOptimizationRules.priorityKeywords[foundPriority];
+      if (rule.sort) optimized.parameters.sort_by = rule.sort;
+      if (rule.boost) optimized.parameters.boost = rule.boost;
+    }
+    
+    // Add organizational context if available
+    if (context.userEmail) {
+      const domain = context.userEmail.split('@')[1];
+      if (domain) {
+        optimized.parameters.organizationDomain = domain;
+      }
+    }
+    
+    return optimized;
+  }
+
+  /**
+   * Process a natural language query about meeting intelligence with enhanced capabilities
    * @param {string} query - User's natural language query
    * @param {Object} context - Additional context (user info, recent queries, etc.)
    * @returns {Promise<Object>} - Processed query with intent and parameters
@@ -50,7 +203,11 @@ Always be helpful, accurate, and concise in your responses.`;
     try {
       console.log(`[LLMService] Processing query: "${query}"`);
       
-      const prompt = this.buildQueryProcessingPrompt(query, context);
+      // Get conversation context for this user (Step 5.2 enhancement)
+      const userContext = this.getConversationContext(context.userEmail);
+      
+      // Build enhanced prompt with context
+      const prompt = this.buildEnhancedQueryProcessingPrompt(query, context, userContext);
       
       // Use configured AI service
       const service = aiConfig.service.toLowerCase();
@@ -85,8 +242,14 @@ Always be helpful, accurate, and concise in your responses.`;
 
       const processedQuery = this.parseQueryResponse(response, query);
       
-      console.log(`[LLMService] Processed query intent: ${processedQuery.intent}`);
-      return processedQuery;
+      // Apply query optimization (Step 5.2 enhancement)
+      const optimizedQuery = this.optimizeQuery(processedQuery, context);
+      
+      // Update conversation context (Step 5.2 enhancement)
+      this.updateConversationContext(context.userEmail, query, optimizedQuery);
+      
+      console.log(`[LLMService] Processed query intent: ${optimizedQuery.intent}`);
+      return optimizedQuery;
       
     } catch (error) {
       console.error(`[LLMService] Error processing query:`, error);
@@ -157,12 +320,81 @@ Always be helpful, accurate, and concise in your responses.`;
   }
 
   /**
-   * Build prompt for query processing
-   * @param {string} query - User's query
+   * Build prompt for query processing (legacy method for backward compatibility)
+   * @param {string} query - User query
    * @param {Object} context - Additional context
    * @returns {string} - Formatted prompt
    */
   buildQueryProcessingPrompt(query, context) {
+    // Use enhanced version with empty user context
+    return this.buildEnhancedQueryProcessingPrompt(query, context, { queries: [], topics: [], entities: {} });
+  }
+
+  /**
+   * Build enhanced prompt for query processing with context (Step 5.2 enhancement)
+   * @param {string} query - User query
+   * @param {Object} context - Additional context
+   * @param {Object} userContext - User's conversation context
+   * @returns {string} - Formatted prompt
+   */
+  buildEnhancedQueryProcessingPrompt(query, context, userContext) {
+    const recentQueries = userContext.queries.slice(0, 3).map(q => 
+      `- "${q.original}" (${q.intent})`
+    ).join('\n');
+    
+    const knownEntities = Object.keys(userContext.entities).map(key => 
+      `${key}: ${Array.from(userContext.entities[key]).slice(0, 3).join(', ')}`
+    ).join('\n');
+    
+    return `Analyze this meeting intelligence query and extract the intent and parameters. Consider conversation context and optimize for the user's needs.
+
+Current Query: "${query}"
+
+User Context:
+- Email: ${context.userEmail || 'Unknown'}
+- Organization: ${context.organizationDomain || context.userEmail?.split('@')[1] || 'Unknown'}
+
+Recent Conversation:
+${recentQueries || 'No recent queries'}
+
+Known Entities:
+${knownEntities || 'No previous entities'}
+
+Please respond with a JSON object containing:
+{
+  "intent": "one of: find_meetings, get_participants, find_documents, analyze_relationships, get_organization_hierarchy, get_department_stats, find_colleagues, analyze_collaboration, general_query",
+  "entities": {
+    "people": ["email addresses or names mentioned"],
+    "dates": ["specific dates or date ranges"],
+    "topics": ["meeting topics or keywords"],
+    "locations": ["meeting locations if mentioned"],
+    "departments": ["department names or codes"],
+    "organizations": ["organization domains or names"]
+  },
+  "parameters": {
+    "limit": 10,
+    "sort_by": "date",
+    "include_content": false,
+    "timeRange": "number of days to look back",
+    "includeHierarchy": false,
+    "crossDepartment": false,
+    "collaborationDepth": 1
+  },
+  "confidence": 0.8,
+  "queryComplexity": "simple|moderate|complex",
+  "suggestedFollowups": ["relevant follow-up questions based on intent"]
+}
+
+Be precise with entity extraction, consider conversation context, and choose the most appropriate intent including organizational intelligence capabilities.`;
+  }
+
+  /**
+   * Build original prompt for query processing (original implementation)
+   * @param {string} query - User query
+   * @param {Object} context - Additional context
+   * @returns {string} - Formatted prompt
+   */
+  buildOriginalQueryProcessingPrompt(query, context) {
     return `Please analyze this natural language query about meeting intelligence and extract the key information:
 
 Query: "${query}"
@@ -194,14 +426,17 @@ Only return the JSON object, no additional text.`;
   }
 
   /**
-   * Build prompt for response generation
+   * Build enhanced prompt for response generation with context awareness (Step 5.2)
    * @param {string} originalQuery - Original query
    * @param {Object} queryResults - Database results
    * @param {Object} context - Additional context
    * @returns {string} - Formatted prompt
    */
   buildResponseGenerationPrompt(originalQuery, queryResults, context) {
-    return `Generate a helpful, natural language response to this meeting intelligence query:
+    const userContext = this.getConversationContext(context.userEmail);
+    const recentTopics = userContext.queries.slice(0, 2).map(q => q.intent).join(', ');
+    
+    return `Generate a helpful, natural language response to this meeting intelligence query with enhanced context awareness and organizational insights.
 
 Original Query: "${originalQuery}"
 
@@ -210,17 +445,76 @@ ${JSON.stringify(queryResults, null, 2)}
 
 Context:
 - User: ${context.userEmail || 'Unknown'}
+- Organization: ${context.organizationDomain || context.userEmail?.split('@')[1] || 'Unknown'}
 - Total results found: ${queryResults.totalResults || 0}
+- Recent conversation topics: ${recentTopics || 'None'}
+- Query complexity: ${queryResults.complexity || 'moderate'}
 
 Please provide a response that:
-1. Directly answers the user's question
-2. Summarizes the key findings from the data
-3. Highlights interesting patterns or insights
-4. Suggests relevant follow-up questions if appropriate
-5. Is conversational and easy to understand
+1. Directly answers the user's question with specific data points
+2. Summarizes key findings and provides actionable insights
+3. Highlights interesting patterns, trends, or organizational insights
+4. Provides context about collaboration patterns if relevant
+5. Suggests 2-3 specific, relevant follow-up questions based on the results
+6. Uses a conversational, professional tone
+7. Includes organizational context when discussing people or departments
 
-If no results were found, explain why and suggest alternative queries.
-Keep the response concise but informative (2-4 paragraphs maximum).`;
+For organizational queries, include:
+- Department relationships and hierarchy context
+- Collaboration patterns and cross-functional insights
+- Meeting frequency and engagement metrics
+- Suggestions for improving collaboration or communication
+
+If no results were found:
+- Explain possible reasons (time range, access permissions, data availability)
+- Suggest alternative queries or different approaches
+- Offer to help with related organizational or meeting intelligence questions
+
+Keep the response informative but concise (2-4 paragraphs), and always end with actionable follow-up suggestions.`;
+  }
+
+  /**
+   * Generate context-aware follow-up suggestions (Step 5.2 enhancement)
+   * @param {Object} queryResults - Query results
+   * @param {string} intent - Query intent
+   * @param {Object} context - User context
+   * @returns {Array} - Follow-up suggestions
+   */
+  generateFollowUpSuggestions(queryResults, intent, context) {
+    const suggestions = [];
+    
+    switch (intent) {
+      case 'find_meetings':
+        suggestions.push('Who were the key participants in these meetings?');
+        suggestions.push('What documents were shared in these meetings?');
+        suggestions.push('Show me collaboration patterns from these meetings');
+        break;
+        
+      case 'get_participants':
+        suggestions.push('What meetings did these people organize together?');
+        suggestions.push('Show me the organizational hierarchy for these participants');
+        suggestions.push('Analyze collaboration frequency between these people');
+        break;
+        
+      case 'analyze_relationships':
+        suggestions.push('Which departments collaborate most frequently?');
+        suggestions.push('Show me recent cross-functional meetings');
+        suggestions.push('What are the communication patterns in my organization?');
+        break;
+        
+      case 'get_organization_hierarchy':
+        suggestions.push('Show me department statistics and metrics');
+        suggestions.push('Who are the most active collaborators across departments?');
+        suggestions.push('Analyze meeting patterns by organizational level');
+        break;
+        
+      default:
+        suggestions.push('Show me recent meetings in my organization');
+        suggestions.push('Who do I collaborate with most frequently?');
+        suggestions.push('What are the trending topics in our meetings?');
+    }
+    
+    return suggestions.slice(0, 3); // Return top 3 suggestions
   }
 
   /**

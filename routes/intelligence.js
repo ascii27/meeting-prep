@@ -6,6 +6,7 @@ const express = require('express');
 const router = express.Router();
 const intelligenceService = require('../services/intelligenceService');
 const llmQueryService = require('../services/intelligence/llm/llmQueryService');
+const organizationService = require('../services/intelligence/organizationService');
 const { ensureAuth } = require('../middleware/auth');
 
 /**
@@ -162,6 +163,186 @@ router.get('/query/intents', ensureAuth, async (req, res) => {
   } catch (error) {
     console.error('Error getting available intents:', error);
     res.status(500).json({ error: 'Failed to get available intents' });
+  }
+});
+
+// ============================================================================
+// ORGANIZATIONAL INTELLIGENCE ENDPOINTS
+// ============================================================================
+
+/**
+ * @route GET /api/intelligence/organization/:domain/hierarchy
+ * @description Get organizational hierarchy for visualization
+ * @access Private
+ */
+router.get('/organization/:domain/hierarchy', ensureAuth, async (req, res) => {
+  try {
+    const { domain } = req.params;
+    const hierarchy = await organizationService.getOrganizationalHierarchy(domain);
+    res.json(hierarchy);
+  } catch (error) {
+    console.error('Error getting organizational hierarchy:', error);
+    res.status(500).json({ error: 'Failed to get organizational hierarchy' });
+  }
+});
+
+/**
+ * @route GET /api/intelligence/organization/:domain/chart-data
+ * @description Get organization chart visualization data
+ * @access Private
+ */
+router.get('/organization/:domain/chart-data', ensureAuth, async (req, res) => {
+  try {
+    const { domain } = req.params;
+    const chartData = await organizationService.prepareOrganizationChartData(domain);
+    res.json(chartData);
+  } catch (error) {
+    console.error('Error getting organization chart data:', error);
+    res.status(500).json({ error: 'Failed to get organization chart data' });
+  }
+});
+
+/**
+ * @route GET /api/intelligence/department/:code/statistics
+ * @description Get department statistics and metrics
+ * @access Private
+ */
+router.get('/department/:code/statistics', ensureAuth, async (req, res) => {
+  try {
+    const { code } = req.params;
+    const stats = await organizationService.getDepartmentStatistics(code);
+    
+    if (!stats) {
+      return res.status(404).json({ error: 'Department not found' });
+    }
+    
+    res.json(stats);
+  } catch (error) {
+    console.error('Error getting department statistics:', error);
+    res.status(500).json({ error: 'Failed to get department statistics' });
+  }
+});
+
+/**
+ * @route GET /api/intelligence/person/:email/colleagues
+ * @description Get colleagues for a person
+ * @access Private
+ */
+router.get('/person/:email/colleagues', ensureAuth, async (req, res) => {
+  try {
+    const { email } = req.params;
+    const colleagues = await organizationService.findColleagues(email);
+    res.json(colleagues);
+  } catch (error) {
+    console.error('Error getting colleagues:', error);
+    res.status(500).json({ error: 'Failed to get colleagues' });
+  }
+});
+
+/**
+ * @route GET /api/intelligence/organization/:domain/collaboration
+ * @description Get cross-department collaboration patterns
+ * @access Private
+ */
+router.get('/organization/:domain/collaboration', ensureAuth, async (req, res) => {
+  try {
+    const { domain } = req.params;
+    const { days = 30 } = req.query;
+    
+    const collaboration = await organizationService.getCrossDepartmentCollaboration(
+      domain, 
+      parseInt(days)
+    );
+    
+    res.json(collaboration);
+  } catch (error) {
+    console.error('Error getting collaboration patterns:', error);
+    res.status(500).json({ error: 'Failed to get collaboration patterns' });
+  }
+});
+
+/**
+ * @route POST /api/intelligence/organization
+ * @description Create or update an organization
+ * @access Private
+ */
+router.post('/organization', ensureAuth, async (req, res) => {
+  try {
+    const orgData = req.body;
+    const organization = await organizationService.createOrganization(orgData);
+    res.status(201).json(organization);
+  } catch (error) {
+    console.error('Error creating organization:', error);
+    res.status(500).json({ error: 'Failed to create organization' });
+  }
+});
+
+/**
+ * @route POST /api/intelligence/department
+ * @description Create or update a department
+ * @access Private
+ */
+router.post('/department', ensureAuth, async (req, res) => {
+  try {
+    const deptData = req.body;
+    const department = await organizationService.createDepartment(deptData);
+    res.status(201).json(department);
+  } catch (error) {
+    console.error('Error creating department:', error);
+    res.status(500).json({ error: 'Failed to create department' });
+  }
+});
+
+/**
+ * @route POST /api/intelligence/person/:email/department
+ * @description Assign a person to a department
+ * @access Private
+ */
+router.post('/person/:email/department', ensureAuth, async (req, res) => {
+  try {
+    const { email } = req.params;
+    const { departmentCode, role, isManager = false } = req.body;
+    
+    const assignment = await organizationService.assignPersonToDepartment(
+      email, 
+      departmentCode, 
+      role, 
+      isManager
+    );
+    
+    if (!assignment) {
+      return res.status(404).json({ error: 'Person or department not found' });
+    }
+    
+    res.status(201).json(assignment);
+  } catch (error) {
+    console.error('Error assigning person to department:', error);
+    res.status(500).json({ error: 'Failed to assign person to department' });
+  }
+});
+
+/**
+ * @route POST /api/intelligence/reporting-relationship
+ * @description Create a reporting relationship between two people
+ * @access Private
+ */
+router.post('/reporting-relationship', ensureAuth, async (req, res) => {
+  try {
+    const { managerEmail, reportEmail } = req.body;
+    
+    const relationship = await organizationService.createReportingRelationship(
+      managerEmail, 
+      reportEmail
+    );
+    
+    if (!relationship) {
+      return res.status(404).json({ error: 'Manager or report not found' });
+    }
+    
+    res.status(201).json(relationship);
+  } catch (error) {
+    console.error('Error creating reporting relationship:', error);
+    res.status(500).json({ error: 'Failed to create reporting relationship' });
   }
 });
 
