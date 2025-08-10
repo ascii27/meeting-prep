@@ -238,6 +238,97 @@ class GraphDatabaseService {
     
     return result.records.map(record => record.get('m').properties);
   }
+
+  /**
+   * Create or update a document node
+   * @param {Object} document - Document information
+   * @param {string} document.id - Document ID
+   * @param {string} document.title - Document title
+   * @param {string} document.url - Document URL
+   * @param {string} document.type - Document type (e.g., 'google_doc', 'google_sheet')
+   * @param {string} document.content - Document content (optional)
+   * @returns {Promise<Object>} - Created/updated document properties
+   */
+  async createDocument(document) {
+    const { id, title, url, type = 'google_doc', content = null } = document;
+    
+    const query = `
+      MERGE (d:Document {id: $id})
+      ON CREATE SET 
+        d.title = $title, 
+        d.url = $url, 
+        d.type = $type,
+        d.content = $content,
+        d.createdAt = datetime()
+      ON MATCH SET 
+        d.title = $title, 
+        d.url = $url, 
+        d.type = $type,
+        d.content = $content,
+        d.updatedAt = datetime()
+      RETURN d
+    `;
+    
+    const params = {
+      id: id || uuidv4(),
+      title,
+      url,
+      type,
+      content
+    };
+    
+    const result = await this.executeQuery(query, params);
+    return result.records[0].get('d').properties;
+  }
+
+  /**
+   * Create relationship between meeting and document
+   * @param {string} meetingId - Meeting ID
+   * @param {string} documentId - Document ID
+   * @param {string} relationshipType - Type of relationship (default: 'HAS_DOCUMENT')
+   * @returns {Promise<void>}
+   */
+  async linkMeetingToDocument(meetingId, documentId, relationshipType = 'HAS_DOCUMENT') {
+    const query = `
+      MATCH (m:Meeting {id: $meetingId})
+      MATCH (d:Document {id: $documentId})
+      MERGE (m)-[:${relationshipType}]->(d)
+    `;
+    
+    await this.executeQuery(query, { meetingId, documentId });
+  }
+
+  /**
+   * Get documents for a meeting
+   * @param {string} meetingId - Meeting ID
+   * @returns {Promise<Array>} - List of documents associated with the meeting
+   */
+  async getDocumentsForMeeting(meetingId) {
+    const query = `
+      MATCH (m:Meeting {id: $meetingId})-[:HAS_DOCUMENT]->(d:Document)
+      RETURN d
+      ORDER BY d.createdAt DESC
+    `;
+    
+    const result = await this.executeQuery(query, { meetingId });
+    return result.records.map(record => record.get('d').properties);
+  }
+
+  /**
+   * Get meetings that reference a specific document
+   * @param {string} documentId - Document ID
+   * @returns {Promise<Array>} - List of meetings that reference the document
+   */
+  async getMeetingsForDocument(documentId) {
+    const query = `
+      MATCH (m:Meeting)-[:HAS_DOCUMENT]->(d:Document {id: $documentId})
+      RETURN m
+      ORDER BY m.startTime DESC
+    `;
+    
+    const result = await this.executeQuery(query, { documentId });
+    return result.records.map(record => record.get('m').properties);
+  }
 }
 
 module.exports = new GraphDatabaseService();

@@ -8,13 +8,15 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "dev:reset-db": "nodemon server.js --reset-db",
-    "reset-db": "node server.js --reset-db"
+    "reset-db": "node server.js --reset-db",
+    "intelligence-worker": "node scripts/run-intelligence-worker.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "commander": "^14.0.0",
     "dotenv": "^17.2.0",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
@@ -22,7 +24,9 @@
     "googleapis": "^152.0.0",
     "litellm": "^0.12.0",
     "marked": "^16.0.0",
+    "neo4j-driver": "^5.28.1",
     "node-cache": "^5.1.2",
+    "open": "^10.2.0",
     "openai": "^5.9.0",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
@@ -30,6 +34,7 @@
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.7",
     "sequelize-cli": "^6.6.3",
+    "server-destroy": "^1.0.1",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
