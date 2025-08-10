@@ -346,4 +346,62 @@ router.post('/reporting-relationship', ensureAuth, async (req, res) => {
   }
 });
 
+// @desc    Get quick statistics for chat interface
+// @route   GET /api/intelligence/stats/quick
+router.get('/stats/quick', ensureAuth, async (req, res) => {
+  try {
+    const userEmail = req.user.email;
+    const now = new Date();
+    const weekStart = new Date(now.setDate(now.getDate() - now.getDay() + 1)); // Monday
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6); // Sunday
+
+    // Get quick stats from graph database
+    const stats = await graphDatabaseService.executeQuery(`
+      MATCH (p:Person {email: $userEmail})
+      OPTIONAL MATCH (p)-[:ATTENDED|ORGANIZED]->(m:Meeting)
+      WHERE m.startTime >= $weekStart AND m.startTime <= $weekEnd
+      WITH p, count(DISTINCT m) as meetingsThisWeek
+      
+      OPTIONAL MATCH (p)-[:ATTENDED|ORGANIZED]->(allMeetings:Meeting)
+      WITH p, meetingsThisWeek, count(DISTINCT allMeetings) as totalMeetings
+      
+      OPTIONAL MATCH (p)-[:ATTENDED|ORGANIZED]->(allMeetings)-[:HAS_DOCUMENT]->(d:Document)
+      WITH p, meetingsThisWeek, totalMeetings, count(DISTINCT d) as documentsCount
+      
+      OPTIONAL MATCH (p)-[:ATTENDED|ORGANIZED]->(allMeetings)-[:ATTENDED|ORGANIZED]-(otherPeople:Person)
+      WHERE otherPeople.email <> $userEmail
+      
+      RETURN {
+        meetingsThisWeek: meetingsThisWeek,
+        totalMeetings: totalMeetings,
+        participantsCount: count(DISTINCT otherPeople),
+        documentsCount: documentsCount
+      } as stats
+    `, {
+      userEmail,
+      weekStart: weekStart.toISOString(),
+      weekEnd: weekEnd.toISOString()
+    });
+
+    const result = stats.records[0]?.get('stats') || {
+      meetingsThisWeek: 0,
+      totalMeetings: 0,
+      participantsCount: 0,
+      documentsCount: 0
+    };
+
+    res.json(result);
+  } catch (error) {
+    console.error('Error fetching quick stats:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch statistics',
+      meetingsThisWeek: '-',
+      totalMeetings: '-',
+      participantsCount: '-',
+      documentsCount: '-'
+    });
+  }
+});
+
 module.exports = router;
