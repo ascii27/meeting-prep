@@ -9,7 +9,10 @@
     "dev": "nodemon server.js",
     "dev:reset-db": "nodemon server.js --reset-db",
     "reset-db": "node server.js --reset-db",
-    "intelligence-worker": "node scripts/run-intelligence-worker.js"
+    "intelligence-worker": "node scripts/run-intelligence-worker.js",
+    "reload-database": "node scripts/reload-database.js",
+    "reload-database:1month": "node scripts/reload-database.js --months 1",
+    "reload-database:6months": "node scripts/reload-database.js --months 6"
   },
   "keywords": [],
   "author": "",
