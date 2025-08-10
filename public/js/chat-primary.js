@@ -626,8 +626,11 @@ class ChatPrimaryInterface {
   formatMessage(message) {
     if (!message) return '';
     
+    // Ensure message is a string
+    const messageStr = typeof message === 'string' ? message : String(message);
+    
     // Convert markdown-like formatting
-    return message
+    return messageStr
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
       .replace(/`(.*?)`/g, '<code>$1</code>')

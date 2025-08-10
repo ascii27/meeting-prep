@@ -7,6 +7,7 @@ const router = express.Router();
 const intelligenceService = require('../services/intelligenceService');
 const llmQueryService = require('../services/intelligence/llm/llmQueryService');
 const organizationService = require('../services/intelligence/organizationService');
+const graphDatabaseService = require('../services/intelligence/graph/graphDatabaseService');
 const { ensureAuth } = require('../middleware/auth');
 
 /**
@@ -564,27 +565,29 @@ router.get('/stats/quick', ensureAuth, async (req, res) => {
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekStart.getDate() + 6); // Sunday
 
-    // Get quick stats from graph database
+    // Get quick stats from graph database - fixed aggregation query
     const stats = await graphDatabaseService.executeQuery(`
       MATCH (p:Person {email: $userEmail})
-      OPTIONAL MATCH (p)-[:ATTENDED|ORGANIZED]->(m:Meeting)
-      WHERE m.startTime >= $weekStart AND m.startTime <= $weekEnd
-      WITH p, count(DISTINCT m) as meetingsThisWeek
       
+      // Count meetings this week
+      OPTIONAL MATCH (p)-[:ATTENDED|ORGANIZED]->(thisWeekMeetings:Meeting)
+      WHERE thisWeekMeetings.startTime >= $weekStart AND thisWeekMeetings.startTime <= $weekEnd
+      
+      // Count all meetings
       OPTIONAL MATCH (p)-[:ATTENDED|ORGANIZED]->(allMeetings:Meeting)
-      WITH p, meetingsThisWeek, count(DISTINCT allMeetings) as totalMeetings
       
-      OPTIONAL MATCH (p)-[:ATTENDED|ORGANIZED]->(allMeetings)-[:HAS_DOCUMENT]->(d:Document)
-      WITH p, meetingsThisWeek, totalMeetings, count(DISTINCT d) as documentsCount
+      // Count documents
+      OPTIONAL MATCH (p)-[:ATTENDED|ORGANIZED]->(docMeetings:Meeting)-[:HAS_DOCUMENT]->(d:Document)
       
-      OPTIONAL MATCH (p)-[:ATTENDED|ORGANIZED]->(allMeetings)-[:ATTENDED|ORGANIZED]-(otherPeople:Person)
+      // Count unique participants
+      OPTIONAL MATCH (p)-[:ATTENDED|ORGANIZED]->(participantMeetings:Meeting)-[:ATTENDED|ORGANIZED]-(otherPeople:Person)
       WHERE otherPeople.email <> $userEmail
       
       RETURN {
-        meetingsThisWeek: meetingsThisWeek,
-        totalMeetings: totalMeetings,
+        meetingsThisWeek: count(DISTINCT thisWeekMeetings),
+        totalMeetings: count(DISTINCT allMeetings),
         participantsCount: count(DISTINCT otherPeople),
-        documentsCount: documentsCount
+        documentsCount: count(DISTINCT d)
       } as stats
     `, {
       userEmail,
@@ -592,11 +595,27 @@ router.get('/stats/quick', ensureAuth, async (req, res) => {
       weekEnd: weekEnd.toISOString()
     });
 
-    const result = stats.records[0]?.get('stats') || {
+    const rawResult = stats.records[0]?.get('stats') || {
       meetingsThisWeek: 0,
       totalMeetings: 0,
       participantsCount: 0,
       documentsCount: 0
+    };
+
+    // Convert Neo4j Integer objects to JavaScript numbers to avoid [object Object] display
+    const result = {
+      meetingsThisWeek: typeof rawResult.meetingsThisWeek?.toNumber === 'function' 
+        ? rawResult.meetingsThisWeek.toNumber() 
+        : (rawResult.meetingsThisWeek || 0),
+      totalMeetings: typeof rawResult.totalMeetings?.toNumber === 'function' 
+        ? rawResult.totalMeetings.toNumber() 
+        : (rawResult.totalMeetings || 0),
+      participantsCount: typeof rawResult.participantsCount?.toNumber === 'function' 
+        ? rawResult.participantsCount.toNumber() 
+        : (rawResult.participantsCount || 0),
+      documentsCount: typeof rawResult.documentsCount?.toNumber === 'function' 
+        ? rawResult.documentsCount.toNumber() 
+        : (rawResult.documentsCount || 0)
     };
 
     res.json(result);

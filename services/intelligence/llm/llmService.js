@@ -322,12 +322,38 @@ Always be helpful, accurate, and provide context-aware responses.`;
   async generateResponse(queryResults, intent, context = {}) {
     try {
       const userContext = this.getConversationContext(context.userEmail);
-      const prompt = this.buildResponsePrompt(queryResults, intent, context, userContext);
+      const prompt = this.buildResponseGenerationPrompt(context.originalQuery || 'Show me relevant information', queryResults, context);
       
-      const response = await this.callAIService(prompt, {
-        temperature: 0.7,
-        max_tokens: 1000
-      });
+      // Use configured AI service (consistent with processQuery method)
+      const service = aiConfig.service.toLowerCase();
+      let response;
+      
+      if (service === 'litellm') {
+        const model = aiConfig.litellm.fallbackModels[0] || 'gpt-4';
+        
+        // Use max_completion_tokens for newer models (gpt-5, gpt-5-mini), max_tokens for older ones
+        const tokenParam = model.includes('gpt-5') ? 'max_completion_tokens' : 'max_tokens';
+        const requestParams = {
+          model: model,
+          messages: [
+            { role: 'system', content: this.systemPrompt },
+            { role: 'user', content: prompt }
+          ],
+          temperature: 0.7,
+          [tokenParam]: 1000
+        };
+        
+        const completion = await litellmService.completion(requestParams);
+        response = completion.choices[0].message.content;
+      } else {
+        response = await openaiService.generateResponse([
+          { role: 'system', content: this.systemPrompt },
+          { role: 'user', content: prompt }
+        ], {
+          temperature: 0.7,
+          max_tokens: 1000
+        });
+      }
 
       if (!response || !response.trim()) {
         return {
@@ -649,8 +675,20 @@ Keep the response informative but concise (2-4 paragraphs), and always end with 
    */
   parseQueryResponse(response, originalQuery) {
     try {
+      // Log the raw response for debugging
+      console.log(`[LLMService] Raw LLM response:`, response);
+      
+      // Clean the response - remove any markdown formatting
+      let cleanResponse = response.trim();
+      if (cleanResponse.startsWith('```json')) {
+        cleanResponse = cleanResponse.replace(/```json\s*/, '').replace(/```\s*$/, '');
+      }
+      if (cleanResponse.startsWith('```')) {
+        cleanResponse = cleanResponse.replace(/```\s*/, '').replace(/```\s*$/, '');
+      }
+      
       // Try to parse JSON response
-      const parsed = JSON.parse(response.trim());
+      const parsed = JSON.parse(cleanResponse);
       
       // Validate required fields
       if (!parsed.intent) {
@@ -673,6 +711,7 @@ Keep the response informative but concise (2-4 paragraphs), and always end with 
       
     } catch (error) {
       console.warn(`[LLMService] Failed to parse LLM response, using fallback:`, error);
+      console.warn(`[LLMService] Problematic response:`, response);
       
       // Fallback: basic intent detection
       return this.fallbackQueryParsing(originalQuery);

@@ -40,12 +40,19 @@ class LLMQueryService {
         context
       );
       
+      // Extract text from response object if it's an object, otherwise use as-is
+      const responseText = typeof naturalLanguageResponse === 'object' && naturalLanguageResponse.text
+        ? naturalLanguageResponse.text
+        : naturalLanguageResponse;
+
       return {
         query: query,
         intent: parsedQuery.intent,
         confidence: parsedQuery.confidence,
         results: queryResults,
-        response: naturalLanguageResponse,
+        response: responseText,
+        visualizations: naturalLanguageResponse.visualizations || [],
+        followUps: naturalLanguageResponse.followUps || this.generateFollowUpSuggestions(parsedQuery, queryResults),
         suggestions: this.generateFollowUpSuggestions(parsedQuery, queryResults)
       };
       
