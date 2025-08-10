@@ -25,19 +25,41 @@ function clearDocumentCache(meetingId) {
 
 /**
  * Create a Google Docs client
- * @param {Object} tokens - OAuth tokens
+ * @param {Object} tokens - OAuth tokens (can be from intelligence worker or web app)
  * @returns {Object} - Google Docs client
  */
 function createDocsClient(tokens) {
+  // Handle different token formats from intelligence worker vs web app
+  let clientId, clientSecret, accessToken, refreshToken;
+  
+  if (tokens.oAuth2Client) {
+    // If we have an OAuth2Client instance, use it directly
+    return google.docs({ version: 'v1', auth: tokens.oAuth2Client });
+  } else if (tokens.tokens) {
+    // Intelligence worker format with nested tokens
+    clientId = tokens.tokens.client_id || process.env.WORKER_GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID;
+    clientSecret = tokens.tokens.client_secret || process.env.WORKER_GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET;
+    accessToken = tokens.tokens.access_token;
+    refreshToken = tokens.tokens.refresh_token;
+  } else {
+    // Direct token format or web app format
+    clientId = tokens.client_id || process.env.WORKER_GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID;
+    clientSecret = tokens.client_secret || process.env.WORKER_GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET;
+    accessToken = tokens.accessToken || tokens.access_token;
+    refreshToken = tokens.refreshToken || tokens.refresh_token;
+  }
+  
+  console.log(`[DocumentService] Creating OAuth client with client_id: ${clientId?.substring(0, 8)}...`);
+  
   const oauth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    'http://localhost:3000/auth/google/callback'
+    clientId,
+    clientSecret,
+    'http://localhost:8085' // Use the same redirect URI as the intelligence worker
   );
   
   oauth2Client.setCredentials({
-    access_token: tokens.accessToken || tokens.access_token,
-    refresh_token: tokens.refreshToken || tokens.refresh_token
+    access_token: accessToken,
+    refresh_token: refreshToken
   });
   
   return google.docs({ version: 'v1', auth: oauth2Client });
@@ -68,14 +90,18 @@ async function getDocumentsForEvent(event, tokens) {
     return [];
   }
   
-  console.log(`[DocumentService] Getting documents for event: ${event.id}`);
-  console.log(`[DocumentService] Event:`, event);
+  console.log(`[DocumentService] Getting documents for event: ${event.id || event.googleEventId}`);
+  console.log(`[DocumentService] Event keys:`, Object.keys(event));
+  console.log(`[DocumentService] Event attachments:`, event.attachments);
+  console.log(`[DocumentService] Event description:`, event.description);
   
   const docs = [];
   
   // Check for attachments
   if (event.attachments && Array.isArray(event.attachments)) {
-    event.attachments.forEach(attachment => {
+    console.log(`[DocumentService] Found ${event.attachments.length} attachments`);
+    event.attachments.forEach((attachment, index) => {
+      console.log(`[DocumentService] Attachment ${index}:`, attachment);
       // Look for Google Doc attachments
       if (attachment.mimeType === 'application/vnd.google-apps.document' && attachment.fileUrl) {
         const docId = extractDocumentIdFromUrl(attachment.fileUrl);
@@ -88,11 +114,34 @@ async function getDocumentsForEvent(event, tokens) {
         }
       }
     });
+  } else {
+    console.log(`[DocumentService] No attachments array found. Event.attachments:`, event.attachments);
+  }
+  
+  // Also check for Google Doc links in the description
+  if (event.description) {
+    console.log(`[DocumentService] Checking description for Google Doc links`);
+    const docUrls = event.description.match(/https:\/\/docs\.google\.com\/document\/d\/[a-zA-Z0-9-_]+/g);
+    if (docUrls) {
+      console.log(`[DocumentService] Found ${docUrls.length} Google Doc URLs in description`);
+      docUrls.forEach(url => {
+        const docId = extractDocumentIdFromUrl(url);
+        if (docId && !docs.find(doc => doc.id === docId)) {
+          docs.push({
+            id: docId,
+            title: 'Document from description',
+            url: url
+          });
+        }
+      });
+    }
   }
   
   // Only return documents that are actually attached to this specific event
   if (docs.length === 0) {
-    console.log(`[DocumentService] No attachments found for event: ${event.id}`);
+    console.log(`[DocumentService] No documents found for event: ${event.id || event.googleEventId}`);
+  } else {
+    console.log(`[DocumentService] Found ${docs.length} documents for event`);
   }
   
   return docs;
