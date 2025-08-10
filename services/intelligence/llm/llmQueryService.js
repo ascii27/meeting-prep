@@ -1224,8 +1224,9 @@ class LLMQueryService {
       });
     }
     
-    // Now build query to find meetings with documents
-    let cypher = `MATCH (m:Meeting)-[:HAS_DOCUMENT]->(d:Document)`;
+    // Since HAS_DOCUMENT relationships don't exist, let's find meetings first
+    // and then check for documents in the document service
+    let cypher = `MATCH (m:Meeting)`;
     
     // Add person filter if specified
     if (entities.people && entities.people.length > 0) {
@@ -1254,15 +1255,15 @@ class LLMQueryService {
       cypher += ` WHERE ${conditions.join(' AND ')}`;
     }
     
-    cypher += ` RETURN DISTINCT m, collect(d) as documents ORDER BY m.startTime DESC LIMIT $limit`;
+    cypher += ` RETURN DISTINCT m ORDER BY m.startTime DESC LIMIT $limit`;
     params.limit = neo4j.int(parseInt(parameters.limit) || 5);
     
-    console.log('[LLMQueryService] Final query for meetings with documents:');
+    console.log('[LLMQueryService] Final query for meetings (will check documents separately):');
     console.log('[LLMQueryService] Cypher:', cypher);
     console.log('[LLMQueryService] Params:', JSON.stringify(params, null, 2));
     
     const result = await graphDatabaseService.executeQuery(cypher, params);
-    console.log('[LLMQueryService] Query result: Found', result.records.length, 'meetings with documents');
+    console.log('[LLMQueryService] Query result: Found', result.records.length, 'meetings');
     
     if (result.records.length === 0) {
       return {
@@ -1279,7 +1280,6 @@ class LLMQueryService {
     
     for (const record of result.records) {
       const meeting = record.get('m').properties;
-      const documents = record.get('documents');
       
       const meetingContent = {
         meeting: {
@@ -1287,50 +1287,60 @@ class LLMQueryService {
           startTime: meeting.startTime,
           endTime: meeting.endTime,
           location: meeting.location,
-          description: meeting.description
+          description: meeting.description,
+          googleEventId: meeting.googleEventId
         },
         documents: [],
         content: []
       };
       
-      // Fetch content for each document if user tokens are available
-      if (context.userTokens && documents.length > 0) {
-        for (const doc of documents) {
-          const docProps = doc.properties;
-          try {
-            console.log(`[LLMQueryService] Fetching content for document: ${docProps.title}`);
-            const content = await documentService.getDocumentContent(docProps.id, context.userTokens);
+      // Try to fetch documents for this meeting using the document service
+      if (context.userTokens && meeting.googleEventId) {
+        try {
+          console.log(`[LLMQueryService] Checking for documents for meeting: ${meeting.title} (${meeting.googleEventId})`);
+          
+          // Use the document service to get documents for this event
+          const documents = await documentService.getDocumentsForEvent(meeting.googleEventId, context.userTokens);
+          
+          if (documents && documents.length > 0) {
+            console.log(`[LLMQueryService] Found ${documents.length} documents for meeting: ${meeting.title}`);
             
-            meetingContent.documents.push({
-              id: docProps.id,
-              title: docProps.title,
-              url: docProps.url
-            });
-            
-            if (content && content.content) {
-              meetingContent.content.push({
-                title: docProps.title,
-                content: content.content,
-                summary: content.summary || 'No summary available'
-              });
+            for (const doc of documents) {
+              try {
+                console.log(`[LLMQueryService] Fetching content for document: ${doc.title || doc.id}`);
+                const content = await documentService.getDocumentContent(doc.id, context.userTokens);
+                
+                meetingContent.documents.push({
+                  id: doc.id,
+                  title: doc.title || 'Untitled Document',
+                  url: doc.url || `https://docs.google.com/document/d/${doc.id}`
+                });
+                
+                if (content && content.content) {
+                  meetingContent.content.push({
+                    title: doc.title || 'Untitled Document',
+                    content: content.content,
+                    summary: content.summary || 'No summary available'
+                  });
+                }
+              } catch (docError) {
+                console.error(`[LLMQueryService] Error fetching document content for ${doc.id}:`, docError.message);
+                meetingContent.documents.push({
+                  id: doc.id,
+                  title: doc.title || 'Untitled Document',
+                  url: doc.url || `https://docs.google.com/document/d/${doc.id}`,
+                  error: 'Could not fetch content'
+                });
+              }
             }
-          } catch (error) {
-            console.error(`[LLMQueryService] Error fetching document content for ${docProps.id}:`, error.message);
-            meetingContent.documents.push({
-              id: docProps.id,
-              title: docProps.title,
-              url: docProps.url,
-              error: 'Could not fetch content'
-            });
+          } else {
+            console.log(`[LLMQueryService] No documents found for meeting: ${meeting.title}`);
           }
+        } catch (error) {
+          console.error(`[LLMQueryService] Error fetching documents for meeting ${meeting.googleEventId}:`, error.message);
         }
       } else {
-        // Just return document metadata if no tokens available
-        meetingContent.documents = documents.map(doc => ({
-          id: doc.properties.id,
-          title: doc.properties.title,
-          url: doc.properties.url
-        }));
+        console.log(`[LLMQueryService] Skipping document fetch - missing tokens or googleEventId for meeting: ${meeting.title}`);
       }
       
       meetingsWithContent.push(meetingContent);
