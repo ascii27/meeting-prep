@@ -491,9 +491,26 @@ We'll implement the Meeting Intelligence Service using a vertical slicing approa
 #### Step 3.3: Add Natural Language Query API
 - Create POST `/api/intelligence/query` endpoint
 - Implement basic query processing
-- Add simple UI for natural language queries
+- Add GET `/api/intelligence/query/intents` endpoint for available query types
 - **Test**: API integration tests for query processing
 - **Validation**: Test endpoints with simple natural language queries
+
+#### Step 3.4: Implement Conversational Chat UI
+- Add toggleable chat interface to dashboard with slide-in/out animation
+- Create chat component with conversation history and input field
+- Implement real-time query processing with loading states
+- Add conversation context management for follow-up questions
+- Include example queries and quick actions for user guidance
+- **Test**: UI interaction tests for chat functionality
+- **Validation**: Verify conversational flow and user experience
+
+#### Step 3.5: Enhance Chat Experience
+- Add conversation persistence across browser sessions
+- Implement typing indicators and response streaming
+- Add quick action buttons for common queries
+- Include conversation export and sharing capabilities
+- **Test**: End-to-end conversation flow testing
+- **Validation**: Verify chat provides intuitive meeting intelligence access
 
 ### Phase 4: Action Items and Participant Relationships
 **Goal**: Add action item tracking and participant relationship analysis
@@ -541,13 +558,25 @@ We'll implement the Meeting Intelligence Service using a vertical slicing approa
 - **Test**: Unit tests for enhanced query processing
 - **Validation**: Verify complex queries are correctly processed
 
-#### Step 5.3: Add Advanced Visualization Components
-- Create organizational chart visualization
-- Implement participant network visualization
-- Add topic evolution visualization
-- Create comprehensive dashboard UI
-- **Test**: UI component tests for visualizations
-- **Validation**: Verify visualizations represent data accurately
+#### Step 5.3: Transform Chat to Primary UX Experience
+- **Redesign Application Architecture**: Transform from sidebar chat to primary chat-first interface
+- **Create Chat-Centric Layout**: Design main application layout with chat as the central experience
+- **Implement Conversation-Driven Navigation**: Use chat interactions to drive all application features
+- **Add Rich Response Components**: Embed visualizations, data tables, and interactive elements directly in chat
+- **Create Context-Aware UI States**: Dynamically show relevant UI components based on conversation context
+- **Implement Multi-Modal Responses**: Support text, charts, tables, and interactive elements in chat responses
+- **Add Persistent Chat History**: Maintain conversation continuity across sessions with searchable history
+- **Create Smart Suggestions**: Proactive suggestions based on user patterns and organizational context
+- **Test**: End-to-end user experience testing for chat-first interface
+- **Validation**: Verify chat provides intuitive primary experience for all meeting intelligence features
+
+#### Step 5.4: Add Advanced Visualization Components
+- Create organizational chart visualization embedded in chat responses
+- Implement participant network visualization as interactive chat components
+- Add topic evolution visualization with chat-driven filtering
+- Create comprehensive dashboard accessible through conversational commands
+- **Test**: UI component tests for chat-embedded visualizations
+- **Validation**: Verify visualizations integrate seamlessly with chat experience
 
 ### Phase 6: System Optimization and Scaling
 **Goal**: Optimize system performance and prepare for scaling
@@ -640,8 +669,10 @@ Our testing approach will build on the existing test infrastructure while addres
 
 ## Conclusion
 
-The Meeting Intelligence Service represents a fundamental transformation of the Meeting Prep application from a synchronous meeting preparation tool to an asynchronous intelligence platform. By extracting and refactoring existing document retrieval and meeting processing functionality into background workers, we'll create a system that continuously builds and maintains a comprehensive knowledge graph without user intervention.
+The Meeting Intelligence Service represents a fundamental transformation of the Meeting Prep application from a synchronous meeting preparation tool to an asynchronous, chat-first intelligence platform. By extracting and refactoring existing document retrieval and meeting processing functionality into background workers, we'll create a system that continuously builds and maintains a comprehensive knowledge graph without user intervention.
 
-This architectural shift enables a more natural, query-based user experience where users can ask questions about meetings, people, and topics rather than explicitly requesting meeting summaries. The asynchronous processing approach will significantly reduce user cognitive load while providing richer insights and context than was previously possible with synchronous processing.
+This architectural shift enables a conversational, chat-centric user experience where the primary interface is an intelligent chat system that can answer questions about meetings, people, and topics while embedding rich visualizations and interactive components directly in the conversation flow. Users will interact with all meeting intelligence features through natural language conversations rather than traditional UI navigation.
 
-The phased implementation approach ensures a smooth transition from the current architecture while incrementally adding new capabilities, ultimately delivering a more powerful and user-friendly meeting intelligence platform.
+The chat-first approach transforms the user experience from a traditional dashboard-based application to an intelligent assistant that proactively surfaces insights, suggests relevant queries, and provides contextual information through ongoing conversations. This conversational interface reduces cognitive load while making complex organizational intelligence accessible through simple, natural language interactions.
+
+The phased implementation approach ensures a smooth transition from the current architecture while incrementally adding new capabilities, ultimately delivering a revolutionary chat-first meeting intelligence platform that feels more like conversing with an intelligent colleague than using traditional software.

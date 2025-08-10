@@ -4,9 +4,28 @@ const { ensureAuth } = require('../middleware/auth');
 const { getWeekEvents } = require('../services/calendarService');
 const { getWeekDays, groupEventsByDay, formatDateRange, getWeekDateRangeText } = require('../utils/dateUtils');
 
-// @desc    Dashboard
+// @desc    Chat-First Dashboard (Primary Experience)
 // @route   GET /dashboard
 router.get('/', ensureAuth, async (req, res) => {
+  // Check if user prefers traditional view or is explicitly requesting it
+  const useTraditional = req.query.view === 'traditional' || req.headers['x-traditional-view'];
+  
+  if (useTraditional) {
+    return router.handle({ ...req, url: '/traditional' }, res);
+  }
+  
+  // Render chat-first interface
+  res.render('chat-dashboard', {
+    title: 'Meeting Intelligence',
+    name: req.user.name,
+    email: req.user.email,
+    profileImage: req.user.profileImage
+  });
+});
+
+// @desc    Traditional Dashboard View
+// @route   GET /dashboard/traditional
+router.get('/traditional', ensureAuth, async (req, res) => {
   try {
     // Get week offset from query params (default to 0 for current week)
     const weekOffset = parseInt(req.query.weekOffset || '0');
