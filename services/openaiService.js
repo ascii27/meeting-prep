@@ -461,11 +461,45 @@ Format your response as JSON:
   }
 }
 
+/**
+ * Generate a response using OpenAI with custom messages and options
+ * @param {Array} messages - Array of message objects with role and content
+ * @param {Object} options - OpenAI options (temperature, max_tokens, etc.)
+ * @returns {Promise<string>} - Generated response content
+ */
+async function generateResponse(messages, options = {}) {
+  try {
+    const client = getOpenAIClient();
+    
+    const defaultOptions = {
+      model: aiConfig.openai.model || 'gpt-3.5-turbo',
+      temperature: 0.7,
+      max_tokens: 1000
+    };
+    
+    const requestOptions = { ...defaultOptions, ...options, messages };
+    
+    console.log(`[OpenAI Service] Generating response with ${messages.length} messages`);
+    
+    const completion = await client.chat.completions.create(requestOptions);
+    
+    const response = completion.choices[0].message.content;
+    console.log(`[OpenAI Service] Generated response (${response.length} characters)`);
+    
+    return response;
+    
+  } catch (error) {
+    console.error('[OpenAI Service] Error generating response:', error);
+    throw new Error(`Failed to generate response: ${error.message}`);
+  }
+}
+
 module.exports = {
   generateSummary,
   extractKeyTopics,
   analyzeDocumentForMeeting,
   generateMeetingSummary,
   generateDailyBriefing,
+  generateResponse,
   clearMeetingCache
 };

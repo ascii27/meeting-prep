@@ -2,17 +2,41 @@
  * Unit tests for LLM Service
  */
 
-// Mock the openaiService before importing llmService
+// Mock both AI services before importing llmService
+jest.mock('../../../config/aiConfig', () => ({
+  service: 'litellm', // Default to litellm for tests
+  litellm: {
+    fallbackModels: ['gpt-4', 'gpt-3.5-turbo'],
+    defaultParams: {
+      temperature: 0.7,
+      maxTokens: 1000
+    }
+  }
+}));
+
 jest.mock('../../openaiService', () => ({
   generateResponse: jest.fn()
 }));
 
+jest.mock('../../litellmService', () => ({
+  completion: jest.fn()
+}));
+
 const llmService = require('../llm/llmService');
 const openaiService = require('../../openaiService');
+const litellmService = require('../../litellmService');
 
 describe('LLMService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    
+    // Setup default mock responses for litellm
+    litellmService.completion.mockResolvedValue({
+      choices: [{ message: { content: 'Invalid JSON' } }]
+    });
+    
+    // Setup default mock responses for openai service
+    openaiService.generateResponse.mockResolvedValue('Invalid JSON');
   });
 
   describe('processQuery', () => {
@@ -30,7 +54,10 @@ describe('LLMService', () => {
         confidence: 0.8
       });
 
-      openaiService.generateResponse.mockResolvedValue(mockResponse);
+      // Mock litellm service since that's what the config is set to use
+      litellmService.completion.mockResolvedValue({
+        choices: [{ message: { content: mockResponse } }]
+      });
 
       const result = await llmService.processQuery('Show me meetings with John last week');
 
@@ -79,7 +106,10 @@ describe('LLMService', () => {
     it('should generate a natural language response', async () => {
       const mockResponse = 'Based on your query, I found 5 meetings with John last week. The meetings covered topics including project planning and status updates.';
       
-      openaiService.generateResponse.mockResolvedValue(mockResponse);
+      // Mock litellm service since that's what the config is set to use
+      litellmService.completion.mockResolvedValue({
+        choices: [{ message: { content: mockResponse } }]
+      });
 
       const queryResults = {
         type: 'meetings',
@@ -96,12 +126,13 @@ describe('LLMService', () => {
       );
 
       expect(result).toBe(mockResponse);
-      expect(openaiService.generateResponse).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ role: 'system' }),
-          expect.objectContaining({ role: 'user' })
-        ]),
+      expect(litellmService.completion).toHaveBeenCalledWith(
         expect.objectContaining({
+          model: expect.any(String),
+          messages: expect.arrayContaining([
+            expect.objectContaining({ role: 'system' }),
+            expect.objectContaining({ role: 'user' })
+          ]),
           temperature: 0.7,
           max_tokens: 1500
         })

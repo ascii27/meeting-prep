@@ -3,7 +3,9 @@
  * Handles natural language query processing and response generation
  */
 
+const aiConfig = require('../../../config/aiConfig');
 const openaiService = require('../../openaiService');
+const litellmService = require('../../litellmService');
 
 class LLMService {
   constructor() {
@@ -50,13 +52,30 @@ Always be helpful, accurate, and concise in your responses.`;
       
       const prompt = this.buildQueryProcessingPrompt(query, context);
       
-      const response = await openaiService.generateResponse([
-        { role: 'system', content: this.systemPrompt },
-        { role: 'user', content: prompt }
-      ], {
-        temperature: 0.3, // Lower temperature for more consistent query processing
-        max_tokens: 1000
-      });
+      // Use configured AI service
+      const service = aiConfig.service.toLowerCase();
+      let response;
+      
+      if (service === 'litellm') {
+        const completion = await litellmService.completion({
+          model: aiConfig.litellm.fallbackModels[0] || 'gpt-4',
+          messages: [
+            { role: 'system', content: this.systemPrompt },
+            { role: 'user', content: prompt }
+          ],
+          temperature: 0.3,
+          max_tokens: 1000
+        });
+        response = completion.choices[0].message.content;
+      } else {
+        response = await openaiService.generateResponse([
+          { role: 'system', content: this.systemPrompt },
+          { role: 'user', content: prompt }
+        ], {
+          temperature: 0.3,
+          max_tokens: 1000
+        });
+      }
 
       const processedQuery = this.parseQueryResponse(response, query);
       
@@ -82,13 +101,30 @@ Always be helpful, accurate, and concise in your responses.`;
       
       const prompt = this.buildResponseGenerationPrompt(originalQuery, queryResults, context);
       
-      const response = await openaiService.generateResponse([
-        { role: 'system', content: this.systemPrompt },
-        { role: 'user', content: prompt }
-      ], {
-        temperature: 0.7, // Higher temperature for more natural responses
-        max_tokens: 1500
-      });
+      // Use configured AI service
+      const service = aiConfig.service.toLowerCase();
+      let response;
+      
+      if (service === 'litellm') {
+        const completion = await litellmService.completion({
+          model: aiConfig.litellm.fallbackModels[0] || 'gpt-4',
+          messages: [
+            { role: 'system', content: this.systemPrompt },
+            { role: 'user', content: prompt }
+          ],
+          temperature: 0.7,
+          max_tokens: 1500
+        });
+        response = completion.choices[0].message.content;
+      } else {
+        response = await openaiService.generateResponse([
+          { role: 'system', content: this.systemPrompt },
+          { role: 'user', content: prompt }
+        ], {
+          temperature: 0.7,
+          max_tokens: 1500
+        });
+      }
 
       console.log(`[LLMService] Generated response (${response.length} characters)`);
       return response;
