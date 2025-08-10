@@ -319,6 +319,130 @@ Always be helpful, accurate, and provide context-aware responses.`;
     }
   }
 
+  async generateResponse(queryResults, intent, context = {}) {
+    try {
+      const userContext = this.getConversationContext(context.userEmail);
+      const prompt = this.buildResponsePrompt(queryResults, intent, context, userContext);
+      
+      const response = await this.callAIService(prompt, {
+        temperature: 0.7,
+        max_tokens: 1000
+      });
+
+      if (!response || !response.trim()) {
+        return {
+          text: "I found some information but couldn't generate a proper response. Please try rephrasing your question.",
+          data: queryResults,
+          visualizations: this.getVisualizationsForIntent(intent, queryResults),
+          followUps: this.generateFollowUpSuggestions(queryResults, intent, context)
+        };
+      }
+
+      return {
+        text: response.trim(),
+        data: queryResults,
+        visualizations: this.getVisualizationsForIntent(intent, queryResults),
+        followUps: this.generateFollowUpSuggestions(queryResults, intent, context)
+      };
+    } catch (error) {
+      console.error('Error generating response:', error);
+      return {
+        text: "I encountered an issue while processing your request. Please try again.",
+        data: queryResults,
+        visualizations: [],
+        followUps: []
+      };
+    }
+  }
+
+  /**
+   * Get appropriate visualizations based on query intent and results
+   */
+  getVisualizationsForIntent(intent, queryResults) {
+    const visualizations = [];
+
+    switch (intent) {
+      case 'organization_hierarchy':
+      case 'find_people':
+        if (queryResults.people && queryResults.people.length > 3) {
+          visualizations.push({
+            type: 'organization',
+            data: queryResults,
+            title: 'Organization Structure'
+          });
+        }
+        break;
+
+      case 'collaboration_analysis':
+      case 'network_analysis':
+        visualizations.push({
+          type: 'collaboration',
+          data: queryResults,
+          title: 'Collaboration Network'
+        });
+        break;
+
+      case 'meeting_frequency':
+      case 'time_analysis':
+        if (queryResults.meetings && queryResults.meetings.length > 0) {
+          visualizations.push({
+            type: 'timeline',
+            data: queryResults,
+            title: 'Meeting Timeline'
+          });
+        }
+        break;
+
+      case 'department_analysis':
+        visualizations.push({
+          type: 'departments',
+          data: queryResults,
+          title: 'Department Statistics'
+        });
+        break;
+
+      case 'topic_analysis':
+      case 'content_analysis':
+        if (queryResults.topics && queryResults.topics.length > 0) {
+          visualizations.push({
+            type: 'topics',
+            data: queryResults,
+            title: 'Topic Evolution'
+          });
+        }
+        break;
+
+      case 'find_meetings':
+        if (queryResults.meetings && queryResults.meetings.length > 5) {
+          visualizations.push({
+            type: 'timeline',
+            data: queryResults,
+            title: 'Meeting Timeline'
+          });
+        }
+        break;
+
+      default:
+        // For general queries, add relevant visualizations based on data content
+        if (queryResults.meetings && queryResults.meetings.length > 3) {
+          visualizations.push({
+            type: 'timeline',
+            data: queryResults,
+            title: 'Meeting Activity'
+          });
+        }
+        if (queryResults.people && queryResults.people.length > 2) {
+          visualizations.push({
+            type: 'collaboration',
+            data: queryResults,
+            title: 'Key Collaborators'
+          });
+        }
+    }
+
+    return visualizations;
+  }
+
   /**
    * Build prompt for query processing (legacy method for backward compatibility)
    * @param {string} query - User query
