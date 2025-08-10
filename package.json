@@ -10,6 +10,8 @@
     "dev:reset-db": "nodemon server.js --reset-db",
     "reset-db": "node server.js --reset-db",
     "intelligence-worker": "node scripts/run-intelligence-worker.js",
+    "clear-neo4j": "node scripts/clear-neo4j.js",
+    "verify-relationships": "node scripts/verify-relationships.js",
     "reload-database": "node scripts/reload-database.js",
     "reload-database:1month": "node scripts/reload-database.js --months 1",
     "reload-database:6months": "node scripts/reload-database.js --months 6"
