@@ -290,7 +290,7 @@ class GraphDatabaseService {
    */
   async linkMeetingToDocument(meetingId, documentId, relationshipType = 'HAS_DOCUMENT') {
     const query = `
-      MATCH (m:Meeting {id: $meetingId})
+      MATCH (m:Meeting {googleEventId: $meetingId})
       MATCH (d:Document {id: $documentId})
       MERGE (m)-[:${relationshipType}]->(d)
     `;
@@ -305,7 +305,7 @@ class GraphDatabaseService {
    */
   async getDocumentsForMeeting(meetingId) {
     const query = `
-      MATCH (m:Meeting {id: $meetingId})-[:HAS_DOCUMENT]->(d:Document)
+      MATCH (m:Meeting {googleEventId: $meetingId})-[:HAS_DOCUMENT]->(d:Document)
       RETURN d
       ORDER BY d.createdAt DESC
     `;

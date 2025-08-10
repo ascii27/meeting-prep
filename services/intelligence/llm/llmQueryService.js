@@ -1255,10 +1255,15 @@ class LLMQueryService {
       cypher += ` WHERE ${conditions.join(' AND ')}`;
     }
     
-    cypher += ` RETURN DISTINCT m ORDER BY m.startTime DESC LIMIT $limit`;
+    // Include documents in the query using HAS_DOCUMENT relationships
+    cypher += ` 
+      OPTIONAL MATCH (m)-[:HAS_DOCUMENT]->(d:Document)
+      RETURN DISTINCT m, collect(d) as documents 
+      ORDER BY m.startTime DESC 
+      LIMIT $limit`;
     params.limit = neo4j.int(parseInt(parameters.limit) || 5);
     
-    console.log('[LLMQueryService] Final query for meetings (will check documents separately):');
+    console.log('[LLMQueryService] Final query for meetings with documents:');
     console.log('[LLMQueryService] Cypher:', cypher);
     console.log('[LLMQueryService] Params:', JSON.stringify(params, null, 2));
     
@@ -1274,12 +1279,13 @@ class LLMQueryService {
       };
     }
     
-    // Import document service to fetch content
-    const documentService = require('../../documentService');
     const meetingsWithContent = [];
     
     for (const record of result.records) {
       const meeting = record.get('m').properties;
+      const documents = record.get('documents') || [];
+      
+      console.log(`[LLMQueryService] Processing meeting: ${meeting.title} with ${documents.length} documents`);
       
       const meetingContent = {
         meeting: {
@@ -1294,53 +1300,30 @@ class LLMQueryService {
         content: []
       };
       
-      // Try to fetch documents for this meeting using the document service
-      if (context.userTokens && meeting.googleEventId) {
-        try {
-          console.log(`[LLMQueryService] Checking for documents for meeting: ${meeting.title} (${meeting.googleEventId})`);
+      // Process documents that are already linked in Neo4j
+      for (const docNode of documents) {
+        if (docNode && docNode.properties) {
+          const doc = docNode.properties;
+          console.log(`[LLMQueryService] Found document: ${doc.title || doc.id}`);
           
-          // Use the document service to get documents for this event
-          const documents = await documentService.getDocumentsForEvent(meeting.googleEventId, context.userTokens);
+          meetingContent.documents.push({
+            id: doc.id,
+            title: doc.title || 'Untitled Document',
+            url: doc.url || `https://docs.google.com/document/d/${doc.id}`
+          });
           
-          if (documents && documents.length > 0) {
-            console.log(`[LLMQueryService] Found ${documents.length} documents for meeting: ${meeting.title}`);
-            
-            for (const doc of documents) {
-              try {
-                console.log(`[LLMQueryService] Fetching content for document: ${doc.title || doc.id}`);
-                const content = await documentService.getDocumentContent(doc.id, context.userTokens);
-                
-                meetingContent.documents.push({
-                  id: doc.id,
-                  title: doc.title || 'Untitled Document',
-                  url: doc.url || `https://docs.google.com/document/d/${doc.id}`
-                });
-                
-                if (content && content.content) {
-                  meetingContent.content.push({
-                    title: doc.title || 'Untitled Document',
-                    content: content.content,
-                    summary: content.summary || 'No summary available'
-                  });
-                }
-              } catch (docError) {
-                console.error(`[LLMQueryService] Error fetching document content for ${doc.id}:`, docError.message);
-                meetingContent.documents.push({
-                  id: doc.id,
-                  title: doc.title || 'Untitled Document',
-                  url: doc.url || `https://docs.google.com/document/d/${doc.id}`,
-                  error: 'Could not fetch content'
-                });
-              }
-            }
+          // Include the document content if it exists in Neo4j
+          if (doc.content) {
+            meetingContent.content.push({
+              title: doc.title || 'Untitled Document',
+              content: doc.content,
+              summary: doc.summary || 'No summary available'
+            });
+            console.log(`[LLMQueryService] Added content for document: ${doc.title} (${doc.content.length} chars)`);
           } else {
-            console.log(`[LLMQueryService] No documents found for meeting: ${meeting.title}`);
+            console.log(`[LLMQueryService] Document ${doc.title} has no content stored in Neo4j`);
           }
-        } catch (error) {
-          console.error(`[LLMQueryService] Error fetching documents for meeting ${meeting.googleEventId}:`, error.message);
         }
-      } else {
-        console.log(`[LLMQueryService] Skipping document fetch - missing tokens or googleEventId for meeting: ${meeting.title}`);
       }
       
       meetingsWithContent.push(meetingContent);

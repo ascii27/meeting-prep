@@ -44,7 +44,8 @@ async function verifyRelationships() {
     console.log('\n📄 Meetings with Documents:');
     const meetingsWithDocsQuery = `
       MATCH (m:Meeting)-[:HAS_DOCUMENT]->(d:Document)
-      RETURN m.title as meetingTitle, m.googleEventId as eventId, count(d) as docCount
+      WITH m, count(d) as docCount
+      RETURN m.title as meetingTitle, m.googleEventId as eventId, docCount
       ORDER BY m.startTime DESC
       LIMIT 10
     `;
