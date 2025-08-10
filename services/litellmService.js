@@ -92,10 +92,25 @@ async function completionWithFallback(options) {
     // Prepare the request options
     const requestOptions = {
       model: modelToUse,
-      messages: options.messages,
-      temperature: options.temperature || config.defaultParams.temperature,
-      max_tokens: options.max_tokens || config.defaultParams.maxTokens
+      messages: options.messages
     };
+    
+    // Handle temperature parameter based on model
+    // GPT-5 models only support temperature of 1 (default), older models support custom values
+    if (modelToUse.includes('gpt-5')) {
+      // GPT-5 models only support default temperature of 1
+      requestOptions.temperature = 1;
+    } else {
+      requestOptions.temperature = options.temperature || config.defaultParams.temperature;
+    }
+    
+    // Handle token limit parameter based on model
+    // GPT-5 models require max_completion_tokens, older models use max_tokens
+    if (modelToUse.includes('gpt-5')) {
+      requestOptions.max_completion_tokens = options.max_completion_tokens || options.max_tokens || config.defaultParams.maxTokens;
+    } else {
+      requestOptions.max_tokens = options.max_tokens || config.defaultParams.maxTokens;
+    }
     
     // Add API key and base URL based on whether we're using LiteLLM server or direct provider calls
     if (config.apiUrl) {
