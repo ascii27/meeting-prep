@@ -171,9 +171,8 @@ class ChatPrimaryInterface {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          query: query,
-          context: this.currentContext,
-          conversationHistory: this.conversationHistory.slice(-5) // Last 5 messages
+          query: query
+          // Removed conversationHistory and context to reduce payload size
         })
       });
 

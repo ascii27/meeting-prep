@@ -85,8 +85,8 @@ function getApiKeyForModel(model) {
  */
 async function completionWithFallback(options) {
   try {
-    // Apply fallback model if available
-    const modelToUse = options.model;
+    // Apply fallback model if available, use default if not specified
+    const modelToUse = options.model || config.fallbackModels[0] || 'gpt-4.1-mini';
     console.log(`[LiteLLM Service] Sending completion request to model: ${modelToUse}`);
     
     // Prepare the request options
@@ -97,7 +97,7 @@ async function completionWithFallback(options) {
     
     // Handle temperature parameter based on model
     // GPT-5 models only support temperature of 1 (default), older models support custom values
-    if (modelToUse.includes('gpt-5')) {
+    if (modelToUse && modelToUse.includes('gpt-5')) {
       // GPT-5 models only support default temperature of 1
       requestOptions.temperature = 1;
     } else {

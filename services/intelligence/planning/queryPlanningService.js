@@ -20,8 +20,8 @@ class QueryPlanningService {
     if (this.initialized) return;
 
     try {
-      // Load database capabilities documentation
-      const capabilitiesPath = path.join(__dirname, '../../../docs/database-capabilities.md');
+      // Load simplified tools documentation
+      const capabilitiesPath = path.join(__dirname, '../../../docs/simplified-tools.md');
       this.databaseCapabilities = await fs.readFile(capabilitiesPath, 'utf8');
       
       // Initialize strategy templates
@@ -266,20 +266,40 @@ RESPOND WITH JSON ONLY. NO OTHER TEXT.
    * @returns {string} - System prompt
    */
   getStrategyPlanningSystemPrompt() {
-    return `You are an expert database query strategist for an organizational intelligence system. Your role is to analyze complex user questions and create efficient, multi-step query strategies.
+    return `You are an expert query strategist for a meeting intelligence system. Your role is to analyze user questions and create efficient query strategies using simplified tools.
 
 CRITICAL: You MUST respond ONLY with valid JSON. Do not include any explanatory text, conversation, or natural language responses. Only return the JSON strategy object.
 
+AVAILABLE TOOLS (use these exact names):
+- find_meetings: Find meetings by person, timeframe, or keywords
+- find_documents: Find documents and their content from meetings  
+- find_people: Find people and their participation data
+- get_meeting_details: Get complete details for a specific meeting
+- analyze_patterns: Analyze patterns in meetings, documents, or collaboration
+
 Key Principles:
-1. **Efficiency First**: Start with indexed lookups, apply filters early
-2. **Logical Progression**: Each step should build on previous results  
-3. **Performance Awareness**: Consider query complexity and execution time
-4. **Comprehensive Coverage**: Ensure the strategy will fully answer the user's question
-5. **Fallback Planning**: Consider what to do if intermediate steps return no results
+1. **Use Simplified Tools**: Only use the 5 tools listed above
+2. **Clear Parameters**: Provide specific, clear parameters for each tool
+3. **Logical Progression**: Each step should build on previous results  
+4. **Efficiency**: Start with broad searches, then narrow down
+5. **Complete Coverage**: Ensure the strategy will fully answer the user's question
 
-You have access to a Neo4j graph database with Person, Meeting, and Document nodes, plus 13 different query types ranging from simple lookups to complex organizational analysis.
+RESPONSE FORMAT: Respond ONLY with valid JSON wrapped in \`\`\`json code blocks. No other text is allowed.
 
-RESPONSE FORMAT: Respond ONLY with valid JSON wrapped in \`\`\`json code blocks. No other text is allowed.`;
+Example strategy format:
+{
+  "reasoning": "Brief explanation of approach",
+  "steps": [
+    {
+      "tool": "find_meetings",
+      "description": "What this step accomplishes",
+      "parameters": {
+        "person": "Snehal",
+        "timeframe": "last week"
+      }
+    }
+  ]
+}`;
   }
 
   /**

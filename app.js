@@ -45,7 +45,6 @@ app.use('/dashboard', require('./routes/dashboard'));
 app.use('/api/preparation', require('./routes/preparation'));
 app.use('/history', require('./routes/history'));
 app.use('/api/documents', require('./routes/documents'));
-app.use('/api/daily-briefing', require('./routes/dailyBriefing'));
 app.use('/api/intelligence', require('./routes/intelligence'));
 
 // Export the app without starting the server

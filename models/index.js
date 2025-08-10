@@ -7,7 +7,7 @@ const Meeting = require('./meeting');
 const MeetingSummary = require('./meetingSummary');
 const PreparationNote = require('./preparationNote');
 const UserPreference = require('./userPreference');
-const DailyBriefing = require('./dailyBriefing');
+
 const { sequelize } = require('../config/database');
 
 // Associations are defined in the individual model files
@@ -20,6 +20,5 @@ module.exports = {
   MeetingSummary,
   PreparationNote,
   UserPreference,
-  DailyBriefing,
   sequelize
 };
