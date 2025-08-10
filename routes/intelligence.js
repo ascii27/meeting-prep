@@ -346,6 +346,214 @@ router.post('/reporting-relationship', ensureAuth, async (req, res) => {
   }
 });
 
+// @desc    Get visualization data for organization chart
+// @route   GET /api/intelligence/visualizations/organization
+router.get('/visualizations/organization', ensureAuth, async (req, res) => {
+  try {
+    const userEmail = req.user.email;
+    const organizationDomain = userEmail.split('@')[1];
+
+    // Get organization hierarchy data
+    const hierarchyData = await organizationService.getOrganizationHierarchy(organizationDomain);
+    
+    // Transform for visualization
+    const visualizationData = {
+      type: 'organization',
+      data: {
+        nodes: hierarchyData.nodes.map(node => ({
+          id: node.id,
+          name: node.name,
+          title: node.title || node.role,
+          department: node.department,
+          managerId: node.managerId,
+          isManager: node.directReports && node.directReports.length > 0,
+          meetingCount: node.meetingCount || 0
+        })),
+        relationships: hierarchyData.relationships || []
+      }
+    };
+
+    res.json(visualizationData);
+  } catch (error) {
+    console.error('Error fetching organization visualization data:', error);
+    res.status(500).json({ error: 'Failed to fetch organization data' });
+  }
+});
+
+// @desc    Get visualization data for collaboration network
+// @route   GET /api/intelligence/visualizations/collaboration
+router.get('/visualizations/collaboration', ensureAuth, async (req, res) => {
+  try {
+    const userEmail = req.user.email;
+    const timeRange = parseInt(req.query.timeRange) || 30; // days
+
+    const endDate = new Date();
+    const startDate = new Date(endDate);
+    startDate.setDate(startDate.getDate() - timeRange);
+
+    // Get collaboration data from graph database
+    const collaborationData = await graphDatabaseService.executeQuery(`
+      MATCH (p1:Person {email: $userEmail})-[:ATTENDED|ORGANIZED]->(m:Meeting)<-[:ATTENDED|ORGANIZED]-(p2:Person)
+      WHERE m.startTime >= $startDate AND m.startTime <= $endDate AND p1 <> p2
+      WITH p1, p2, count(m) as meetingCount
+      WHERE meetingCount > 0
+      RETURN {
+        person1: p1.name || p1.email,
+        person2: p2.name || p2.email,
+        meetingCount: meetingCount,
+        strength: CASE 
+          WHEN meetingCount >= 10 THEN 'strong'
+          WHEN meetingCount >= 5 THEN 'medium'
+          ELSE 'weak'
+        END
+      } as relationship
+      ORDER BY meetingCount DESC
+      LIMIT 20
+    `, {
+      userEmail,
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString()
+    });
+
+    const visualizationData = {
+      type: 'collaboration',
+      data: {
+        relationships: collaborationData.records.map(record => record.get('relationship'))
+      }
+    };
+
+    res.json(visualizationData);
+  } catch (error) {
+    console.error('Error fetching collaboration visualization data:', error);
+    res.status(500).json({ error: 'Failed to fetch collaboration data' });
+  }
+});
+
+// @desc    Get visualization data for meeting timeline
+// @route   GET /api/intelligence/visualizations/timeline
+router.get('/visualizations/timeline', ensureAuth, async (req, res) => {
+  try {
+    const userEmail = req.user.email;
+    const period = req.query.period || 'month'; // week, month, quarter
+    
+    let days;
+    switch (period) {
+      case 'week': days = 7; break;
+      case 'quarter': days = 90; break;
+      default: days = 30; // month
+    }
+
+    const endDate = new Date();
+    const startDate = new Date(endDate);
+    startDate.setDate(startDate.getDate() - days);
+
+    // Get timeline data
+    const timelineData = await graphDatabaseService.executeQuery(`
+      MATCH (p:Person {email: $userEmail})-[:ATTENDED|ORGANIZED]->(m:Meeting)
+      WHERE m.startTime >= $startDate AND m.startTime <= $endDate
+      WITH date(m.startTime) as meetingDate, count(m) as meetingCount
+      RETURN {
+        date: toString(meetingDate),
+        count: meetingCount
+      } as timelinePoint
+      ORDER BY meetingDate
+    `, {
+      userEmail,
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString()
+    });
+
+    const visualizationData = {
+      type: 'timeline',
+      data: {
+        timeline: timelineData.records.map(record => record.get('timelinePoint'))
+      }
+    };
+
+    res.json(visualizationData);
+  } catch (error) {
+    console.error('Error fetching timeline visualization data:', error);
+    res.status(500).json({ error: 'Failed to fetch timeline data' });
+  }
+});
+
+// @desc    Get visualization data for department statistics
+// @route   GET /api/intelligence/visualizations/departments
+router.get('/visualizations/departments', ensureAuth, async (req, res) => {
+  try {
+    const userEmail = req.user.email;
+    const organizationDomain = userEmail.split('@')[1];
+
+    // Get department statistics
+    const departmentStats = await organizationService.getDepartmentStatistics(organizationDomain);
+    
+    const visualizationData = {
+      type: 'departments',
+      data: {
+        departments: departmentStats.map(dept => ({
+          name: dept.name,
+          peopleCount: dept.peopleCount,
+          meetingCount: dept.meetingCount,
+          collaborationScore: dept.collaborationScore || 0
+        }))
+      }
+    };
+
+    res.json(visualizationData);
+  } catch (error) {
+    console.error('Error fetching department visualization data:', error);
+    res.status(500).json({ error: 'Failed to fetch department data' });
+  }
+});
+
+// @desc    Get visualization data for topic evolution
+// @route   GET /api/intelligence/visualizations/topics
+router.get('/visualizations/topics', ensureAuth, async (req, res) => {
+  try {
+    const userEmail = req.user.email;
+    const timeRange = parseInt(req.query.timeRange) || 30;
+
+    const endDate = new Date();
+    const startDate = new Date(endDate);
+    startDate.setDate(startDate.getDate() - timeRange);
+
+    // Get topic data from meetings
+    const topicData = await graphDatabaseService.executeQuery(`
+      MATCH (p:Person {email: $userEmail})-[:ATTENDED|ORGANIZED]->(m:Meeting)-[:HAS_TOPIC]->(t:Topic)
+      WHERE m.startTime >= $startDate AND m.startTime <= $endDate
+      WITH t, count(m) as frequency
+      ORDER BY frequency DESC
+      LIMIT 15
+      RETURN {
+        name: t.name,
+        count: frequency,
+        frequency: toFloat(frequency) / 10.0,
+        trend: CASE 
+          WHEN frequency >= 8 THEN 1
+          WHEN frequency >= 4 THEN 0
+          ELSE -1
+        END
+      } as topic
+    `, {
+      userEmail,
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString()
+    });
+
+    const visualizationData = {
+      type: 'topics',
+      data: {
+        topics: topicData.records.map(record => record.get('topic'))
+      }
+    };
+
+    res.json(visualizationData);
+  } catch (error) {
+    console.error('Error fetching topic visualization data:', error);
+    res.status(500).json({ error: 'Failed to fetch topic data' });
+  }
+});
+
 // @desc    Get quick statistics for chat interface
 // @route   GET /api/intelligence/stats/quick
 router.get('/stats/quick', ensureAuth, async (req, res) => {

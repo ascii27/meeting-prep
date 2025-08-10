@@ -308,7 +308,14 @@ class ChatPrimaryInterface {
       messageContent.appendChild(messageText);
     }
 
-    // Add rich components based on data type
+    // Add visualizations if available
+    if (data.visualizations && data.visualizations.length > 0) {
+      data.visualizations.forEach(viz => {
+        this.addVisualizationComponent(messageContent, viz);
+      });
+    }
+
+    // Add rich components based on data
     if (data.data && data.data.length > 0) {
       this.addRichComponents(messageContent, data);
     }
@@ -340,7 +347,19 @@ class ChatPrimaryInterface {
         this.addStatisticsCards(messageContent, data.data);
         break;
       case 'organization':
-        this.addOrganizationChart(messageContent, data.data);
+        this.addOrganizationVisualization(messageContent, data.data);
+        break;
+      case 'collaboration':
+        this.addCollaborationVisualization(messageContent, data.data);
+        break;
+      case 'timeline':
+        this.addTimelineVisualization(messageContent, data.data);
+        break;
+      case 'departments':
+        this.addDepartmentVisualization(messageContent, data.data);
+        break;
+      case 'topics':
+        this.addTopicVisualization(messageContent, data.data);
         break;
       default:
         this.addDataTable(messageContent, data.data);
@@ -448,6 +467,132 @@ class ChatPrimaryInterface {
     `;
     
     container.appendChild(followUpDiv);
+  }
+
+  addOrganizationVisualization(container, data) {
+    if (window.chatVisualizations) {
+      window.chatVisualizations.createOrganizationChart(container, data);
+    } else {
+      this.addFallbackVisualization(container, 'Organization Chart', data);
+    }
+  }
+
+  addCollaborationVisualization(container, data) {
+    if (window.chatVisualizations) {
+      window.chatVisualizations.createCollaborationNetwork(container, data);
+    } else {
+      this.addFallbackVisualization(container, 'Collaboration Network', data);
+    }
+  }
+
+  addTimelineVisualization(container, data) {
+    if (window.chatVisualizations) {
+      window.chatVisualizations.createMeetingTimeline(container, data);
+    } else {
+      this.addFallbackVisualization(container, 'Meeting Timeline', data);
+    }
+  }
+
+  addDepartmentVisualization(container, data) {
+    if (window.chatVisualizations) {
+      window.chatVisualizations.createDepartmentStats(container, data);
+    } else {
+      this.addFallbackVisualization(container, 'Department Statistics', data);
+    }
+  }
+
+  addTopicVisualization(container, data) {
+    if (window.chatVisualizations) {
+      window.chatVisualizations.createTopicEvolution(container, data);
+    } else {
+      this.addFallbackVisualization(container, 'Topic Evolution', data);
+    }
+  }
+
+  addVisualizationComponent(container, visualization) {
+    const vizContainer = document.createElement('div');
+    vizContainer.className = 'chat-visualization-container';
+    
+    // Add visualization title if provided
+    if (visualization.title) {
+      const title = document.createElement('h4');
+      title.className = 'visualization-title';
+      title.textContent = visualization.title;
+      vizContainer.appendChild(title);
+    }
+    
+    // Add the visualization based on type
+    switch (visualization.type) {
+      case 'organization':
+        this.addOrganizationVisualization(vizContainer, visualization.data);
+        break;
+      case 'collaboration':
+        this.addCollaborationVisualization(vizContainer, visualization.data);
+        break;
+      case 'timeline':
+        this.addTimelineVisualization(vizContainer, visualization.data);
+        break;
+      case 'departments':
+        this.addDepartmentVisualization(vizContainer, visualization.data);
+        break;
+      case 'topics':
+        this.addTopicVisualization(vizContainer, visualization.data);
+        break;
+      default:
+        console.warn('Unknown visualization type:', visualization.type);
+    }
+    
+    container.appendChild(vizContainer);
+  }
+
+  addFallbackVisualization(container, title, data) {
+    const fallback = document.createElement('div');
+    fallback.className = 'chat-chart-container';
+    
+    fallback.innerHTML = `
+      <div class="chart-header">
+        <h3 class="chart-title">${title}</h3>
+      </div>
+      <div class="chart-content">
+        <div class="chart-loading">
+          <div class="chart-loading-spinner"></div>
+          <span>Loading visualization...</span>
+        </div>
+      </div>
+    `;
+    
+    container.appendChild(fallback);
+    
+    // Try to load visualization after a delay
+    setTimeout(() => {
+      if (window.chatVisualizations) {
+        fallback.remove();
+        switch (title) {
+          case 'Organization Chart':
+            this.addOrganizationVisualization(container, data);
+            break;
+          case 'Collaboration Network':
+            this.addCollaborationVisualization(container, data);
+            break;
+          case 'Meeting Timeline':
+            this.addTimelineVisualization(container, data);
+            break;
+          case 'Department Statistics':
+            this.addDepartmentVisualization(container, data);
+            break;
+          case 'Topic Evolution':
+            this.addTopicVisualization(container, data);
+            break;
+        }
+      } else {
+        // Show error state
+        fallback.querySelector('.chart-content').innerHTML = `
+          <div class="chart-error">
+            <span>Unable to load ${title} visualization</span>
+          </div>
+        `;
+      }
+    }, 2000);
   }
 
   addDataTable(container, data) {
