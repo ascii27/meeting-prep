@@ -133,8 +133,8 @@ describe('LLMService', () => {
             expect.objectContaining({ role: 'system' }),
             expect.objectContaining({ role: 'user' })
           ]),
-          temperature: 0.7,
-          max_tokens: 1500
+          temperature: 0.7
+          // Note: Token parameter (max_tokens or max_completion_tokens) depends on model
         })
       );
     });
