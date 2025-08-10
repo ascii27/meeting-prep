@@ -24,7 +24,8 @@ class LLMQueryService {
       analyze_topic_trends: this.handleAnalyzeTopicTrends.bind(this),
       find_meeting_conflicts: this.handleFindMeetingConflicts.bind(this),
       get_productivity_insights: this.handleGetProductivityInsights.bind(this),
-      analyze_communication_flow: this.handleAnalyzeCommunicationFlow.bind(this)
+      analyze_communication_flow: this.handleAnalyzeCommunicationFlow.bind(this),
+      get_meeting_content: this.handleGetMeetingContent.bind(this)
     };
   }
 
@@ -1161,6 +1162,137 @@ class LLMQueryService {
     });
     
     return matchingWords / Math.max(searchWords.length, targetWords.length);
+  }
+
+  /**
+   * Get meeting content and documents for analysis
+   * @param {Object} parsedQuery - Parsed query object
+   * @param {Object} context - Additional context including user tokens
+   * @returns {Promise<Object>} - Meeting content and analysis results
+   */
+  async handleGetMeetingContent(parsedQuery, context) {
+    const { entities, parameters } = parsedQuery;
+    const conditions = [];
+    const params = {};
+    
+    console.log('[LLMQueryService] Getting meeting content for analysis');
+    
+    // Build query to find meetings with documents
+    let cypher = `MATCH (m:Meeting)-[:HAS_DOCUMENT]->(d:Document)`;
+    
+    // Add person filter if specified
+    if (entities.people && entities.people.length > 0) {
+      cypher += `-[:ATTENDED|ORGANIZED]-(p:Person)`;
+      conditions.push(`p.email IN $people OR p.name IN $people`);
+      params.people = entities.people;
+    }
+    
+    // Add timeframe filter
+    if (entities.timeframe) {
+      const timeFilter = this.parseTimeframe(entities.timeframe);
+      if (timeFilter) {
+        conditions.push(`m.startTime >= $startTime AND m.startTime <= $endTime`);
+        params.startTime = timeFilter.start;
+        params.endTime = timeFilter.end;
+      }
+    }
+    
+    // Add meeting title filter if specified
+    if (entities.meetings && entities.meetings.length > 0) {
+      conditions.push(`any(meeting IN $meetings WHERE toLower(m.title) CONTAINS toLower(meeting))`);
+      params.meetings = entities.meetings;
+    }
+    
+    if (conditions.length > 0) {
+      cypher += ` WHERE ${conditions.join(' AND ')}`;
+    }
+    
+    cypher += ` RETURN DISTINCT m, collect(d) as documents ORDER BY m.startTime DESC LIMIT $limit`;
+    params.limit = neo4j.int(parseInt(parameters.limit) || 5);
+    
+    const result = await graphDatabaseService.executeQuery(cypher, params);
+    
+    if (result.records.length === 0) {
+      return {
+        type: 'meeting_content',
+        totalResults: 0,
+        data: [],
+        message: 'No meetings with documents found matching your criteria.'
+      };
+    }
+    
+    // Import document service to fetch content
+    const documentService = require('../../documentService');
+    const meetingsWithContent = [];
+    
+    for (const record of result.records) {
+      const meeting = record.get('m').properties;
+      const documents = record.get('documents');
+      
+      const meetingContent = {
+        meeting: {
+          title: meeting.title,
+          startTime: meeting.startTime,
+          endTime: meeting.endTime,
+          location: meeting.location,
+          description: meeting.description
+        },
+        documents: [],
+        content: []
+      };
+      
+      // Fetch content for each document if user tokens are available
+      if (context.userTokens && documents.length > 0) {
+        for (const doc of documents) {
+          const docProps = doc.properties;
+          try {
+            console.log(`[LLMQueryService] Fetching content for document: ${docProps.title}`);
+            const content = await documentService.getDocumentContent(docProps.id, context.userTokens);
+            
+            meetingContent.documents.push({
+              id: docProps.id,
+              title: docProps.title,
+              url: docProps.url
+            });
+            
+            if (content && content.content) {
+              meetingContent.content.push({
+                title: docProps.title,
+                content: content.content,
+                summary: content.summary || 'No summary available'
+              });
+            }
+          } catch (error) {
+            console.error(`[LLMQueryService] Error fetching document content for ${docProps.id}:`, error.message);
+            meetingContent.documents.push({
+              id: docProps.id,
+              title: docProps.title,
+              url: docProps.url,
+              error: 'Could not fetch content'
+            });
+          }
+        }
+      } else {
+        // Just return document metadata if no tokens available
+        meetingContent.documents = documents.map(doc => ({
+          id: doc.properties.id,
+          title: doc.properties.title,
+          url: doc.properties.url
+        }));
+      }
+      
+      meetingsWithContent.push(meetingContent);
+    }
+    
+    return {
+      type: 'meeting_content',
+      totalResults: meetingsWithContent.length,
+      data: meetingsWithContent,
+      hasContent: meetingsWithContent.some(m => m.content.length > 0),
+      message: context.userTokens ? 
+        'Retrieved meeting content and documents for analysis.' : 
+        'Found meetings with documents. Document content requires authentication.'
+    };
   }
 }
 

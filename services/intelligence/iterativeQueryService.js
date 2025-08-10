@@ -245,6 +245,11 @@ ${resultsText}
 - **Input**: meeting identifier or search criteria
 - **Output**: List of attendees for specific meetings
 
+### get_meeting_content
+- **Input**: timeframe, person name/email, meeting title keywords
+- **Output**: Meeting documents, summaries, and full content for analysis
+- **Use for**: Questions about meeting summaries, what was discussed, action items, decisions made
+
 ### analyze_collaboration
 - **Input**: person email or department
 - **Output**: Who they work with most, meeting patterns

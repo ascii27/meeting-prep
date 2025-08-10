@@ -123,6 +123,33 @@ RETURN d, m
 ORDER BY m.startTime DESC
 ```
 
+#### get_meeting_content
+**Purpose**: Retrieve and analyze actual meeting document content
+**Capabilities**:
+- Find meetings with associated documents
+- Fetch full document content from Google Docs
+- Extract meeting summaries and key points
+- Analyze what was discussed in meetings
+- Identify action items and decisions made
+- Filter by participants, timeframe, or meeting keywords
+
+**Use Cases**:
+- "What was discussed in my 1:1 with [person]?"
+- "What were the action items from the [meeting name]?"
+- "Summarize the key decisions from meetings last week"
+- "What topics were covered in [department] meetings?"
+
+**Example Cypher Pattern**:
+```cypher
+MATCH (m:Meeting)-[:HAS_DOCUMENT]->(d:Document)
+WHERE m.startTime >= datetime($startDate)
+  AND EXISTS((m)<-[:ATTENDED|ORGANIZED]-(:Person {email: $userEmail}))
+RETURN m, collect(d) as documents
+ORDER BY m.startTime DESC
+```
+
+**Note**: Requires user authentication tokens to fetch document content from Google Docs API.
+
 ### 2. Relationship Analysis Queries
 
 #### analyze_relationships
