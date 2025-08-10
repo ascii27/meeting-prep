@@ -1219,7 +1219,7 @@ class LLMQueryService {
       testCypher += ` WHERE ${testConditions.join(' AND ')}`;
     }
     
-    testCypher += ` RETURN m.title, m.startTime, m.id ORDER BY m.startTime DESC LIMIT 5`;
+    testCypher += ` RETURN m.title, m.startTime, m.id ORDER BY m.startTime DESC LIMIT 50`;
     
     console.log('[LLMQueryService] Testing for any matching meetings first...');
     console.log('[LLMQueryService] Test query:', testCypher);
@@ -1275,7 +1275,7 @@ class LLMQueryService {
       RETURN DISTINCT m, collect(d) as documents 
       ORDER BY m.startTime DESC 
       LIMIT $limit`;
-    params.limit = neo4j.int(parseInt(parameters.limit) || 5);
+    params.limit = neo4j.int(parseInt(parameters.limit) || 100);
     
     console.log('[LLMQueryService] Final query for meetings with documents:');
     console.log('[LLMQueryService] Cypher:', cypher);
