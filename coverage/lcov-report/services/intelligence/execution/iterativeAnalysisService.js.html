@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for services/openaiService.js</title>
+    <title>Code coverage report for services/intelligence/execution/iterativeAnalysisService.js</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../prettify.css" />
-    <link rel="stylesheet" href="../base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../sort-arrow-sprite.png);
+            background-image: url(../../../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../index.html">All files</a> / <a href="index.html">services</a> openaiService.js</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">services/intelligence/execution</a> iterativeAnalysisService.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">4.45% </span>
+                <span class="strong">93.49% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>7/157</span>
+                <span class='fraction'>115/123</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">79.62% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/36</span>
+                <span class='fraction'>86/108</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">96.77% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/17</span>
+                <span class='fraction'>30/31</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">4.48% </span>
+                <span class="strong">94.69% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>7/156</span>
+                <span class='fraction'>107/113</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -568,15 +568,318 @@
 <a name='L503'></a><a href='#L503'>503</a>
 <a name='L504'></a><a href='#L504'>504</a>
 <a name='L505'></a><a href='#L505'>505</a>
-<a name='L506'></a><a href='#L506'>506</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
+<a name='L506'></a><a href='#L506'>506</a>
+<a name='L507'></a><a href='#L507'>507</a>
+<a name='L508'></a><a href='#L508'>508</a>
+<a name='L509'></a><a href='#L509'>509</a>
+<a name='L510'></a><a href='#L510'>510</a>
+<a name='L511'></a><a href='#L511'>511</a>
+<a name='L512'></a><a href='#L512'>512</a>
+<a name='L513'></a><a href='#L513'>513</a>
+<a name='L514'></a><a href='#L514'>514</a>
+<a name='L515'></a><a href='#L515'>515</a>
+<a name='L516'></a><a href='#L516'>516</a>
+<a name='L517'></a><a href='#L517'>517</a>
+<a name='L518'></a><a href='#L518'>518</a>
+<a name='L519'></a><a href='#L519'>519</a>
+<a name='L520'></a><a href='#L520'>520</a>
+<a name='L521'></a><a href='#L521'>521</a>
+<a name='L522'></a><a href='#L522'>522</a>
+<a name='L523'></a><a href='#L523'>523</a>
+<a name='L524'></a><a href='#L524'>524</a>
+<a name='L525'></a><a href='#L525'>525</a>
+<a name='L526'></a><a href='#L526'>526</a>
+<a name='L527'></a><a href='#L527'>527</a>
+<a name='L528'></a><a href='#L528'>528</a>
+<a name='L529'></a><a href='#L529'>529</a>
+<a name='L530'></a><a href='#L530'>530</a>
+<a name='L531'></a><a href='#L531'>531</a>
+<a name='L532'></a><a href='#L532'>532</a>
+<a name='L533'></a><a href='#L533'>533</a>
+<a name='L534'></a><a href='#L534'>534</a>
+<a name='L535'></a><a href='#L535'>535</a>
+<a name='L536'></a><a href='#L536'>536</a>
+<a name='L537'></a><a href='#L537'>537</a>
+<a name='L538'></a><a href='#L538'>538</a>
+<a name='L539'></a><a href='#L539'>539</a>
+<a name='L540'></a><a href='#L540'>540</a>
+<a name='L541'></a><a href='#L541'>541</a>
+<a name='L542'></a><a href='#L542'>542</a>
+<a name='L543'></a><a href='#L543'>543</a>
+<a name='L544'></a><a href='#L544'>544</a>
+<a name='L545'></a><a href='#L545'>545</a>
+<a name='L546'></a><a href='#L546'>546</a>
+<a name='L547'></a><a href='#L547'>547</a>
+<a name='L548'></a><a href='#L548'>548</a>
+<a name='L549'></a><a href='#L549'>549</a>
+<a name='L550'></a><a href='#L550'>550</a>
+<a name='L551'></a><a href='#L551'>551</a>
+<a name='L552'></a><a href='#L552'>552</a>
+<a name='L553'></a><a href='#L553'>553</a>
+<a name='L554'></a><a href='#L554'>554</a>
+<a name='L555'></a><a href='#L555'>555</a>
+<a name='L556'></a><a href='#L556'>556</a>
+<a name='L557'></a><a href='#L557'>557</a>
+<a name='L558'></a><a href='#L558'>558</a>
+<a name='L559'></a><a href='#L559'>559</a>
+<a name='L560'></a><a href='#L560'>560</a>
+<a name='L561'></a><a href='#L561'>561</a>
+<a name='L562'></a><a href='#L562'>562</a>
+<a name='L563'></a><a href='#L563'>563</a>
+<a name='L564'></a><a href='#L564'>564</a>
+<a name='L565'></a><a href='#L565'>565</a>
+<a name='L566'></a><a href='#L566'>566</a>
+<a name='L567'></a><a href='#L567'>567</a>
+<a name='L568'></a><a href='#L568'>568</a>
+<a name='L569'></a><a href='#L569'>569</a>
+<a name='L570'></a><a href='#L570'>570</a>
+<a name='L571'></a><a href='#L571'>571</a>
+<a name='L572'></a><a href='#L572'>572</a>
+<a name='L573'></a><a href='#L573'>573</a>
+<a name='L574'></a><a href='#L574'>574</a>
+<a name='L575'></a><a href='#L575'>575</a>
+<a name='L576'></a><a href='#L576'>576</a>
+<a name='L577'></a><a href='#L577'>577</a>
+<a name='L578'></a><a href='#L578'>578</a>
+<a name='L579'></a><a href='#L579'>579</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">60x</span>
+<span class="cline-any cline-yes">60x</span>
+<span class="cline-any cline-yes">25x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -586,481 +889,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1073,511 +901,902 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const OpenAI = require('openai');
-const NodeCache = require('node-cache');
-const { marked } = require('marked');
-const aiConfig = require('../config/aiConfig');
-&nbsp;
-// Configure marked options
-marked.setOptions({
-  gfm: true,
-  breaks: true,
-  sanitize: true
-});
-&nbsp;
-// Initialize cache with 30 minute TTL by default
-const cache = new NodeCache({ stdTTL: 1800, checkperiod: 120 });
-&nbsp;
-// OpenAI client will be initialized on demand
-let openai;
-&nbsp;
-/**
- * Get or initialize the OpenAI client
- * @returns {OpenAI} OpenAI client instance
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">27x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+ * Iterative Analysis Service
+ * Analyzes intermediate results and generates follow-up queries for comprehensive responses
  */
-function <span class="fstat-no" title="function not covered" >getOpenAIClient(</span>) {
-<span class="cstat-no" title="statement not covered" >  if (!openai) {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      openai = new OpenAI({</span>
-        apiKey: aiConfig.openai.apiKey,
-      });
-<span class="cstat-no" title="statement not covered" >      console.log('[OpenAI Service] Successfully initialized OpenAI client');</span>
-    } catch (error) {
-<span class="cstat-no" title="statement not covered" >      console.error('[OpenAI Service] Error initializing OpenAI client:', error);</span>
-<span class="cstat-no" title="statement not covered" >      throw error;</span>
-    }
-  }
-<span class="cstat-no" title="statement not covered" >  return openai;</span>
-}
+const llmService = require('../llm/llmService');
 &nbsp;
-/**
- * Cache key generator for AI analysis results
- * @param {string} type - Type of analysis (summary, topics, suggestions)
- * @param {string} documentId - Document ID
- * @param {string} meetingId - Meeting ID
- * @returns {string} - Cache key
- */
-function <span class="fstat-no" title="function not covered" >getCacheKey(</span>type, documentId, meetingId) {
-<span class="cstat-no" title="statement not covered" >  return `${type}:${documentId}:${meetingId}`;</span>
-}
-&nbsp;
-/**
- * Clear cache for a specific meeting
- * @param {string} meetingId - Meeting ID
- */
-function <span class="fstat-no" title="function not covered" >clearMeetingCache(</span>meetingId) {
-  const keys = <span class="cstat-no" title="statement not covered" >cache.keys();</span>
-  const meetingKeys = <span class="cstat-no" title="statement not covered" >keys.filter(<span class="fstat-no" title="function not covered" >ke</span>y =&gt; <span class="cstat-no" title="statement not covered" >key.includes(`:${meetingId}`))</span>;</span>
-<span class="cstat-no" title="statement not covered" >  cache.del(meetingKeys);</span>
-}
-&nbsp;
-/**
- * Generate a document summary using OpenAI
- * @param {string} documentContent - Document content to summarize
- * @param {string} documentId - Document ID for caching
- * @param {string} meetingId - Meeting ID for caching
- * @returns {Promise&lt;string&gt;} - Document summary
- */
-async function <span class="fstat-no" title="function not covered" >generateSummary(</span>documentContent, documentId, meetingId) {
-  const cacheKey = <span class="cstat-no" title="statement not covered" >getCacheKey('summary', documentId, meetingId);</span>
-<span class="cstat-no" title="statement not covered" >  console.log(`[OpenAI Service] Generating summary for document ${documentId} in meeting ${meetingId}`);</span>
-  
-  // Check cache first
-  const cachedSummary = <span class="cstat-no" title="statement not covered" >cache.get(cacheKey);</span>
-<span class="cstat-no" title="statement not covered" >  if (cachedSummary) {</span>
-<span class="cstat-no" title="statement not covered" >    console.log(`[OpenAI Service] Using cached summary for document ${documentId}`);</span>
-<span class="cstat-no" title="statement not covered" >    return cachedSummary;</span>
-  }
-  
-<span class="cstat-no" title="statement not covered" >  console.log(`[OpenAI Service] No cached summary found, calling OpenAI API`);</span>
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    // Initialize OpenAI client using the lazy loading function
-    const client = <span class="cstat-no" title="statement not covered" >getOpenAIClient();</span>
-    
-    const model = <span class="cstat-no" title="statement not covered" >aiConfig.openai.model || 'gpt-4';</span>
-<span class="cstat-no" title="statement not covered" >    console.log(`[OpenAI Service] Calling OpenAI API with model: ${model}`);</span>
-    
-    const response = <span class="cstat-no" title="statement not covered" >await getOpenAIClient().chat.completions.create({</span>
-      model: model,
-      messages: [
-        {
-          role: 'system',
-          content: 'I have a long internal meeting document. Please extract the following: 1.	Short Narrative Summary (3–5 sentences): Capture the purpose and main themes of the meeting in a natural tone, suitable for sharing in an internal update.  2.	High-Value Preparation List: Provide a short list (5–7 bullets max) of the most important actions, follow-ups, or items I should prepare before the next meeting. Focus on high-leverage items that drive planning, decision-making, or unblock others.  Keep your response concise, clear, and focused on execution.  ' 
-        },
-        {
-          role: 'user',
-          content: `Please summarize the following document content:\n\n${documentContent}`
-        }
-      ],
-      temperature: aiConfig.openai.temperature,
-      max_tokens: aiConfig.openai.maxTokens
-    });
-<span class="cstat-no" title="statement not covered" >    console.log(`[OpenAI Service] Received response from OpenAI API for summary generation`);</span>
-    
-    const markdownSummary = <span class="cstat-no" title="statement not covered" >response.choices[0].message.content.trim();</span>
-    
-    // Convert markdown to HTML
-<span class="cstat-no" title="statement not covered" >    console.log(`[OpenAI Service] Converting markdown summary to HTML`);</span>
-    const htmlSummary = <span class="cstat-no" title="statement not covered" >marked.parse(markdownSummary);</span>
-    
-    // Cache the HTML result
-<span class="cstat-no" title="statement not covered" >    cache.set(cacheKey, htmlSummary);</span>
-    
-<span class="cstat-no" title="statement not covered" >    return htmlSummary;</span>
-  } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('Error generating summary:', error);</span>
-<span class="cstat-no" title="statement not covered" >    throw new Error('Failed to generate document summary');</span>
-  }
-}
-&nbsp;
-/**
- * Extract key topics from document content
- * @param {string} documentContent - Document content to analyze
- * @param {string} documentId - Document ID for caching
- * @param {string} meetingId - Meeting ID for caching
- * @returns {Promise&lt;Array&lt;string&gt;&gt;} - List of key topics
- */
-async function <span class="fstat-no" title="function not covered" >extractKeyTopics(</span>documentContent, documentId, meetingId) {
-  const cacheKey = <span class="cstat-no" title="statement not covered" >getCacheKey('topics', documentId, meetingId);</span>
-  
-  // Check cache first
-  const cachedTopics = <span class="cstat-no" title="statement not covered" >cache.get(cacheKey);</span>
-<span class="cstat-no" title="statement not covered" >  if (cachedTopics) {</span>
-<span class="cstat-no" title="statement not covered" >    return cachedTopics;</span>
-  }
-  
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    // Initialize OpenAI client using the lazy loading function
-    const client = <span class="cstat-no" title="statement not covered" >getOpenAIClient();</span>
-    
-<span class="cstat-no" title="statement not covered" >    console.log(`[OpenAI Service] Extracting key topics for document ${documentId} in meeting ${meetingId}`);</span>
-    const model = <span class="cstat-no" title="statement not covered" >aiConfig.openai.model || 'gpt-4';</span>
-    
-    const response = <span class="cstat-no" title="statement not covered" >await getOpenAIClient().chat.completions.create({</span>
-      model: model,
-      messages: [
-        {
-          role: 'system',
-          content: 'You are an expert at extracting key topics from documents. Please identify the main topics that will be discussed in this meeting document.'
-        },
-        {
-          role: 'user',
-          content: `Please identify the key topics from the following document content:\n\n${documentContent}`
-        }
-      ],
-      max_tokens: 500,
-      temperature: 0.3
-    });
-    
-<span class="cstat-no" title="statement not covered" >    console.log(`[OpenAI Service] Received response from OpenAI API for key topics extraction`);</span>
-    
-    // Get the response text and parse it as JSON
-    const responseText = <span class="cstat-no" title="statement not covered" >response.choices[0].message.content.trim();</span>
-<span class="cstat-no" title="statement not covered" >    console.log(`[OpenAI Service] Parsing response text as JSON: ${responseText.substring(0, 100)}...`);</span>
-    
-    let topics = <span class="cstat-no" title="statement not covered" >[];</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const result = <span class="cstat-no" title="statement not covered" >JSON.parse(responseText);</span>
-<span class="cstat-no" title="statement not covered" >      topics = result.topics || [];</span>
-<span class="cstat-no" title="statement not covered" >      console.log(`[OpenAI Service] Successfully extracted ${topics.length} topics`);</span>
-    } catch (jsonError) {
-<span class="cstat-no" title="statement not covered" >      console.error('Error parsing JSON response:', jsonError);</span>
-      // Fallback: try to extract topics from non-JSON response
-<span class="cstat-no" title="statement not covered" >      topics = responseText.split('\n')</span>
-        .filter(<span class="fstat-no" title="function not covered" >li</span>ne =&gt; <span class="cstat-no" title="statement not covered" >line.trim().length &gt; 0)</span>
-        .slice(0, 5);
-<span class="cstat-no" title="statement not covered" >      console.log(`[OpenAI Service] Fallback: extracted ${topics.length} topics from text`);</span>
-    }
-    
-    // Cache the result
-<span class="cstat-no" title="statement not covered" >    cache.set(cacheKey, topics);</span>
-    
-<span class="cstat-no" title="statement not covered" >    return topics;</span>
-  } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('Error extracting key topics:', error);</span>
-<span class="cstat-no" title="statement not covered" >    throw new Error('Failed to extract key topics from document');</span>
-  }
-}
-&nbsp;
-/**
- * Generate preparation suggestions based on document content
- * @param {string} documentContent - Document content to analyze
- * @param {string} documentId - Document ID for caching
- * @param {string} meetingId - Meeting ID for caching
- * @returns {Promise&lt;Array&lt;string&gt;&gt;} - List of preparation suggestions
- */
-async function <span class="fstat-no" title="function not covered" >generatePreparationSuggestions(</span>documentContent, documentId, meetingId) {
-  const cacheKey = <span class="cstat-no" title="statement not covered" >getCacheKey('suggestions', documentId, meetingId);</span>
-  
-  // Check cache first
-  const cachedSuggestions = <span class="cstat-no" title="statement not covered" >cache.get(cacheKey);</span>
-<span class="cstat-no" title="statement not covered" >  if (cachedSuggestions) {</span>
-<span class="cstat-no" title="statement not covered" >    return cachedSuggestions;</span>
-  }
-  
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    // Initialize OpenAI client using the lazy loading function
-    const client = <span class="cstat-no" title="statement not covered" >getOpenAIClient();</span>
-    
-<span class="cstat-no" title="statement not covered" >    console.log(`[OpenAI Service] Generating preparation suggestions for document ${documentId} in meeting ${meetingId}`);</span>
-    const model = <span class="cstat-no" title="statement not covered" >aiConfig.openai.model || 'gpt-4';</span>
-    
-    const response = <span class="cstat-no" title="statement not covered" >await getOpenAIClient().chat.completions.create({</span>
-      model: model,
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a helpful assistant that provides preparation suggestions for meetings. Based on the document content, suggest 3-5 actions the user should take to prepare for the meeting.'
-        },
-        {
-          role: 'user',
-          content: `Please provide preparation suggestions based on the following document content. Return them as a JSON object with a 'suggestions' array of strings. Format your entire response as valid JSON and nothing else:\n\n${documentContent}`
-        }
-      ]
-    });
-    
-<span class="cstat-no" title="statement not covered" >    console.log(`[OpenAI Service] Received response from OpenAI API for preparation suggestions`);</span>
-    
-    // Get the response text and parse it as JSON
-    const responseText = <span class="cstat-no" title="statement not covered" >response.choices[0].message.content.trim();</span>
-<span class="cstat-no" title="statement not covered" >    console.log(`[OpenAI Service] Parsing response text as JSON: ${responseText.substring(0, 100)}...`);</span>
-    
-    let suggestions = <span class="cstat-no" title="statement not covered" >[];</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const result = <span class="cstat-no" title="statement not covered" >JSON.parse(responseText);</span>
-<span class="cstat-no" title="statement not covered" >      suggestions = result.suggestions || [];</span>
-<span class="cstat-no" title="statement not covered" >      console.log(`[OpenAI Service] Successfully extracted ${suggestions.length} suggestions`);</span>
-    } catch (jsonError) {
-<span class="cstat-no" title="statement not covered" >      console.error('Error parsing JSON response:', jsonError);</span>
-      // Fallback: try to extract suggestions from non-JSON response
-<span class="cstat-no" title="statement not covered" >      suggestions = responseText.split('\n')</span>
-        .filter(<span class="fstat-no" title="function not covered" >li</span>ne =&gt; <span class="cstat-no" title="statement not covered" >line.trim().length &gt; 0 &amp;&amp; line.trim().startsWith('-'))</span>
-        .map(<span class="fstat-no" title="function not covered" >li</span>ne =&gt; <span class="cstat-no" title="statement not covered" >line.trim().substring(1).trim())</span>
-        .slice(0, 5);
-<span class="cstat-no" title="statement not covered" >      console.log(`[OpenAI Service] Fallback: extracted ${suggestions.length} suggestions from text`);</span>
-    }
-    
-    // Cache the result
-<span class="cstat-no" title="statement not covered" >    cache.set(cacheKey, suggestions);</span>
-    
-<span class="cstat-no" title="statement not covered" >    return suggestions;</span>
-  } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('Error generating preparation suggestions:', error);</span>
-<span class="cstat-no" title="statement not covered" >    throw new Error('Failed to generate preparation suggestions');</span>
-  }
-}
-&nbsp;
-/**
- * Analyze a document for meeting preparation
- * @param {string} documentContent - Document content to analyze
- * @param {string} documentId - Document ID
- * @param {string} meetingId - Meeting ID
- * @returns {Promise&lt;Object&gt;} - Analysis results including only summary
- */
-async function <span class="fstat-no" title="function not covered" >analyzeDocumentForMeeting(</span>documentContent, documentId, meetingId) {
-<span class="cstat-no" title="statement not covered" >  console.log(`[OpenAI Service] Starting document analysis for document ${documentId} in meeting ${meetingId}`);</span>
-  
-  // Validate document content
-<span class="cstat-no" title="statement not covered" >  if (!documentContent) {</span>
-<span class="cstat-no" title="statement not covered" >    console.error(`[OpenAI Service] Document content is empty or null for document ${documentId}`);</span>
-<span class="cstat-no" title="statement not covered" >    throw new Error('Document content is required for analysis');</span>
-  }
-  
-  // Log document content details
-<span class="cstat-no" title="statement not covered" >  console.log(`[OpenAI Service] Document content type: ${typeof documentContent}`);</span>
-<span class="cstat-no" title="statement not covered" >  console.log(`[OpenAI Service] Document content length: ${documentContent.length} characters`);</span>
-<span class="cstat-no" title="statement not covered" >  console.log(`[OpenAI Service] Document content preview: ${documentContent.substring(0, 100)}...`);</span>
-  
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    // Generate summary only
-<span class="cstat-no" title="statement not covered" >    console.log(`[OpenAI Service] Generating summary for document ${documentId}`);</span>
-    const summary = <span class="cstat-no" title="statement not covered" >await generateSummary(documentContent, documentId, meetingId);</span>
-    
-<span class="cstat-no" title="statement not covered" >    console.log(`[OpenAI Service] Successfully completed analysis for document ${documentId}`);</span>
-<span class="cstat-no" title="statement not covered" >    return {</span>
-      summary,
-      // Provide empty arrays for topics and suggestions to maintain API compatibility
-      topics: [],
-      suggestions: []
+class IterativeAnalysisService {
+  constructor() {
+    this.analysisThresholds = {
+      minResultsForAnalysis: 1,
+      maxFollowUpSteps: 3,
+      confidenceThreshold: 0.7,
+      completenessThreshold: 0.8
     };
-  } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('Error analyzing document for meeting:', error);</span>
-<span class="cstat-no" title="statement not covered" >    throw new Error('Failed to analyze document for meeting preparation');</span>
   }
-}
 &nbsp;
-/**
- * Generate a meeting summary from multiple documents
- * @param {string} meetingTitle - Title of the meeting
- * @param {Array} documentContents - Array of {title, content} objects
- * @returns {Promise&lt;Object&gt;} Meeting summary with key topics and preparation suggestions
- */
-async function <span class="fstat-no" title="function not covered" >generateMeetingSummary(</span>meetingTitle, documentContents) {
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    // Initialize OpenAI client using the lazy loading function
-    const client = <span class="cstat-no" title="statement not covered" >getOpenAIClient();</span>
+  /**
+   * Analyze intermediate results to determine if follow-up queries are needed
+   * @param {Array} stepResults - Results from executed steps
+   * @param {Object} strategy - Original query strategy
+   * @param {Object} context - Execution context
+   * @returns {Promise&lt;Object&gt;} - Analysis result with follow-up recommendations
+   */
+  async analyzeIntermediateResults(stepResults, strategy, context) {
+    try {
+      console.log(`[IterativeAnalysisService] Analyzing ${stepResults.length} step results`);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    console.log(`[OpenAI Service] Generating meeting summary for: ${meetingTitle}`);</span>
-    
-    // Combine all document contents
-    const combinedContent = <span class="cstat-no" title="statement not covered" >documentContents.map(<span class="fstat-no" title="function not covered" >do</span>c =&gt; </span>
-<span class="cstat-no" title="statement not covered" >      `Document: ${doc.title}\n${doc.content}`</span>
-    ).join('\n\n---\n\n');
-&nbsp;
-    const prompt = <span class="cstat-no" title="statement not covered" >`You are an AI assistant helping to prepare for a meeting. Please analyze the following documents for the meeting "${meetingTitle}" and provide:</span>
-&nbsp;
-1. A concise summary (2-3 paragraphs) of the key information
-2. A list of key topics that will likely be discussed
-3. Specific preparation suggestions for the attendee
-&nbsp;
-Documents:
-${combinedContent}
-&nbsp;
-Please format your response as JSON with the following structure:
-{
-  "summary": "Your summary here",
-  "keyTopics": ["topic1", "topic2", "topic3"],
-  "preparationSuggestions": ["suggestion1", "suggestion2", "suggestion3"]
-}`;
-&nbsp;
-    const response = <span class="cstat-no" title="statement not covered" >await getOpenAIClient().chat.completions.create({</span>
-      model: aiConfig.openai.model || 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a helpful assistant that analyzes meeting documents and provides structured summaries in JSON format.'
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
-      max_tokens: 1000,
-      temperature: 0.3
-    });
-&nbsp;
-    const content = <span class="cstat-no" title="statement not covered" >response.choices[0].message.content;</span>
-    
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const parsed = <span class="cstat-no" title="statement not covered" >JSON.parse(content);</span>
-<span class="cstat-no" title="statement not covered" >      console.log(`[OpenAI Service] Successfully generated meeting summary for: ${meetingTitle}`);</span>
-<span class="cstat-no" title="statement not covered" >      return parsed;</span>
-    } catch (parseError) {
-<span class="cstat-no" title="statement not covered" >      console.error('[OpenAI Service] Error parsing JSON response:', parseError);</span>
-      // Fallback to basic summary
-<span class="cstat-no" title="statement not covered" >      return {</span>
-        summary: content,
-        keyTopics: [],
-        preparationSuggestions: []
-      };
-    }
-&nbsp;
-  } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('[OpenAI Service] Error generating meeting summary:', error);</span>
-<span class="cstat-no" title="statement not covered" >    throw new Error('Failed to generate meeting summary');</span>
-  }
-}
-&nbsp;
-/**
- * Generate a comprehensive daily briefing from meeting summaries
- * @param {Object} briefingContext - Context object with date, meetings, and summaries
- * @returns {Promise&lt;Object&gt;} Daily briefing summary
- */
-async function <span class="fstat-no" title="function not covered" >generateDailyBriefing(</span>briefingContext) {
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    // Initialize OpenAI client using the lazy loading function
-    const client = <span class="cstat-no" title="statement not covered" >getOpenAIClient();</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    console.log(`[OpenAI Service] Generating daily briefing for ${briefingContext.date}`);</span>
-    
-    const { date, isToday, totalMeetings, meetingsWithDocuments, meetings, summaries } = <span class="cstat-no" title="statement not covered" >briefingContext;</span>
-    
-    // Create context summary
-    const meetingsList = <span class="cstat-no" title="statement not covered" >meetings.map(<span class="fstat-no" title="function not covered" >me</span>eting =&gt; </span>
-<span class="cstat-no" title="statement not covered" >      `- ${meeting.title} (${meeting.startTime})`</span>
-    ).join('\n');
-    
-    const summariesText = <span class="cstat-no" title="statement not covered" >summaries.map(<span class="fstat-no" title="function not covered" >su</span>mmary =&gt; </span>
-<span class="cstat-no" title="statement not covered" >      `Meeting: ${summary.meetingTitle}\nSummary: ${summary.summary}\nKey Topics: ${summary.keyTopics.join(', ')}\n`</span>
-    ).join('\n---\n');
-&nbsp;
-    const timeContext = <span class="cstat-no" title="statement not covered" >isToday ? 'today' : `on ${date}`;</span>
-    
-    const prompt = <span class="cstat-no" title="statement not covered" >`You are an AI assistant creating a comprehensive daily briefing. Please analyze the following information about meetings ${timeContext} and create a unified briefing.</span>
-&nbsp;
-Date: ${date}
-Total Meetings: ${totalMeetings}
-Meetings with Documents: ${meetingsWithDocuments}
-&nbsp;
-All Meetings:
-${meetingsList}
-&nbsp;
-Detailed Summaries (for meetings with documents):
-${summariesText}
-&nbsp;
-Please create a comprehensive daily briefing that:
-1. Provides an executive summary of the day's meetings
-2. Highlights key themes and connections across meetings
-3. Identifies important decisions or actions needed
-4. Suggests strategic preparation priorities
-&nbsp;
-Format your response as JSON:
-{
-  "summary": "Your comprehensive briefing summary here (3-4 paragraphs)"
-}`;
-&nbsp;
-    const response = <span class="cstat-no" title="statement not covered" >await getOpenAIClient().chat.completions.create({</span>
-      model: aiConfig.openai.model || 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a strategic executive assistant that creates comprehensive daily briefings by analyzing multiple meetings and finding connections and priorities.'
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
-      max_tokens: 1200,
-      temperature: 0.4
-    });
-&nbsp;
-    const content = <span class="cstat-no" title="statement not covered" >response.choices[0].message.content;</span>
-    
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      // Try to extract JSON from the content if it's not pure JSON
-      let jsonContent = <span class="cstat-no" title="statement not covered" >content;</span>
+      // Filter successful results for analysis
+      const successfulResults = stepResults.filter(result =&gt; result.success);
       
-      // Check if the content might contain markdown or text before/after JSON
-      const jsonStartIndex = <span class="cstat-no" title="statement not covered" >content.indexOf('{');</span>
-      const jsonEndIndex = <span class="cstat-no" title="statement not covered" >content.lastIndexOf('}');</span>
-      
-<span class="cstat-no" title="statement not covered" >      if (jsonStartIndex !== -1 &amp;&amp; jsonEndIndex !== -1 &amp;&amp; jsonEndIndex &gt; jsonStartIndex) {</span>
-        // Extract what looks like JSON
-<span class="cstat-no" title="statement not covered" >        jsonContent = content.substring(jsonStartIndex, jsonEndIndex + 1);</span>
+      if (successfulResults.length &lt; this.analysisThresholds.minResultsForAnalysis) {
+        return {
+          needsFollowUp: false,
+          reason: 'Insufficient successful results for analysis',
+          followUpSteps: [],
+          analysisConfidence: 0
+        };
       }
+&nbsp;
+      // Perform comprehensive analysis
+      const analysis = await this.performComprehensiveAnalysis(successfulResults, strategy, context);
       
-      const parsed = <span class="cstat-no" title="statement not covered" >JSON.parse(jsonContent);</span>
-<span class="cstat-no" title="statement not covered" >      console.log(`[OpenAI Service] Successfully generated daily briefing for ${date}`);</span>
-<span class="cstat-no" title="statement not covered" >      return parsed;</span>
-    } catch (parseError) {
-<span class="cstat-no" title="statement not covered" >      console.error('[OpenAI Service] Error parsing daily briefing JSON:', parseError);</span>
-<span class="cstat-no" title="statement not covered" >      console.log('[OpenAI Service] Raw content received:', content);</span>
+      // Determine if follow-up is needed
+      const followUpDecision = this.evaluateFollowUpNeed(analysis, strategy);
       
-      // Fallback to basic summary
-<span class="cstat-no" title="statement not covered" >      return {</span>
-        summary: content
+      // Generate follow-up steps if needed
+      let followUpSteps = [];
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (followUpDecision.needsFollowUp) {
+        followUpSteps = await this.generateFollowUpSteps(analysis, strategy, context);
+      }
+&nbsp;
+      const result = {
+        needsFollowUp: followUpDecision.needsFollowUp,
+        reason: followUpDecision.reason,
+        followUpSteps,
+        analysis: analysis.summary,
+        confidence: analysis.confidence,
+        completeness: analysis.completeness,
+        insights: analysis.insights
+      };
+&nbsp;
+      console.log(`[IterativeAnalysisService] Analysis complete: ${result.needsFollowUp ? 'Follow-up needed' : <span class="branch-1 cbranch-no" title="branch not covered" >'No follow-up required'}</span>`);
+&nbsp;
+      return result;
+&nbsp;
+    } catch (error) {
+      console.error('[IterativeAnalysisService] Analysis failed:', error);
+      return {
+        needsFollowUp: false,
+        reason: `Analysis failed: ${error.message}`,
+        followUpSteps: [],
+        error: error.message
       };
     }
-&nbsp;
-  } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('[OpenAI Service] Error generating daily briefing:', error);</span>
-<span class="cstat-no" title="statement not covered" >    throw new Error('Failed to generate daily briefing');</span>
   }
-}
 &nbsp;
-/**
- * Generate a response using OpenAI with custom messages and options
- * @param {Array} messages - Array of message objects with role and content
- * @param {Object} options - OpenAI options (temperature, max_tokens, etc.)
- * @returns {Promise&lt;string&gt;} - Generated response content
- */
-async function <span class="fstat-no" title="function not covered" >generateResponse(</span>messages, options = <span class="branch-0 cbranch-no" title="branch not covered" >{})</span> {
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    const client = <span class="cstat-no" title="statement not covered" >getOpenAIClient();</span>
+  /**
+   * Perform comprehensive analysis of step results
+   * @param {Array} results - Successful step results
+   * @param {Object} strategy - Original strategy
+   * @param {Object} context - Execution context
+   * @returns {Promise&lt;Object&gt;} - Comprehensive analysis
+   */
+  async performComprehensiveAnalysis(results, strategy, context) {
+    // Aggregate data from all results
+    const aggregatedData = this.aggregateResultData(results);
     
-    const defaultOptions = <span class="cstat-no" title="statement not covered" >{</span>
-      model: aiConfig.openai.model || 'gpt-3.5-turbo',
-      temperature: 0.7,
-      max_tokens: 1000
+    // Build analysis prompt for LLM
+    const analysisPrompt = this.buildAnalysisPrompt(results, strategy, context, aggregatedData);
+    
+    // Get LLM analysis
+    const llmAnalysis = await llmService.generateResponse(analysisPrompt, {}, {
+      ...context,
+      systemPrompt: this.getAnalysisSystemPrompt()
+    });
+&nbsp;
+    // Parse LLM response
+    const parsedAnalysis = this.parseLLMAnalysis(llmAnalysis);
+    
+    // Calculate metrics
+    const metrics = this.calculateAnalysisMetrics(results, aggregatedData);
+    
+    return {
+      summary: parsedAnalysis.summary || <span class="branch-1 cbranch-no" title="branch not covered" >'Analysis completed',</span>
+      insights: parsedAnalysis.insights || <span class="branch-1 cbranch-no" title="branch not covered" >[],</span>
+      gaps: parsedAnalysis.gaps || <span class="branch-1 cbranch-no" title="branch not covered" >[],</span>
+      confidence: parsedAnalysis.confidence || metrics.confidence, // Use LLM confidence if available
+      completeness: parsedAnalysis.completeness || <span class="branch-1 cbranch-no" title="branch not covered" >metrics.completeness,</span> // Use LLM completeness if available
+      dataQuality: metrics.dataQuality,
+      aggregatedData,
+      recommendations: parsedAnalysis.recommendations || <span class="branch-1 cbranch-no" title="branch not covered" >[]</span>
     };
+  }
+&nbsp;
+  /**
+   * Aggregate data from all step results
+   * @param {Array} results - Step results
+   * @returns {Object} - Aggregated data
+   */
+  aggregateResultData(results) {
+    const aggregated = {
+      totalResults: 0,
+      resultsByType: {},
+      entities: {
+        people: new Set(),
+        meetings: new Set(),
+        documents: new Set(),
+        topics: new Set()
+      },
+      timeRanges: [],
+      patterns: []
+    };
+&nbsp;
+    results.forEach(result =&gt; {
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (!result.results || !result.results.results) <span class="cstat-no" title="statement not covered" >return;</span>
+&nbsp;
+      const data = result.results.results;
+      const queryType = result.queryType;
+&nbsp;
+      // Count results by type
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (Array.isArray(data)) {
+        aggregated.totalResults += data.length;
+        aggregated.resultsByType[queryType] = (aggregated.resultsByType[queryType] || 0) + data.length;
+&nbsp;
+        // Extract entities based on query type
+        this.extractEntitiesFromResults(data, queryType, aggregated.entities);
+      }
+&nbsp;
+      // Extract time ranges if available
+      if (result.parameters &amp;&amp; (result.parameters.timeframe || <span class="branch-2 cbranch-no" title="branch not covered" >result.parameters.startDate)</span>) {
+        aggregated.timeRanges.push({
+          queryType,
+          timeframe: result.parameters.timeframe,
+          startDate: result.parameters.startDate,
+          endDate: result.parameters.endDate
+        });
+      }
+    });
+&nbsp;
+    // Convert sets to arrays for serialization
+    Object.keys(aggregated.entities).forEach(key =&gt; {
+      aggregated.entities[key] = Array.from(aggregated.entities[key]);
+    });
+&nbsp;
+    return aggregated;
+  }
+&nbsp;
+  /**
+   * Extract entities from query results
+   * @param {Array} data - Query result data
+   * @param {string} queryType - Type of query
+   * @param {Object} entities - Entity sets to populate
+   */
+  extractEntitiesFromResults(data, queryType, entities) {
+    data.forEach(item =&gt; {
+      // Extract people
+      if (item.email) entities.people.add(item.email);
+      if (item.organizer?.email) entities.people.add(item.organizer.email);
+      if (item.attendees) {
+        item.attendees.forEach(attendee =&gt; {
+          <span class="missing-if-branch" title="else path not taken" >E</span>if (attendee.email) entities.people.add(attendee.email);
+        });
+      }
+&nbsp;
+      // Extract meetings
+      if (item.id &amp;&amp; (queryType === 'find_meetings' || item.title)) {
+        entities.meetings.add(item.id);
+      }
+&nbsp;
+      // Extract documents
+      if (item.id &amp;&amp; queryType === 'find_documents') {
+        entities.documents.add(item.id);
+      }
+&nbsp;
+      // Extract topics from titles and descriptions
+      if (item.title) {
+        const topics = this.extractTopicsFromText(item.title);
+        topics.forEach(topic =&gt; entities.topics.add(topic));
+      }
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (item.description) {
+        const topics = <span class="cstat-no" title="statement not covered" >this.extractTopicsFromText(item.description);</span>
+<span class="cstat-no" title="statement not covered" >        topics.forEach(<span class="fstat-no" title="function not covered" >to</span>pic =&gt; <span class="cstat-no" title="statement not covered" >entities.topics.add(topic))</span>;</span>
+      }
+    });
+  }
+&nbsp;
+  /**
+   * Extract topics from text using simple keyword extraction
+   * @param {string} text - Text to extract topics from
+   * @returns {Array} - Extracted topics
+   */
+  extractTopicsFromText(text) {
+    if (!text || typeof text !== 'string') return [];
+&nbsp;
+    // Simple topic extraction - look for common meeting keywords
+    const topicPatterns = [
+      /\b(standup|scrum|retrospective|planning|review)\b/gi,
+      /\b(project|feature|bug|issue|task)\b/gi,
+      /\b(design|architecture|technical|development)\b/gi,
+      /\b(marketing|sales|customer|user)\b/gi,
+      /\b(quarterly|monthly|weekly|daily)\b/gi
+    ];
+&nbsp;
+    const topics = [];
+    topicPatterns.forEach(pattern =&gt; {
+      const matches = text.match(pattern);
+      if (matches) {
+        topics.push(...matches.map(m =&gt; m.toLowerCase()));
+      }
+    });
+&nbsp;
+    return [...new Set(topics)]; // Remove duplicates
+  }
+&nbsp;
+  /**
+   * Build analysis prompt for LLM
+   * @param {Array} results - Step results
+   * @param {Object} strategy - Original strategy
+   * @param {Object} context - Execution context
+   * @param {Object} aggregatedData - Aggregated data
+   * @returns {string} - Analysis prompt
+   */
+  buildAnalysisPrompt(results, strategy, context, aggregatedData) {
+    const resultsSummary = results.map(r =&gt; ({
+      step: r.stepNumber,
+      type: r.queryType,
+      description: r.description,
+      resultCount: Array.isArray(r.results?.results) ? r.results.results.length : <span class="branch-1 cbranch-no" title="branch not covered" >0,</span>
+      success: r.success
+    }));
+&nbsp;
+    return `
+# Intermediate Results Analysis
+&nbsp;
+## Original Strategy
+**Analysis**: ${strategy.analysis}
+**Expected Outcome**: ${strategy.expectedOutcome}
+**Complexity**: ${strategy.complexity}
+&nbsp;
+## Executed Steps Summary
+${JSON.stringify(resultsSummary, null, 2)}
+&nbsp;
+## Aggregated Data
+- **Total Results**: ${aggregatedData.totalResults}
+- **People Found**: ${aggregatedData.entities.people.length}
+- **Meetings Found**: ${aggregatedData.entities.meetings.length}
+- **Documents Found**: ${aggregatedData.entities.documents.length}
+- **Topics Identified**: ${aggregatedData.entities.topics.length}
+&nbsp;
+## Results by Query Type
+${JSON.stringify(aggregatedData.resultsByType, null, 2)}
+&nbsp;
+## Task
+Analyze these intermediate results and determine:
+&nbsp;
+1. **Completeness**: Are the results sufficient to answer the original question?
+2. **Gaps**: What information might be missing or incomplete?
+3. **Insights**: What patterns or insights can be derived from the current data?
+4. **Follow-up Needs**: What additional queries would provide more comprehensive answers?
+&nbsp;
+## Response Format
+Respond with a JSON object:
+&nbsp;
+\`\`\`json
+{
+  "summary": "Brief analysis of the current results",
+  "completeness": 0.8,
+  "insights": [
+    "Key insight 1",
+    "Key insight 2"
+  ],
+  "gaps": [
+    "Missing information 1",
+    "Missing information 2"
+  ],
+  "recommendations": [
+    "Recommendation for additional analysis"
+  ],
+  "needsFollowUp": true,
+  "followUpReason": "Specific reason why follow-up is needed"
+}
+\`\`\`
+&nbsp;
+Focus on providing actionable insights and specific recommendations for follow-up queries.
+`;
+  }
+&nbsp;
+  /**
+   * Get system prompt for analysis
+   * @returns {string} - System prompt
+   */
+  getAnalysisSystemPrompt() {
+    return `You are an expert data analyst specializing in organizational intelligence and meeting data analysis. Your role is to analyze intermediate query results and determine if additional information is needed to provide comprehensive answers.
+&nbsp;
+Key principles:
+1. **Thoroughness**: Identify gaps in data that could improve the final answer
+2. **Relevance**: Focus on follow-up queries that directly address the original question
+3. **Efficiency**: Avoid unnecessary queries that don't add significant value
+4. **Context Awareness**: Consider the original strategy and expected outcomes
+&nbsp;
+You have access to meeting data, participant information, collaboration patterns, and organizational insights. Always provide specific, actionable recommendations.`;
+  }
+&nbsp;
+  /**
+   * Parse LLM analysis response
+   * @param {string|Object} response - LLM response
+   * @returns {Object} - Parsed analysis
+   */
+  parseLLMAnalysis(response) {
+    try {
+      let responseText = typeof response === 'object' &amp;&amp; response.text 
+        ? response.text 
+        : <span class="branch-1 cbranch-no" title="branch not covered" >response;</span>
+&nbsp;
+      // Extract JSON from response if wrapped in markdown
+      const jsonMatch = responseText.match(/```json\n([\s\S]*?)\n```/);
+      if (jsonMatch) {
+        responseText = jsonMatch[1];
+      }
+&nbsp;
+      const parsed = JSON.parse(responseText);
+      
+      return {
+        summary: parsed.summary || <span class="branch-1 cbranch-no" title="branch not covered" >'Analysis completed',</span>
+        completeness: parsed.completeness || <span class="branch-1 cbranch-no" title="branch not covered" >0.5,</span>
+        insights: parsed.insights || [],
+        gaps: parsed.gaps || [],
+        recommendations: parsed.recommendations || [],
+        needsFollowUp: parsed.needsFollowUp || false,
+        followUpReason: parsed.followUpReason || ''
+      };
+&nbsp;
+    } catch (error) {
+      console.error('[IterativeAnalysisService] Failed to parse LLM analysis:', error);
+      return {
+        summary: 'Analysis parsing failed',
+        completeness: 0.5,
+        insights: [],
+        gaps: ['Analysis parsing error'],
+        recommendations: [],
+        needsFollowUp: false,
+        followUpReason: 'Unable to determine follow-up needs'
+      };
+    }
+  }
+&nbsp;
+  /**
+   * Calculate analysis metrics
+   * @param {Array} results - Step results
+   * @param {Object} aggregatedData - Aggregated data
+   * @returns {Object} - Analysis metrics
+   */
+  calculateAnalysisMetrics(results, aggregatedData) {
+    const successRate = results.length &gt; 0 ? 
+      results.filter(r =&gt; r.success).length / results.length : 0;
+    const dataRichness = aggregatedData.totalResults &gt; 0 ? 
+      Math.min(aggregatedData.totalResults / 10, 1) : 0; // Normalize to 0-1
     
-    const requestOptions = <span class="cstat-no" title="statement not covered" >{ ...defaultOptions, ...options, messages };</span>
-    
-<span class="cstat-no" title="statement not covered" >    console.log(`[OpenAI Service] Generating response with ${messages.length} messages`);</span>
-    
-    const completion = <span class="cstat-no" title="statement not covered" >await client.chat.completions.create(requestOptions);</span>
-    
-    const response = <span class="cstat-no" title="statement not covered" >completion.choices[0].message.content;</span>
-<span class="cstat-no" title="statement not covered" >    console.log(`[OpenAI Service] Generated response (${response.length} characters)`);</span>
-    
-<span class="cstat-no" title="statement not covered" >    return response;</span>
-    
-  } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('[OpenAI Service] Error generating response:', error);</span>
-<span class="cstat-no" title="statement not covered" >    throw new Error(`Failed to generate response: ${error.message}`);</span>
+    const entityDiversity = Object.values(aggregatedData.entities)
+      .reduce((sum, entities) =&gt; sum + (entities.length &gt; 0 ? 1 : 0), 0) / 4;
+&nbsp;
+    return {
+      confidence: (successRate + dataRichness) / 2,
+      completeness: (dataRichness + entityDiversity) / 2,
+      dataQuality: successRate,
+      entityDiversity
+    };
+  }
+&nbsp;
+  /**
+   * Evaluate if follow-up queries are needed
+   * @param {Object} analysis - Comprehensive analysis
+   * @param {Object} strategy - Original strategy
+   * @returns {Object} - Follow-up decision
+   */
+  evaluateFollowUpNeed(analysis, strategy) {
+    const reasons = [];
+&nbsp;
+    // Check completeness threshold
+    if (analysis.completeness &lt; this.analysisThresholds.completenessThreshold) {
+      reasons.push(`Low completeness score: ${analysis.completeness.toFixed(2)}`);
+    }
+&nbsp;
+    // Check confidence threshold
+    if (analysis.confidence &lt; this.analysisThresholds.confidenceThreshold) {
+      reasons.push(`Low confidence score: ${analysis.confidence.toFixed(2)}`);
+    }
+&nbsp;
+    // Check for identified gaps
+    if (analysis.gaps &amp;&amp; analysis.gaps.length &gt; 0) {
+      reasons.push(`${analysis.gaps.length} gaps identified`);
+    }
+&nbsp;
+    // Check strategy complexity - high complexity strategies may need more iterations
+    if (strategy.complexity === 'high' &amp;&amp; analysis.completeness &lt; 0.9) {
+      reasons.push('High complexity strategy requires additional analysis');
+    }
+&nbsp;
+    const needsFollowUp = reasons.length &gt; 0;
+&nbsp;
+    return {
+      needsFollowUp,
+      reason: needsFollowUp ? reasons.join('; ') : 'Analysis appears complete'
+    };
+  }
+&nbsp;
+  /**
+   * Generate follow-up query steps
+   * @param {Object} analysis - Comprehensive analysis
+   * @param {Object} strategy - Original strategy
+   * @param {Object} context - Execution context
+   * @returns {Promise&lt;Array&gt;} - Follow-up steps
+   */
+  async generateFollowUpSteps(analysis, strategy, context) {
+    try {
+      const followUpPrompt = this.buildFollowUpPrompt(analysis, strategy, context);
+      
+      const llmResponse = await llmService.generateResponse(followUpPrompt, {}, {
+        ...context,
+        systemPrompt: this.getFollowUpSystemPrompt()
+      });
+&nbsp;
+      const followUpSteps = this.parseFollowUpSteps(llmResponse);
+      
+      // Limit number of follow-up steps
+      return followUpSteps.slice(0, this.analysisThresholds.maxFollowUpSteps);
+&nbsp;
+    } catch (error) {
+      console.error('[IterativeAnalysisService] Follow-up generation failed:', error);
+      return [];
+    }
+  }
+&nbsp;
+  /**
+   * Build follow-up generation prompt
+   * @param {Object} analysis - Analysis results
+   * @param {Object} strategy - Original strategy
+   * @param {Object} context - Execution context
+   * @returns {string} - Follow-up prompt
+   */
+  buildFollowUpPrompt(analysis, strategy, context) {
+    return `
+# Follow-up Query Generation
+&nbsp;
+## Original Strategy
+**Analysis**: ${strategy.analysis}
+**Expected Outcome**: ${strategy.expectedOutcome}
+&nbsp;
+## Current Analysis Results
+**Completeness**: ${analysis.completeness.toFixed(2)}
+**Confidence**: ${analysis.confidence.toFixed(2)}
+&nbsp;
+## Identified Gaps
+${analysis.gaps.map(gap =&gt; `- ${gap}`).join('\n')}
+&nbsp;
+## Recommendations
+${analysis.recommendations.map(rec =&gt; `- ${rec}`).join('\n')}
+&nbsp;
+## Available Query Types
+- find_meetings: Find meetings with specific criteria
+- get_participants: Find people and participants
+- find_documents: Find documents and files
+- analyze_collaboration: Analyze collaboration patterns
+- find_frequent_collaborators: Find key collaborators
+- analyze_meeting_patterns: Analyze meeting timing patterns
+- get_department_insights: Department-specific analytics
+- analyze_topic_trends: Topic and content analysis
+- find_meeting_conflicts: Scheduling conflict detection
+- get_productivity_insights: Productivity metrics
+- analyze_communication_flow: Communication patterns
+&nbsp;
+## Task
+Generate 1-3 follow-up query steps that would address the identified gaps and improve the completeness of the analysis.
+&nbsp;
+## Response Format
+\`\`\`json
+{
+  "followUpSteps": [
+    {
+      "stepNumber": "next_available_number",
+      "description": "What this step accomplishes",
+      "queryType": "appropriate_query_type",
+      "parameters": {
+        "key": "value pairs for the query"
+      },
+      "dependencies": [],
+      "estimatedTime": "fast|medium|slow",
+      "purpose": "Why this step is needed to address gaps"
+    }
+  ]
+}
+\`\`\`
+&nbsp;
+Focus on queries that directly address the gaps and provide the most value for completing the original analysis.
+`;
+  }
+&nbsp;
+  /**
+   * Get system prompt for follow-up generation
+   * @returns {string} - System prompt
+   */
+  getFollowUpSystemPrompt() {
+    return `You are an expert query strategist specializing in iterative analysis and follow-up query generation. Your role is to identify the most valuable additional queries that would improve the completeness and quality of organizational intelligence analysis.
+&nbsp;
+Key principles:
+1. **Gap-focused**: Target specific gaps identified in the analysis
+2. **Value-driven**: Prioritize queries that add the most value
+3. **Efficient**: Minimize the number of additional queries needed
+4. **Contextual**: Consider the original strategy and user intent
+&nbsp;
+Always generate practical, executable follow-up steps that directly address identified gaps.`;
+  }
+&nbsp;
+  /**
+   * Parse follow-up steps from LLM response
+   * @param {string|Object} response - LLM response
+   * @returns {Array} - Parsed follow-up steps
+   */
+  parseFollowUpSteps(response) {
+    try {
+      let responseText = typeof response === 'object' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >response.text </span>
+        ? <span class="branch-0 cbranch-no" title="branch not covered" >response.text </span>
+        : response;
+&nbsp;
+      // Extract JSON from response if wrapped in markdown - more flexible regex
+      const jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
+<span class="cstat-no" title="statement not covered" >      if (jsonMatch) {</span>
+<span class="cstat-no" title="statement not covered" >        responseText = jsonMatch[1];</span>
+      }
+&nbsp;
+      const parsed = <span class="cstat-no" title="statement not covered" >JSON.parse(responseText);</span>
+      
+<span class="cstat-no" title="statement not covered" >      return parsed.followUpSteps || [];</span>
+&nbsp;
+    } catch (error) {
+      console.error('[IterativeAnalysisService] Failed to parse follow-up steps:', error);
+      return [];
+    }
+  }
+&nbsp;
+  /**
+   * Set analysis thresholds
+   * @param {Object} thresholds - New threshold values
+   */
+  setAnalysisThresholds(thresholds) {
+    this.analysisThresholds = { ...this.analysisThresholds, ...thresholds };
+  }
+&nbsp;
+  /**
+   * Get current analysis thresholds
+   * @returns {Object} - Current thresholds
+   */
+  getAnalysisThresholds() {
+    return { ...this.analysisThresholds };
   }
 }
 &nbsp;
-module.exports = {
-  generateSummary,
-  extractKeyTopics,
-  analyzeDocumentForMeeting,
-  generateMeetingSummary,
-  generateDailyBriefing,
-  generateResponse,
-  clearMeetingCache
-};
+module.exports = new IterativeAnalysisService();
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1587,14 +1806,14 @@ module.exports = {
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
                 at 2025-08-10T06:25:54.478Z
             </div>
-        <script src="../prettify.js"></script>
+        <script src="../../../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../sorter.js"></script>
-        <script src="../block-navigation.js"></script>
+        <script src="../../../sorter.js"></script>
+        <script src="../../../block-navigation.js"></script>
     </body>
 </html>
     

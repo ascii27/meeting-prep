@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">4.23% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/189</span>
+                <span class='fraction'>8/189</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">8.33% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/24</span>
+                <span class='fraction'>2/24</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">4.39% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/182</span>
+                <span class='fraction'>8/182</span>
             </div>
         
             
@@ -862,17 +862,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -921,7 +921,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1644,7 +1644,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Enhanced LLM Service for Meeting Intelligence - Step 5.2
  * Handles natural language query processing with advanced capabilities:
@@ -1653,17 +1653,17 @@
  * - Organizational intelligence integration
  */
 &nbsp;
-const aiConfig = <span class="cstat-no" title="statement not covered" >require('../../../config/aiConfig');</span>
-const openaiService = <span class="cstat-no" title="statement not covered" >require('../../openaiService');</span>
-const litellmService = <span class="cstat-no" title="statement not covered" >require('../../litellmService');</span>
+const aiConfig = require('../../../config/aiConfig');
+const openaiService = require('../../openaiService');
+const litellmService = require('../../litellmService');
 &nbsp;
 class LLMService {
-<span class="fstat-no" title="function not covered" >  co</span>nstructor() {
+  constructor() {
     // Enhanced conversation management
-<span class="cstat-no" title="statement not covered" >    this.conversationHistory = new Map(); </span>// Store conversation context per user
-<span class="cstat-no" title="statement not covered" >    this.queryOptimizationRules = this.initializeOptimizationRules();</span>
+    this.conversationHistory = new Map(); // Store conversation context per user
+    this.queryOptimizationRules = this.initializeOptimizationRules();
     
-<span class="cstat-no" title="statement not covered" >    this.systemPrompt = `You are an advanced intelligent assistant for a meeting intelligence platform with organizational intelligence capabilities.</span>
+    this.systemPrompt = `You are an advanced intelligent assistant for a meeting intelligence platform with organizational intelligence capabilities.
 You help users query information about meetings, participants, documents, organizational relationships, and collaboration patterns.
 &nbsp;
 Your enhanced capabilities include:
@@ -1711,8 +1711,8 @@ Always be helpful, accurate, and provide context-aware responses.`;
    * Initialize query optimization rules for Step 5.2
    * @returns {Object} - Optimization rules
    */
-<span class="fstat-no" title="function not covered" >  in</span>itializeOptimizationRules() {
-<span class="cstat-no" title="statement not covered" >    return {</span>
+  initializeOptimizationRules() {
+    return {
       timeRangeDefaults: {
         'recent': 30, // days
         'last month': 30,
@@ -2435,7 +2435,7 @@ Keep the response informative but concise (2-4 paragraphs), and always end with 
   }
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >module.exports = new LLMService();</span>
+module.exports = new LLMService();
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -2443,7 +2443,7 @@ Keep the response informative but concise (2-4 paragraphs), and always end with 
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-10T06:05:35.938Z
+                at 2025-08-10T06:25:54.478Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -42,18 +42,29 @@ class QueryPlanningService {
    * @returns {Promise<Object>} - Comprehensive query strategy
    */
   async createQueryStrategy(userQuery, context = {}) {
-    await this.initialize();
-
     try {
-      console.log(`[QueryPlanningService] Creating strategy for: "${userQuery}"`);
+      await this.initialize();
+
+      console.log('[QueryPlanningService] Creating strategy for:', userQuery);
+      
+      // Store current query and context for fallback strategy
+      this.currentUserQuery = userQuery;
+      this.currentContext = context;
 
       const strategyPrompt = this.buildStrategyPlanningPrompt(userQuery, context);
+      const systemPrompt = this.getStrategyPlanningSystemPrompt();
       
-      // Use LLM to create the query strategy
+      console.log('[QueryPlanningService] 📤 Sending prompt to LLM:');
+      console.log('[QueryPlanningService] System prompt length:', systemPrompt.length);
+      console.log('[QueryPlanningService] User prompt preview:', strategyPrompt.substring(0, 300) + '...');
+      
       const strategyResponse = await llmService.generateResponse(strategyPrompt, {}, {
         ...context,
-        systemPrompt: this.getStrategyPlanningSystemPrompt()
+        systemPrompt: systemPrompt
       });
+
+      console.log('[QueryPlanningService] Raw LLM response:', strategyResponse);
+      console.log('[QueryPlanningService] Response type:', typeof strategyResponse);
 
       // Parse and validate the strategy
       const strategy = this.parseStrategyResponse(strategyResponse);
@@ -157,7 +168,97 @@ Strategy:
 4. Generate insights on collaboration effectiveness
 
 Remember: Start with simple, indexed queries and build complexity. Use timeframe filters early. Consider performance implications.
+
+CRITICAL INSTRUCTION: You MUST respond with ONLY the JSON strategy object wrapped in \`\`\`json code blocks. 
+
+❌ DO NOT write conversational responses like "I looked for meetings..." or "I found..."
+❌ DO NOT provide explanations or commentary
+❌ DO NOT analyze the data or provide results
+✅ DO provide ONLY the JSON strategy for how to query the data
+
+Your response should look exactly like this:
+\`\`\`json
+{
+  "analysis": "Brief analysis of what the user is asking for",
+  "complexity": "low",
+  "steps": [...],
+  "expectedOutcome": "What the final result should provide",
+  "followUpQuestions": [...]
+}
+\`\`\`
+
+RESPOND WITH JSON ONLY. NO OTHER TEXT.
 `;
+  }
+
+  /**
+   * Create a simple strategy when LLM returns conversational response
+   * @param {string} query - Original user query
+   * @param {Object} context - User context for filtering
+   * @returns {Object} - Simple strategy object
+   */
+  createSimpleStrategy(query, context = {}) {
+    // Analyze the query to determine the appropriate strategy
+    const queryLower = query.toLowerCase();
+    
+    let queryType = 'find_meetings'; // Default
+    let parameters = {};
+    let description = 'Find relevant meetings';
+    
+    // Determine query type based on keywords
+    if (queryLower.includes('meeting') || queryLower.includes('week') || queryLower.includes('today') || queryLower.includes('schedule')) {
+      queryType = 'find_meetings';
+      description = 'Find meetings based on timeframe';
+      
+      // Add timeframe parameters
+      if (queryLower.includes('week') || queryLower.includes('this week')) {
+        parameters.timeframe = 'this_week';
+      } else if (queryLower.includes('today')) {
+        parameters.timeframe = 'today';
+      } else if (queryLower.includes('tomorrow')) {
+        parameters.timeframe = 'tomorrow';
+      } else if (queryLower.includes('august')) {
+        parameters.timeframe = 'august';
+      } else if (queryLower.includes('month') || queryLower.includes('this month')) {
+        parameters.timeframe = 'this_month';
+      } else if (queryLower.includes('last month')) {
+        parameters.timeframe = 'last_month';
+      } else {
+        parameters.timeframe = 'recent';
+      }
+      
+      // Add user context for filtering
+      if (context.userEmail) {
+        parameters.userEmail = context.userEmail;
+      }
+    } else if (queryLower.includes('people') || queryLower.includes('participant') || queryLower.includes('who')) {
+      queryType = 'get_participants';
+      description = 'Find people and participants';
+    } else if (queryLower.includes('document') || queryLower.includes('file')) {
+      queryType = 'find_documents';
+      description = 'Find documents and files';
+    } else if (queryLower.includes('collaborat')) {
+      queryType = 'analyze_collaboration';
+      description = 'Analyze collaboration patterns';
+    }
+    
+    return {
+      analysis: `Simple strategy for: ${query}`,
+      complexity: 'low',
+      steps: [
+        {
+          stepNumber: 1,
+          description: description,
+          queryType: queryType,
+          parameters: parameters,
+          dependencies: [],
+          estimatedTime: 'fast',
+          purpose: 'Respond to user query with relevant data'
+        }
+      ],
+      expectedOutcome: 'Provide relevant information based on user query',
+      followUpQuestions: ['Would you like more details?', 'Any specific timeframe?']
+    };
   }
 
   /**
@@ -166,6 +267,8 @@ Remember: Start with simple, indexed queries and build complexity. Use timeframe
    */
   getStrategyPlanningSystemPrompt() {
     return `You are an expert database query strategist for an organizational intelligence system. Your role is to analyze complex user questions and create efficient, multi-step query strategies.
+
+CRITICAL: You MUST respond ONLY with valid JSON. Do not include any explanatory text, conversation, or natural language responses. Only return the JSON strategy object.
 
 Key Principles:
 1. **Efficiency First**: Start with indexed lookups, apply filters early
@@ -176,7 +279,7 @@ Key Principles:
 
 You have access to a Neo4j graph database with Person, Meeting, and Document nodes, plus 13 different query types ranging from simple lookups to complex organizational analysis.
 
-Always respond with valid JSON that follows the specified format. Be specific about parameters and realistic about complexity estimates.`;
+RESPONSE FORMAT: Respond ONLY with valid JSON wrapped in \`\`\`json code blocks. No other text is allowed.`;
   }
 
   /**
@@ -190,6 +293,23 @@ Always respond with valid JSON that follows the specified format. Be specific ab
       let responseText = typeof response === 'object' && response.text 
         ? response.text 
         : response;
+
+      console.log('[QueryPlanningService] Parsing response text:', responseText);
+
+      // If the response text looks like a conversational response, it means the LLM
+      // didn't follow our JSON format instructions. This is the core issue we need to fix.
+      if (responseText && typeof responseText === 'string' && 
+          (responseText.startsWith('I found') || 
+           responseText.startsWith('I looked') || 
+           responseText.startsWith('I searched') ||
+           responseText.includes('couldn\'t generate') ||
+           responseText.includes('can happen for a few common reasons') ||
+           !responseText.trim().startsWith('{'))) {
+        console.log('[QueryPlanningService] ❌ LLM FAILED TO RETURN JSON STRATEGY!');
+        console.log('[QueryPlanningService] Expected JSON strategy, but got conversational response:');
+        console.log('[QueryPlanningService] Response preview:', responseText.substring(0, 200) + '...');
+        throw new Error('LLM returned conversational response instead of required JSON strategy format');
+      }
 
       // Extract JSON from response if it's wrapped in markdown
       const jsonMatch = responseText.match(/```json\n([\s\S]*?)\n```/);
@@ -393,4 +513,4 @@ Always respond with valid JSON that follows the specified format. Be specific ab
   }
 }
 
-module.exports = new QueryPlanningService();
+module.exports = QueryPlanningService;

@@ -440,4 +440,4 @@ class QueryContextManager {
   }
 }
 
-module.exports = new QueryContextManager();
+module.exports = QueryContextManager;

@@ -113,6 +113,12 @@ class LLMQueryService {
       cypher += `-[:ATTENDED|ORGANIZED]-(p:Person)`;
       conditions.push(`p.email IN $people OR p.name IN $people`);
       params.people = entities.people;
+    } else if (parameters.userEmail) {
+      // Filter by specific user email from parameters
+      cypher += `-[:ATTENDED|ORGANIZED]-(p:Person)`;
+      conditions.push(`p.email = $userEmail`);
+      params.userEmail = parameters.userEmail;
+      console.log(`[LLMQueryService] Filtering meetings for user: ${parameters.userEmail}`);
     }
     
     // Add timeframe filter if specified
@@ -145,15 +151,32 @@ class LLMQueryService {
     console.log(`[LLMQueryService] Parameters:`, params);
     
     const result = await graphDatabaseService.executeQuery(cypher, params);
-    const meetings = result.records.map(record => record.get('m').properties);
+    console.log(`[LLMQueryService] Database result:`, {
+      recordCount: result.records.length,
+      summary: result.summary
+    });
     
-    return {
+    const meetings = result.records.map(record => record.get('m').properties);
+    console.log(`[LLMQueryService] Processed meetings:`, {
+      count: meetings.length,
+      meetings: meetings.slice(0, 3) // Log first 3 meetings for debugging
+    });
+    
+    const queryResult = {
       type: 'meetings',
-      totalResults: meetings.length,
       data: meetings,
+      totalResults: meetings.length,
       query: cypher,
       parameters: params
     };
+
+    console.log(`[LLMQueryService] Returning query result:`, {
+      type: queryResult.type,
+      totalResults: queryResult.totalResults,
+      dataCount: queryResult.data.length
+    });
+
+    return queryResult;
   }
 
   /**

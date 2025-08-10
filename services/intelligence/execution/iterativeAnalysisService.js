@@ -575,4 +575,4 @@ Always generate practical, executable follow-up steps that directly address iden
   }
 }
 
-module.exports = new IterativeAnalysisService();
+module.exports = IterativeAnalysisService;

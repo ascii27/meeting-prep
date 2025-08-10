@@ -10,6 +10,12 @@ const organizationService = require('../services/intelligence/organizationServic
 const graphDatabaseService = require('../services/intelligence/graph/graphDatabaseService');
 const { ensureAuth } = require('../middleware/auth');
 
+// Phase 1 & 2: Intelligent Query Planning System
+const QueryPlanningService = require('../services/intelligence/planning/queryPlanningService');
+const QueryExecutionOrchestrator = require('../services/intelligence/execution/queryExecutionOrchestrator');
+const queryPlanningService = new QueryPlanningService();
+const queryExecutionOrchestrator = new QueryExecutionOrchestrator();
+
 /**
  * @route GET /api/intelligence/status
  * @description Get the status of the intelligence processing
@@ -106,12 +112,14 @@ router.get('/people', ensureAuth, async (req, res) => {
 
 /**
  * @route POST /api/intelligence/query
- * @description Process natural language queries about meeting intelligence
+ * @description Process natural language queries using intelligent query planning (Phase 1 & 2)
  * @access Private
  */
 router.post('/query', ensureAuth, async (req, res) => {
+  console.log('[Intelligence API] Query endpoint hit');
   try {
-    const { query } = req.body;
+    const { query, useIntelligentPlanning = true } = req.body;
+    console.log('[Intelligence API] Request body:', { query, useIntelligentPlanning });
     
     if (!query || typeof query !== 'string' || query.trim().length === 0) {
       return res.status(400).json({ 
@@ -126,27 +134,146 @@ router.post('/query', ensureAuth, async (req, res) => {
       userName: req.user.displayName || req.user.email.split('@')[0]
     };
     
-    console.log(`[Intelligence API] Processing natural language query from ${context.userEmail}: "${query}"`);
+    console.log(`[Intelligence API] Processing query from ${context.userEmail}: "${query}"`);
     
-    // Process the query using the LLM query service
-    const result = await llmQueryService.processQuery(query.trim(), context);
-    
-    // Add metadata to the response
-    result.metadata = {
-      processedAt: new Date().toISOString(),
-      user: context.userEmail,
-      processingTime: Date.now() - Date.now() // This would be calculated properly in production
-    };
-    
-    console.log(`[Intelligence API] Query processed successfully. Intent: ${result.intent}, Results: ${result.results?.totalResults || 0}`);
-    
-    res.json(result);
+    if (useIntelligentPlanning) {
+      console.log('[Intelligence API] Using Simplified Iterative Query System');
+      
+      const IterativeQueryService = require('../services/intelligence/iterativeQueryService');
+      const iterativeService = new IterativeQueryService();
+      
+      const startTime = Date.now();
+      
+      try {
+        const result = await iterativeService.processQuery(query.trim(), context);
+        const processingTime = Date.now() - startTime;
+        
+        console.log(`[Intelligence API] Iterative processing completed in ${processingTime}ms:`, {
+          iterations: result.iterations,
+          resultsCollected: result.resultsCollected,
+          hasAnswer: !!result.answer
+        });
+        
+        // Return simplified result structure
+        const response = {
+          query: result.query,
+          response: result.answer,  // Client expects 'response' field, not 'answer'
+          metadata: {
+            ...result.metadata,
+            processingTime,
+            iterations: result.iterations,
+            resultsCollected: result.resultsCollected
+          }
+        };
+        
+        res.json(response);
+        
+      } catch (error) {
+        console.error('[Intelligence API] Iterative processing failed:', error);
+        
+        // Fallback to legacy system
+        console.log('[Intelligence API] Falling back to legacy system');
+        const legacyResult = await llmQueryService.processQuery(query.trim(), context);
+        res.json(legacyResult);
+      }
+      
+    } else {
+      // Fallback to legacy system
+      console.log('[Intelligence API] Using legacy query processing');
+      const result = await llmQueryService.processQuery(query.trim(), context);
+      
+      result.metadata = {
+        processedAt: new Date().toISOString(),
+        user: context.userEmail,
+        processingTime: Date.now() - Date.now(),
+        systemUsed: 'Legacy LLM Query Service'
+      };
+      
+      console.log(`[Intelligence API] Legacy query processed. Intent: ${result.intent}`);
+      res.json(result);
+    }
     
   } catch (error) {
-    console.error('Error processing natural language query:', error);
+    console.error('[Intelligence API] Error processing natural language query:', error);
+    console.error('[Intelligence API] Error stack:', error.stack);
+    console.error('[Intelligence API] Error details:', {
+      name: error.name,
+      message: error.message,
+      cause: error.cause
+    });
     res.status(500).json({ 
       error: 'Failed to process query',
-      message: error.message 
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
+});
+
+/**
+ * @route POST /api/intelligence/query/debug
+ * @description Debug query planning - shows strategy without execution
+ * @access Private
+ */
+router.post('/query/debug', ensureAuth, async (req, res) => {
+  try {
+    const { query } = req.body;
+    
+    if (!query || typeof query !== 'string' || query.trim().length === 0) {
+      return res.status(400).json({ 
+        error: 'Query is required and must be a non-empty string' 
+      });
+    }
+    
+    const context = {
+      userEmail: req.user.email,
+      userId: req.user.id,
+      userName: req.user.displayName || req.user.email.split('@')[0]
+    };
+    
+    console.log(`[Intelligence API Debug] Analyzing query strategy for: "${query}"`);
+    
+    // Only run Phase 1: Strategy Planning (no execution)
+    const strategyResult = await queryPlanningService.createQueryStrategy(query.trim(), context);
+    
+    // Return detailed strategy information for debugging
+    const debugInfo = {
+      query: query.trim(),
+      strategy: strategyResult.strategy,
+      planning: {
+        estimatedSteps: strategyResult.estimatedSteps,
+        estimatedComplexity: strategyResult.estimatedComplexity,
+        createdAt: strategyResult.createdAt
+      },
+      stepDetails: strategyResult.strategy.steps.map(step => ({
+        stepNumber: step.stepNumber,
+        description: step.description,
+        queryType: step.queryType,
+        parameters: step.parameters,
+        dependencies: step.dependencies,
+        estimatedTime: step.estimatedTime,
+        reasoning: step.reasoning || 'No reasoning provided'
+      })),
+      metadata: {
+        processedAt: new Date().toISOString(),
+        user: context.userEmail,
+        mode: 'DEBUG - Strategy Planning Only'
+      }
+    };
+    
+    console.log(`[Intelligence API Debug] Strategy analysis complete:`, {
+      steps: debugInfo.stepDetails.length,
+      complexity: debugInfo.planning.estimatedComplexity,
+      queryTypes: debugInfo.stepDetails.map(s => s.queryType)
+    });
+    
+    res.json(debugInfo);
+    
+  } catch (error) {
+    console.error('Error in debug query planning:', error);
+    res.status(500).json({ 
+      error: 'Failed to analyze query strategy',
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 });

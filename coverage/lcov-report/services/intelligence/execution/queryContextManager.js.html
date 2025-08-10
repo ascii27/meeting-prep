@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for services/intelligence/organizationService.js</title>
+    <title>Code coverage report for services/intelligence/execution/queryContextManager.js</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../../prettify.css" />
-    <link rel="stylesheet" href="../../base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../../sort-arrow-sprite.png);
+            background-image: url(../../../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">services/intelligence</a> organizationService.js</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">services/intelligence/execution</a> queryContextManager.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">88.8% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/87</span>
+                <span class='fraction'>119/134</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">74.78% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/34</span>
+                <span class='fraction'>89/119</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">90.62% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/17</span>
+                <span class='fraction'>29/32</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">92.24% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/84</span>
+                <span class='fraction'>107/116</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -436,16 +436,86 @@
 <a name='L371'></a><a href='#L371'>371</a>
 <a name='L372'></a><a href='#L372'>372</a>
 <a name='L373'></a><a href='#L373'>373</a>
-<a name='L374'></a><a href='#L374'>374</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L374'></a><a href='#L374'>374</a>
+<a name='L375'></a><a href='#L375'>375</a>
+<a name='L376'></a><a href='#L376'>376</a>
+<a name='L377'></a><a href='#L377'>377</a>
+<a name='L378'></a><a href='#L378'>378</a>
+<a name='L379'></a><a href='#L379'>379</a>
+<a name='L380'></a><a href='#L380'>380</a>
+<a name='L381'></a><a href='#L381'>381</a>
+<a name='L382'></a><a href='#L382'>382</a>
+<a name='L383'></a><a href='#L383'>383</a>
+<a name='L384'></a><a href='#L384'>384</a>
+<a name='L385'></a><a href='#L385'>385</a>
+<a name='L386'></a><a href='#L386'>386</a>
+<a name='L387'></a><a href='#L387'>387</a>
+<a name='L388'></a><a href='#L388'>388</a>
+<a name='L389'></a><a href='#L389'>389</a>
+<a name='L390'></a><a href='#L390'>390</a>
+<a name='L391'></a><a href='#L391'>391</a>
+<a name='L392'></a><a href='#L392'>392</a>
+<a name='L393'></a><a href='#L393'>393</a>
+<a name='L394'></a><a href='#L394'>394</a>
+<a name='L395'></a><a href='#L395'>395</a>
+<a name='L396'></a><a href='#L396'>396</a>
+<a name='L397'></a><a href='#L397'>397</a>
+<a name='L398'></a><a href='#L398'>398</a>
+<a name='L399'></a><a href='#L399'>399</a>
+<a name='L400'></a><a href='#L400'>400</a>
+<a name='L401'></a><a href='#L401'>401</a>
+<a name='L402'></a><a href='#L402'>402</a>
+<a name='L403'></a><a href='#L403'>403</a>
+<a name='L404'></a><a href='#L404'>404</a>
+<a name='L405'></a><a href='#L405'>405</a>
+<a name='L406'></a><a href='#L406'>406</a>
+<a name='L407'></a><a href='#L407'>407</a>
+<a name='L408'></a><a href='#L408'>408</a>
+<a name='L409'></a><a href='#L409'>409</a>
+<a name='L410'></a><a href='#L410'>410</a>
+<a name='L411'></a><a href='#L411'>411</a>
+<a name='L412'></a><a href='#L412'>412</a>
+<a name='L413'></a><a href='#L413'>413</a>
+<a name='L414'></a><a href='#L414'>414</a>
+<a name='L415'></a><a href='#L415'>415</a>
+<a name='L416'></a><a href='#L416'>416</a>
+<a name='L417'></a><a href='#L417'>417</a>
+<a name='L418'></a><a href='#L418'>418</a>
+<a name='L419'></a><a href='#L419'>419</a>
+<a name='L420'></a><a href='#L420'>420</a>
+<a name='L421'></a><a href='#L421'>421</a>
+<a name='L422'></a><a href='#L422'>422</a>
+<a name='L423'></a><a href='#L423'>423</a>
+<a name='L424'></a><a href='#L424'>424</a>
+<a name='L425'></a><a href='#L425'>425</a>
+<a name='L426'></a><a href='#L426'>426</a>
+<a name='L427'></a><a href='#L427'>427</a>
+<a name='L428'></a><a href='#L428'>428</a>
+<a name='L429'></a><a href='#L429'>429</a>
+<a name='L430'></a><a href='#L430'>430</a>
+<a name='L431'></a><a href='#L431'>431</a>
+<a name='L432'></a><a href='#L432'>432</a>
+<a name='L433'></a><a href='#L433'>433</a>
+<a name='L434'></a><a href='#L434'>434</a>
+<a name='L435'></a><a href='#L435'>435</a>
+<a name='L436'></a><a href='#L436'>436</a>
+<a name='L437'></a><a href='#L437'>437</a>
+<a name='L438'></a><a href='#L438'>438</a>
+<a name='L439'></a><a href='#L439'>439</a>
+<a name='L440'></a><a href='#L440'>440</a>
+<a name='L441'></a><a href='#L441'>441</a>
+<a name='L442'></a><a href='#L442'>442</a>
+<a name='L443'></a><a href='#L443'>443</a>
+<a name='L444'></a><a href='#L444'>444</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -454,10 +524,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -465,10 +534,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -477,45 +543,49 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -525,11 +595,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -537,37 +608,38 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -576,6 +648,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -585,49 +658,83 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">70x</span>
+<span class="cline-any cline-yes">70x</span>
+<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -638,9 +745,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -650,9 +757,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -661,14 +770,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -676,28 +783,31 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -711,8 +821,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -721,6 +836,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -730,15 +846,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -748,35 +866,43 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -785,18 +911,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -804,384 +933,465 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * Organization Service
- * Handles organizational hierarchy, departments, and team structures
+ * Query Context Manager
+ * Manages execution context, state, and intermediate results for multi-step query strategies
  */
-const graphDatabaseService = <span class="cstat-no" title="statement not covered" >require('./graph/graphDatabaseService');</span>
-const neo4j = <span class="cstat-no" title="statement not covered" >require('neo4j-driver');</span>
 &nbsp;
-class OrganizationService {
-<span class="fstat-no" title="function not covered" >  co</span>nstructor() {
-<span class="cstat-no" title="statement not covered" >    this.graphDb = graphDatabaseService;</span>
+class QueryContextManager {
+  constructor() {
+    this.executionContexts = new Map();
+    this.maxContextAge = 60 * 60 * 1000; // 1 hour
+    this.maxContexts = 100;
   }
 &nbsp;
   /**
-   * Create or update an organization in the graph database
-   * @param {Object} orgData - Organization data
-   * @returns {Promise&lt;Object&gt;} - Created organization
+   * Initialize execution context for a new strategy execution
+   * @param {string} executionId - Unique execution identifier
+   * @param {Object} strategy - Query strategy
+   * @param {Object} context - Initial context (user, conversation, etc.)
+   * @returns {Promise&lt;void&gt;}
    */
-<span class="fstat-no" title="function not covered" >  as</span>ync createOrganization(orgData) {
-    const { name, domain, description, industry } = <span class="cstat-no" title="statement not covered" >orgData;</span>
-    
-    const cypher = <span class="cstat-no" title="statement not covered" >`</span>
-      MERGE (org:Organization {domain: $domain})
-      SET org.name = $name,
-          org.description = $description,
-          org.industry = $industry,
-          org.updatedAt = datetime()
-      RETURN org
-    `;
-    
-    const params = <span class="cstat-no" title="statement not covered" >{ name, domain, description, industry };</span>
-    const result = <span class="cstat-no" title="statement not covered" >await this.graphDb.executeQuery(cypher, params);</span>
-    
-<span class="cstat-no" title="statement not covered" >    return result.records[0]?.get('org').properties;</span>
-  }
-&nbsp;
-  /**
-   * Create or update a department
-   * @param {Object} deptData - Department data
-   * @returns {Promise&lt;Object&gt;} - Created department
-   */
-<span class="fstat-no" title="function not covered" >  as</span>ync createDepartment(deptData) {
-    const { name, code, description, organizationDomain, parentDepartmentCode } = <span class="cstat-no" title="statement not covered" >deptData;</span>
-    
-    let cypher = <span class="cstat-no" title="statement not covered" >`</span>
-      MATCH (org:Organization {domain: $organizationDomain})
-      MERGE (dept:Department {code: $code})
-      SET dept.name = $name,
-          dept.description = $description,
-          dept.updatedAt = datetime()
-      MERGE (org)-[:HAS_DEPARTMENT]-&gt;(dept)
-    `;
-    
-    const params = <span class="cstat-no" title="statement not covered" >{ name, code, description, organizationDomain };</span>
-    
-    // Add parent department relationship if specified
-<span class="cstat-no" title="statement not covered" >    if (parentDepartmentCode) {</span>
-<span class="cstat-no" title="statement not covered" >      cypher += `</span>
-        WITH dept
-        MATCH (parentDept:Department {code: $parentDepartmentCode})
-        MERGE (parentDept)-[:HAS_SUBDEPARTMENT]-&gt;(dept)
-      `;
-<span class="cstat-no" title="statement not covered" >      params.parentDepartmentCode = parentDepartmentCode;</span>
-    }
-    
-<span class="cstat-no" title="statement not covered" >    cypher += ` RETURN dept`;</span>
-    
-    const result = <span class="cstat-no" title="statement not covered" >await this.graphDb.executeQuery(cypher, params);</span>
-<span class="cstat-no" title="statement not covered" >    return result.records[0]?.get('dept').properties;</span>
-  }
-&nbsp;
-  /**
-   * Associate a person with a department and role
-   * @param {string} personEmail - Person's email
-   * @param {string} departmentCode - Department code
-   * @param {string} role - Person's role in the department
-   * @param {boolean} isManager - Whether person manages the department
-   * @returns {Promise&lt;Object&gt;} - Relationship data
-   */
-<span class="fstat-no" title="function not covered" >  as</span>ync assignPersonToDepartment(personEmail, departmentCode, role, isManager = <span class="branch-0 cbranch-no" title="branch not covered" >false)</span> {
-    const cypher = <span class="cstat-no" title="statement not covered" >`</span>
-      MATCH (p:Person {email: $personEmail})
-      MATCH (dept:Department {code: $departmentCode})
-      MERGE (p)-[r:WORKS_IN]-&gt;(dept)
-      SET r.role = $role,
-          r.isManager = $isManager,
-          r.assignedAt = datetime()
-      RETURN p, r, dept
-    `;
-    
-    const params = <span class="cstat-no" title="statement not covered" >{ personEmail, departmentCode, role, isManager };</span>
-    const result = <span class="cstat-no" title="statement not covered" >await this.graphDb.executeQuery(cypher, params);</span>
-    
-<span class="cstat-no" title="statement not covered" >    if (result.records.length &gt; 0) {</span>
-      const record = <span class="cstat-no" title="statement not covered" >result.records[0];</span>
-<span class="cstat-no" title="statement not covered" >      return {</span>
-        person: record.get('p').properties,
-        relationship: record.get('r').properties,
-        department: record.get('dept').properties
-      };
-    }
-    
-<span class="cstat-no" title="statement not covered" >    return null;</span>
-  }
-&nbsp;
-  /**
-   * Create reporting relationship between two people
-   * @param {string} managerEmail - Manager's email
-   * @param {string} reportEmail - Direct report's email
-   * @returns {Promise&lt;Object&gt;} - Relationship data
-   */
-<span class="fstat-no" title="function not covered" >  as</span>ync createReportingRelationship(managerEmail, reportEmail) {
-    const cypher = <span class="cstat-no" title="statement not covered" >`</span>
-      MATCH (manager:Person {email: $managerEmail})
-      MATCH (report:Person {email: $reportEmail})
-      MERGE (report)-[r:REPORTS_TO]-&gt;(manager)
-      SET r.establishedAt = datetime()
-      RETURN manager, r, report
-    `;
-    
-    const params = <span class="cstat-no" title="statement not covered" >{ managerEmail, reportEmail };</span>
-    const result = <span class="cstat-no" title="statement not covered" >await this.graphDb.executeQuery(cypher, params);</span>
-    
-<span class="cstat-no" title="statement not covered" >    if (result.records.length &gt; 0) {</span>
-      const record = <span class="cstat-no" title="statement not covered" >result.records[0];</span>
-<span class="cstat-no" title="statement not covered" >      return {</span>
-        manager: record.get('manager').properties,
-        relationship: record.get('r').properties,
-        report: record.get('report').properties
-      };
-    }
-    
-<span class="cstat-no" title="statement not covered" >    return null;</span>
-  }
-&nbsp;
-  /**
-   * Get organizational hierarchy for visualization
-   * @param {string} organizationDomain - Organization domain
-   * @returns {Promise&lt;Object&gt;} - Hierarchical organization data
-   */
-<span class="fstat-no" title="function not covered" >  as</span>ync getOrganizationalHierarchy(organizationDomain) {
-    const cypher = <span class="cstat-no" title="statement not covered" >`</span>
-      MATCH (org:Organization {domain: $organizationDomain})
-      OPTIONAL MATCH (org)-[:HAS_DEPARTMENT]-&gt;(dept:Department)
-      OPTIONAL MATCH (dept)&lt;-[:WORKS_IN]-(person:Person)
-      OPTIONAL MATCH (person)-[reports:REPORTS_TO]-&gt;(manager:Person)
-      RETURN org, dept, person, manager, reports
-      ORDER BY dept.name, person.name
-    `;
-    
-    const params = <span class="cstat-no" title="statement not covered" >{ organizationDomain };</span>
-    const result = <span class="cstat-no" title="statement not covered" >await this.graphDb.executeQuery(cypher, params);</span>
-    
-    // Process results into hierarchical structure
-    const hierarchy = <span class="cstat-no" title="statement not covered" >{</span>
-      organization: null,
-      departments: new Map(),
-      people: new Map(),
-      reportingRelationships: []
-    };
-    
-<span class="cstat-no" title="statement not covered" >    result.records.forEach(<span class="fstat-no" title="function not covered" >re</span>cord =&gt; {</span>
-      // Set organization data
-<span class="cstat-no" title="statement not covered" >      if (record.get('org') &amp;&amp; !hierarchy.organization) {</span>
-<span class="cstat-no" title="statement not covered" >        hierarchy.organization = record.get('org').properties;</span>
+  async initializeExecution(executionId, strategy, context) {
+    const executionContext = {
+      id: executionId,
+      strategy,
+      userContext: context,
+      startTime: new Date(),
+      status: 'initialized',
+      stepResults: new Map(),
+      intermediateData: new Map(),
+      entityCache: {
+        people: new Map(),
+        meetings: new Map(),
+        documents: new Map(),
+        topics: new Set()
+      },
+      conversationHistory: context.conversationHistory || [],
+      metadata: {
+        totalSteps: strategy.steps.length,
+        completedSteps: 0,
+        estimatedComplexity: strategy.complexity,
+        originalQuery: context.originalQuery || strategy.analysis
       }
-      
-      // Add departments
-      const dept = <span class="cstat-no" title="statement not covered" >record.get('dept');</span>
-<span class="cstat-no" title="statement not covered" >      if (dept &amp;&amp; !hierarchy.departments.has(dept.properties.code)) {</span>
-<span class="cstat-no" title="statement not covered" >        hierarchy.departments.set(dept.properties.code, {</span>
-          ...dept.properties,
-          people: []
+    };
+&nbsp;
+    this.executionContexts.set(executionId, executionContext);
+    
+    console.log(`[QueryContextManager] Initialized execution context ${executionId}`);
+    
+    // Cleanup old contexts if we're at the limit
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.executionContexts.size &gt; this.maxContexts) {
+<span class="cstat-no" title="statement not covered" >      this.cleanupOldContexts();</span>
+    }
+  }
+&nbsp;
+  /**
+   * Update step result in execution context
+   * @param {string} executionId - Execution identifier
+   * @param {number} stepNumber - Step number
+   * @param {Object} stepResult - Step execution result
+   * @returns {Promise&lt;void&gt;}
+   */
+  async updateStepResult(executionId, stepNumber, stepResult) {
+    const context = this.executionContexts.get(executionId);
+    if (!context) {
+      console.warn(`[QueryContextManager] Context not found for execution ${executionId}`);
+      return;
+    }
+&nbsp;
+    // Store step result
+    context.stepResults.set(stepNumber, stepResult);
+    context.metadata.completedSteps = context.stepResults.size;
+&nbsp;
+    // Extract and cache entities from results
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (stepResult.success &amp;&amp; stepResult.results) {
+      await this.extractAndCacheEntities(context, stepResult);
+    }
+&nbsp;
+    // Update intermediate data for cross-step references
+    await this.updateIntermediateData(context, stepNumber, stepResult);
+&nbsp;
+    console.log(`[QueryContextManager] Updated step ${stepNumber} result for execution ${executionId}`);
+  }
+&nbsp;
+  /**
+   * Extract and cache entities from step results
+   * @param {Object} context - Execution context
+   * @param {Object} stepResult - Step result
+   * @returns {Promise&lt;void&gt;}
+   */
+  async extractAndCacheEntities(context, stepResult) {
+    const results = stepResult.results.results;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!Array.isArray(results)) <span class="cstat-no" title="statement not covered" >return;</span>
+&nbsp;
+    results.forEach(item =&gt; {
+      // Cache people
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (item.email) {
+<span class="cstat-no" title="statement not covered" >        context.entityCache.people.set(item.email, {</span>
+          email: item.email,
+          name: item.name || item.displayName,
+          department: item.department,
+          role: item.role,
+          lastSeen: stepResult.timestamp
         });
       }
-      
-      // Add people
-      const person = <span class="cstat-no" title="statement not covered" >record.get('person');</span>
-<span class="cstat-no" title="statement not covered" >      if (person) {</span>
-        const personData = <span class="cstat-no" title="statement not covered" >person.properties;</span>
-<span class="cstat-no" title="statement not covered" >        hierarchy.people.set(personData.email, personData);</span>
-        
-        // Associate person with department
-<span class="cstat-no" title="statement not covered" >        if (dept) {</span>
-          const deptData = <span class="cstat-no" title="statement not covered" >hierarchy.departments.get(dept.properties.code);</span>
-<span class="cstat-no" title="statement not covered" >          if (!deptData.people.find(<span class="fstat-no" title="function not covered" >p </span>=&gt; <span class="cstat-no" title="statement not covered" >p.email === personData.email)</span>) {</span>
-<span class="cstat-no" title="statement not covered" >            deptData.people.push(personData);</span>
+&nbsp;
+      // Cache organizer from meetings
+      if (item.organizer &amp;&amp; item.organizer.email) {
+        context.entityCache.people.set(item.organizer.email, {
+          email: item.organizer.email,
+          name: item.organizer.name || item.organizer.displayName,
+          department: item.organizer.department,
+          role: item.organizer.role,
+          lastSeen: stepResult.timestamp
+        });
+      }
+&nbsp;
+      // Cache attendees from meetings
+      if (item.attendees &amp;&amp; Array.isArray(item.attendees)) {
+        item.attendees.forEach(attendee =&gt; {
+          <span class="missing-if-branch" title="else path not taken" >E</span>if (attendee.email) {
+            context.entityCache.people.set(attendee.email, {
+              email: attendee.email,
+              name: attendee.name || <span class="branch-1 cbranch-no" title="branch not covered" >attendee.displayName,</span>
+              lastSeen: stepResult.timestamp
+            });
           }
-        }
-        
-        // Add reporting relationships
-        const manager = <span class="cstat-no" title="statement not covered" >record.get('manager');</span>
-        const reportsRel = <span class="cstat-no" title="statement not covered" >record.get('reports');</span>
-<span class="cstat-no" title="statement not covered" >        if (manager &amp;&amp; reportsRel) {</span>
-<span class="cstat-no" title="statement not covered" >          hierarchy.reportingRelationships.push({</span>
-            reportEmail: personData.email,
-            managerEmail: manager.properties.email,
-            relationship: reportsRel.properties
-          });
-        }
+        });
+      }
+&nbsp;
+      // Cache meetings
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (item.id &amp;&amp; (stepResult.queryType === 'find_meetings' || <span class="branch-2 cbranch-no" title="branch not covered" >item.title)</span>) {
+        context.entityCache.meetings.set(item.id, {
+          id: item.id,
+          title: item.title,
+          startTime: item.startTime,
+          endTime: item.endTime,
+          organizer: item.organizer,
+          attendeeCount: item.attendees ? item.attendees.length : 0,
+          lastSeen: stepResult.timestamp
+        });
+      }
+&nbsp;
+      // Cache documents
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (item.id &amp;&amp; stepResult.queryType === 'find_documents') {
+<span class="cstat-no" title="statement not covered" >        context.entityCache.documents.set(item.id, {</span>
+          id: item.id,
+          title: item.title || item.name,
+          type: item.type,
+          createdAt: item.createdAt,
+          author: item.author,
+          lastSeen: stepResult.timestamp
+        });
+      }
+&nbsp;
+      // Extract and cache topics
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (item.title) {
+        const topics = this.extractTopics(item.title);
+        topics.forEach(topic =&gt; context.entityCache.topics.add(topic));
+      }
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (item.description) {
+        const topics = <span class="cstat-no" title="statement not covered" >this.extractTopics(item.description);</span>
+<span class="cstat-no" title="statement not covered" >        topics.forEach(<span class="fstat-no" title="function not covered" >to</span>pic =&gt; <span class="cstat-no" title="statement not covered" >context.entityCache.topics.add(topic))</span>;</span>
       }
     });
+  }
+&nbsp;
+  /**
+   * Extract topics from text
+   * @param {string} text - Text to extract topics from
+   * @returns {Array} - Extracted topics
+   */
+  extractTopics(text) {
+    if (!text || typeof text !== 'string') return [];
+&nbsp;
+    // Simple topic extraction
+    const topicPatterns = [
+      /\b(standup|scrum|retrospective|planning|review|demo)\b/gi,
+      /\b(project|feature|bug|issue|task|epic)\b/gi,
+      /\b(design|architecture|technical|development|engineering)\b/gi,
+      /\b(marketing|sales|customer|user|client)\b/gi,
+      /\b(quarterly|monthly|weekly|daily|sprint)\b/gi,
+      /\b(budget|finance|revenue|cost|pricing)\b/gi,
+      /\b(hiring|onboarding|training|performance)\b/gi
+    ];
+&nbsp;
+    const topics = [];
+    topicPatterns.forEach(pattern =&gt; {
+      const matches = text.match(pattern);
+      if (matches) {
+        topics.push(...matches.map(m =&gt; m.toLowerCase()));
+      }
+    });
+&nbsp;
+    return [...new Set(topics)]; // Remove duplicates
+  }
+&nbsp;
+  /**
+   * Update intermediate data for cross-step references
+   * @param {Object} context - Execution context
+   * @param {number} stepNumber - Step number
+   * @param {Object} stepResult - Step result
+   * @returns {Promise&lt;void&gt;}
+   */
+  async updateIntermediateData(context, stepNumber, stepResult) {
+    const dataKey = `step_${stepNumber}`;
     
-<span class="cstat-no" title="statement not covered" >    return {</span>
-      organization: hierarchy.organization,
-      departments: Array.from(hierarchy.departments.values()),
-      people: Array.from(hierarchy.people.values()),
-      reportingRelationships: hierarchy.reportingRelationships
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (stepResult.success &amp;&amp; stepResult.results) {
+      const results = stepResult.results.results;
+      
+      // Store processed data for easy reference by subsequent steps
+      context.intermediateData.set(dataKey, {
+        queryType: stepResult.queryType,
+        resultCount: Array.isArray(results) ? results.length : <span class="branch-1 cbranch-no" title="branch not covered" >0,</span>
+        results: results,
+        parameters: stepResult.parameters,
+        timestamp: stepResult.timestamp
+      });
+&nbsp;
+      // Create cross-references for common data types
+      if (stepResult.queryType === 'find_meetings' &amp;&amp; Array.isArray(results)) {
+        context.intermediateData.set('latest_meetings', results);
+        context.intermediateData.set('meeting_ids', results.map(m =&gt; m.id).filter(Boolean));
+      }
+&nbsp;
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (stepResult.queryType === 'get_participants' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >Array.isArray(results))</span> {
+<span class="cstat-no" title="statement not covered" >        context.intermediateData.set('latest_participants', results);</span>
+<span class="cstat-no" title="statement not covered" >        context.intermediateData.set('participant_emails', results.map(<span class="fstat-no" title="function not covered" >p </span>=&gt; <span class="cstat-no" title="statement not covered" >p.email)</span>.filter(Boolean));</span>
+      }
+&nbsp;
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (stepResult.queryType === 'find_frequent_collaborators' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >Array.isArray(results))</span> {
+<span class="cstat-no" title="statement not covered" >        context.intermediateData.set('latest_collaborators', results);</span>
+<span class="cstat-no" title="statement not covered" >        context.intermediateData.set('collaborator_emails', results.map(<span class="fstat-no" title="function not covered" >c </span>=&gt; <span class="cstat-no" title="statement not covered" >c.email)</span>.filter(Boolean));</span>
+      }
+    }
+  }
+&nbsp;
+  /**
+   * Get execution context
+   * @param {string} executionId - Execution identifier
+   * @returns {Object|null} - Execution context
+   */
+  getExecutionContext(executionId) {
+    return this.executionContexts.get(executionId) || null;
+  }
+&nbsp;
+  /**
+   * Get step result from context
+   * @param {string} executionId - Execution identifier
+   * @param {number} stepNumber - Step number
+   * @returns {Object|null} - Step result
+   */
+  getStepResult(executionId, stepNumber) {
+    const context = this.executionContexts.get(executionId);
+    if (!context) return null;
+&nbsp;
+    return context.stepResults.get(stepNumber) || null;
+  }
+&nbsp;
+  /**
+   * Get intermediate data
+   * @param {string} executionId - Execution identifier
+   * @param {string} dataKey - Data key
+   * @returns {any} - Intermediate data
+   */
+  getIntermediateData(executionId, dataKey) {
+    const context = this.executionContexts.get(executionId);
+    if (!context) return null;
+&nbsp;
+    return context.intermediateData.get(dataKey) || null;
+  }
+&nbsp;
+  /**
+   * Get cached entities
+   * @param {string} executionId - Execution identifier
+   * @param {string} entityType - Entity type (people, meetings, documents, topics)
+   * @returns {any} - Cached entities
+   */
+  getCachedEntities(executionId, entityType) {
+    const context = this.executionContexts.get(executionId);
+    if (!context || !context.entityCache[entityType]) return null;
+&nbsp;
+    if (entityType === 'topics') {
+      return Array.from(context.entityCache.topics);
+    }
+&nbsp;
+    // Convert Map to Array for other entity types
+    return Array.from(context.entityCache[entityType].values());
+  }
+&nbsp;
+  /**
+   * Build context summary for LLM prompts
+   * @param {string} executionId - Execution identifier
+   * @returns {Object} - Context summary
+   */
+  buildContextSummary(executionId) {
+    const context = this.executionContexts.get(executionId);
+    if (!context) return null;
+&nbsp;
+    const summary = {
+      executionId,
+      originalQuery: context.metadata.originalQuery,
+      progress: {
+        completedSteps: context.metadata.completedSteps,
+        totalSteps: context.metadata.totalSteps,
+        percentage: Math.round((context.metadata.completedSteps / context.metadata.totalSteps) * 100)
+      },
+      entities: {
+        peopleCount: context.entityCache.people.size,
+        meetingsCount: context.entityCache.meetings.size,
+        documentsCount: context.entityCache.documents.size,
+        topicsCount: context.entityCache.topics.size
+      },
+      recentResults: []
+    };
+&nbsp;
+    // Add recent step results (last 3)
+    const stepNumbers = Array.from(context.stepResults.keys()).sort((a, b) =&gt; b - a);
+    for (let i = 0; i &lt; Math.min(3, stepNumbers.length); i++) {
+      const stepNumber = stepNumbers[i];
+      const result = context.stepResults.get(stepNumber);
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (result) {
+        summary.recentResults.push({
+          step: stepNumber,
+          queryType: result.queryType,
+          description: result.description,
+          success: result.success,
+          resultCount: Array.isArray(result.results?.results) ? result.results.results.length : <span class="branch-1 cbranch-no" title="branch not covered" >0</span>
+        });
+      }
+    }
+&nbsp;
+    return summary;
+  }
+&nbsp;
+  /**
+   * Add conversation context
+   * @param {string} executionId - Execution identifier
+   * @param {Object} conversationEntry - Conversation entry
+   * @returns {Promise&lt;void&gt;}
+   */
+  async addConversationContext(executionId, conversationEntry) {
+    const context = this.executionContexts.get(executionId);
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!context) <span class="cstat-no" title="statement not covered" >return;</span>
+&nbsp;
+    context.conversationHistory.push({
+      ...conversationEntry,
+      timestamp: new Date().toISOString()
+    });
+&nbsp;
+    // Keep only last 10 conversation entries
+    if (context.conversationHistory.length &gt; 10) {
+      context.conversationHistory = context.conversationHistory.slice(-10);
+    }
+  }
+&nbsp;
+  /**
+   * Get conversation history
+   * @param {string} executionId - Execution identifier
+   * @returns {Array} - Conversation history
+   */
+  getConversationHistory(executionId) {
+    const context = this.executionContexts.get(executionId);
+    return context ? context.conversationHistory : [];
+  }
+&nbsp;
+  /**
+   * Finalize execution context
+   * @param {string} executionId - Execution identifier
+   * @returns {Promise&lt;void&gt;}
+   */
+  async finalizeExecution(executionId) {
+    const context = this.executionContexts.get(executionId);
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!context) <span class="cstat-no" title="statement not covered" >return;</span>
+&nbsp;
+    context.status = 'finalized';
+    context.endTime = new Date();
+    context.duration = context.endTime - context.startTime;
+&nbsp;
+    console.log(`[QueryContextManager] Finalized execution context ${executionId}`);
+  }
+&nbsp;
+  /**
+   * Cleanup old execution contexts
+   */
+  cleanupOldContexts() {
+    const cutoff = Date.now() - this.maxContextAge;
+    let cleanedCount = 0;
+&nbsp;
+    for (const [id, context] of this.executionContexts) {
+      const contextAge = context.endTime ? context.endTime.getTime() : context.startTime.getTime();
+      if (contextAge &lt; cutoff) {
+        this.executionContexts.delete(id);
+        cleanedCount++;
+      }
+    }
+&nbsp;
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (cleanedCount &gt; 0) {
+      console.log(`[QueryContextManager] Cleaned up ${cleanedCount} old execution contexts`);
+    }
+  }
+&nbsp;
+  /**
+   * Get execution statistics
+   * @returns {Object} - Statistics
+   */
+  getStatistics() {
+    const activeContexts = Array.from(this.executionContexts.values())
+      .filter(ctx =&gt; ctx.status !== 'finalized');
+    
+    const finalizedContexts = Array.from(this.executionContexts.values())
+      .filter(ctx =&gt; ctx.status === 'finalized');
+&nbsp;
+    return {
+      totalContexts: this.executionContexts.size,
+      activeContexts: activeContexts.length,
+      finalizedContexts: finalizedContexts.length,
+      averageStepsPerExecution: finalizedContexts.length &gt; 0 
+        ? finalizedContexts.reduce((sum, ctx) =&gt; sum + ctx.metadata.completedSteps, 0) / finalizedContexts.length 
+        : <span class="branch-1 cbranch-no" title="branch not covered" >0,</span>
+      averageExecutionTime: finalizedContexts.length &gt; 0
+        ? finalizedContexts.reduce((sum, ctx) =&gt; sum + (ctx.duration || <span class="branch-1 cbranch-no" title="branch not covered" >0)</span>, 0) / finalizedContexts.length
+        : <span class="branch-1 cbranch-no" title="branch not covered" >0</span>
     };
   }
 &nbsp;
   /**
-   * Get department statistics and metrics
-   * @param {string} departmentCode - Department code
-   * @returns {Promise&lt;Object&gt;} - Department statistics
+   * Clear all contexts (for testing)
    */
-<span class="fstat-no" title="function not covered" >  as</span>ync getDepartmentStatistics(departmentCode) {
-    const cypher = <span class="cstat-no" title="statement not covered" >`</span>
-      MATCH (dept:Department {code: $departmentCode})
-      OPTIONAL MATCH (dept)&lt;-[:WORKS_IN]-(person:Person)
-      OPTIONAL MATCH (person)-[:ATTENDED|ORGANIZED]-&gt;(meeting:Meeting)
-      WHERE meeting.startTime &gt;= datetime() - duration('P30D')
-      RETURN dept,
-             count(DISTINCT person) as totalPeople,
-             count(DISTINCT meeting) as recentMeetings,
-             collect(DISTINCT person.email) as peopleEmails
-    `;
-    
-    const params = <span class="cstat-no" title="statement not covered" >{ departmentCode };</span>
-    const result = <span class="cstat-no" title="statement not covered" >await this.graphDb.executeQuery(cypher, params);</span>
-    
-<span class="cstat-no" title="statement not covered" >    if (result.records.length &gt; 0) {</span>
-      const record = <span class="cstat-no" title="statement not covered" >result.records[0];</span>
-<span class="cstat-no" title="statement not covered" >      return {</span>
-        department: record.get('dept').properties,
-        totalPeople: record.get('totalPeople').toNumber(),
-        recentMeetings: record.get('recentMeetings').toNumber(),
-        peopleEmails: record.get('peopleEmails')
-      };
-    }
-    
-<span class="cstat-no" title="statement not covered" >    return null;</span>
+  clearAllContexts() {
+    this.executionContexts.clear();
+    console.log('[QueryContextManager] Cleared all execution contexts');
   }
 &nbsp;
   /**
-   * Find people in the same department
-   * @param {string} personEmail - Person's email
-   * @returns {Promise&lt;Array&gt;} - List of colleagues
+   * Set configuration
+   * @param {Object} config - Configuration options
    */
-<span class="fstat-no" title="function not covered" >  as</span>ync findColleagues(personEmail) {
-    const cypher = <span class="cstat-no" title="statement not covered" >`</span>
-      MATCH (person:Person {email: $personEmail})-[:WORKS_IN]-&gt;(dept:Department)
-      MATCH (colleague:Person)-[:WORKS_IN]-&gt;(dept)
-      WHERE colleague.email &lt;&gt; $personEmail
-      OPTIONAL MATCH (colleague)-[reports:REPORTS_TO]-&gt;(manager:Person)
-      RETURN colleague, dept, manager, reports
-      ORDER BY colleague.name
-    `;
-    
-    const params = <span class="cstat-no" title="statement not covered" >{ personEmail };</span>
-    const result = <span class="cstat-no" title="statement not covered" >await this.graphDb.executeQuery(cypher, params);</span>
-    
-<span class="cstat-no" title="statement not covered" >    return result.records.map(<span class="fstat-no" title="function not covered" >re</span>cord =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
-      colleague: record.get('colleague').properties,
-      department: record.get('dept').properties,
-      manager: record.get('manager')?.properties,
-      reportingRelationship: record.get('reports')?.properties
-    }));
-  }
-&nbsp;
-  /**
-   * Get cross-department collaboration patterns
-   * @param {string} organizationDomain - Organization domain
-   * @param {number} days - Number of days to analyze (default: 30)
-   * @returns {Promise&lt;Array&gt;} - Collaboration patterns between departments
-   */
-<span class="fstat-no" title="function not covered" >  as</span>ync getCrossDepartmentCollaboration(organizationDomain, days = <span class="branch-0 cbranch-no" title="branch not covered" >30)</span> {
-    const cypher = <span class="cstat-no" title="statement not covered" >`</span>
-      MATCH (org:Organization {domain: $organizationDomain})-[:HAS_DEPARTMENT]-&gt;(dept1:Department)
-      MATCH (org)-[:HAS_DEPARTMENT]-&gt;(dept2:Department)
-      WHERE dept1.code &lt; dept2.code
-      MATCH (person1:Person)-[:WORKS_IN]-&gt;(dept1)
-      MATCH (person2:Person)-[:WORKS_IN]-&gt;(dept2)
-      MATCH (person1)-[:ATTENDED|ORGANIZED]-&gt;(meeting:Meeting)&lt;-[:ATTENDED|ORGANIZED]-(person2)
-      WHERE meeting.startTime &gt;= datetime() - duration({days: $days})
-      RETURN dept1.name as department1,
-             dept2.name as department2,
-             count(DISTINCT meeting) as sharedMeetings,
-             count(DISTINCT person1) as people1Count,
-             count(DISTINCT person2) as people2Count,
-             collect(DISTINCT meeting.title)[0..5] as sampleMeetings
-      ORDER BY sharedMeetings DESC
-      LIMIT 20
-    `;
-    
-    const params = <span class="cstat-no" title="statement not covered" >{ organizationDomain, days: neo4j.int(days) };</span>
-    const result = <span class="cstat-no" title="statement not covered" >await this.graphDb.executeQuery(cypher, params);</span>
-    
-<span class="cstat-no" title="statement not covered" >    return result.records.map(<span class="fstat-no" title="function not covered" >re</span>cord =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
-      department1: record.get('department1'),
-      department2: record.get('department2'),
-      sharedMeetings: record.get('sharedMeetings').toNumber(),
-      people1Count: record.get('people1Count').toNumber(),
-      people2Count: record.get('people2Count').toNumber(),
-      sampleMeetings: record.get('sampleMeetings')
-    }));
-  }
-&nbsp;
-  /**
-   * Prepare visualization data for organizational chart
-   * @param {string} organizationDomain - Organization domain
-   * @returns {Promise&lt;Object&gt;} - Visualization-ready data
-   */
-<span class="fstat-no" title="function not covered" >  as</span>ync prepareOrganizationChartData(organizationDomain) {
-    const hierarchy = <span class="cstat-no" title="statement not covered" >await this.getOrganizationalHierarchy(organizationDomain);</span>
-    
-    // Create nodes and edges for visualization
-    const nodes = <span class="cstat-no" title="statement not covered" >[];</span>
-    const edges = <span class="cstat-no" title="statement not covered" >[];</span>
-    
-    // Add organization node
-<span class="cstat-no" title="statement not covered" >    if (hierarchy.organization) {</span>
-<span class="cstat-no" title="statement not covered" >      nodes.push({</span>
-        id: `org-${hierarchy.organization.domain}`,
-        label: hierarchy.organization.name,
-        type: 'organization',
-        data: hierarchy.organization
-      });
-    }
-    
-    // Add department nodes
-<span class="cstat-no" title="statement not covered" >    hierarchy.departments.forEach(<span class="fstat-no" title="function not covered" >de</span>pt =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >      nodes.push({</span>
-        id: `dept-${dept.code}`,
-        label: dept.name,
-        type: 'department',
-        data: dept
-      });
-      
-      // Connect to organization
-<span class="cstat-no" title="statement not covered" >      if (hierarchy.organization) {</span>
-<span class="cstat-no" title="statement not covered" >        edges.push({</span>
-          from: `org-${hierarchy.organization.domain}`,
-          to: `dept-${dept.code}`,
-          type: 'has_department'
-        });
-      }
-    });
-    
-    // Add person nodes
-<span class="cstat-no" title="statement not covered" >    hierarchy.people.forEach(<span class="fstat-no" title="function not covered" >pe</span>rson =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >      nodes.push({</span>
-        id: `person-${person.email}`,
-        label: person.name || person.email,
-        type: 'person',
-        data: person
-      });
-    });
-    
-    // Add reporting relationship edges
-<span class="cstat-no" title="statement not covered" >    hierarchy.reportingRelationships.forEach(<span class="fstat-no" title="function not covered" >re</span>l =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >      edges.push({</span>
-        from: `person-${rel.reportEmail}`,
-        to: `person-${rel.managerEmail}`,
-        type: 'reports_to',
-        data: rel.relationship
-      });
-    });
-    
-<span class="cstat-no" title="statement not covered" >    return { nodes, edges };</span>
+  setConfiguration(config) {
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (config.maxContextAge) this.maxContextAge = config.maxContextAge;
+    if (config.maxContexts) this.maxContexts = config.maxContexts;
   }
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >module.exports = new OrganizationService();</span>
+module.exports = new QueryContextManager();
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1191,14 +1401,14 @@ class OrganizationService {
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
                 at 2025-08-10T06:25:54.478Z
             </div>
-        <script src="../../prettify.js"></script>
+        <script src="../../../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../../sorter.js"></script>
-        <script src="../../block-navigation.js"></script>
+        <script src="../../../sorter.js"></script>
+        <script src="../../../block-navigation.js"></script>
     </body>
 </html>
     

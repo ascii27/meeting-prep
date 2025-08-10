@@ -3,8 +3,8 @@
  * Manages execution of complex, multi-step query strategies with dependency resolution
  */
 const llmQueryService = require('../llm/llmQueryService');
-const iterativeAnalysisService = require('./iterativeAnalysisService');
-const queryContextManager = require('./queryContextManager');
+const IterativeAnalysisService = require('./iterativeAnalysisService');
+const QueryContextManager = require('./queryContextManager');
 const { v4: uuidv4 } = require('uuid');
 
 class QueryExecutionOrchestrator {
@@ -13,6 +13,11 @@ class QueryExecutionOrchestrator {
     this.executionHistory = new Map();
     this.maxConcurrentExecutions = 10;
     this.maxExecutionTime = 300000; // 5 minutes
+    
+    // Initialize service instances
+    this.iterativeAnalysisService = new IterativeAnalysisService();
+    this.queryContextManager = new QueryContextManager();
+    this.llmService = require('../llm/llmService'); // For response generation
   }
 
   /**
@@ -45,11 +50,14 @@ class QueryExecutionOrchestrator {
       this.activeExecutions.set(executionId, execution);
       console.log(`[QueryExecutionOrchestrator] Starting execution ${executionId} with ${execution.metadata.totalSteps} steps`);
 
-      // Initialize context manager for this execution
-      await queryContextManager.initializeExecution(executionId, strategy, context);
+      // Initialize execution context
+      await this.queryContextManager.initializeExecution(executionId, strategy, context);
 
       // Execute strategy steps
       const results = await this.executeSteps(execution);
+
+      // Generate final LLM response from the step results
+      const finalResponse = await this.generateFinalResponse(execution, results);
 
       // Finalize execution
       execution.status = 'completed';
@@ -62,13 +70,15 @@ class QueryExecutionOrchestrator {
       // Move to history and cleanup
       this.executionHistory.set(executionId, execution);
       this.activeExecutions.delete(executionId);
-      await queryContextManager.finalizeExecution(executionId);
+      await this.queryContextManager.finalizeExecution(executionId);
 
       return {
         executionId,
-        success: true,
-        results: results.finalResults,
-        intermediateResults: results.intermediateResults,
+        status: 'completed',
+        stepResults: execution.stepResults || [],
+        errors: execution.errors || [],
+        warnings: execution.warnings || [],
+        finalResult: { response: finalResponse },
         metadata: {
           duration: execution.duration,
           stepsExecuted: execution.currentStep,
@@ -90,9 +100,11 @@ class QueryExecutionOrchestrator {
 
       return {
         executionId,
-        success: false,
-        error: error.message,
-        partialResults: execution.results,
+        status: 'failed',
+        stepResults: execution.stepResults || [],
+        errors: [error.message],
+        warnings: execution.warnings || [],
+        finalResult: null,
         metadata: {
           failedAtStep: execution.currentStep,
           totalSteps: execution.metadata.totalSteps
@@ -238,9 +250,17 @@ class QueryExecutionOrchestrator {
       // Execute the query through the LLM query service
       const queryResult = await llmQueryService.executeQuery({
         intent: step.queryType,
-        entities: resolvedParameters,
+        entities: resolvedParameters.entities || {},
+        parameters: resolvedParameters,
         confidence: 0.9 // High confidence since this is a planned step
       }, stepContext);
+
+      console.log(`[QueryExecutionOrchestrator] Step ${step.stepNumber} query result:`, {
+        type: queryResult?.type,
+        totalResults: queryResult?.totalResults,
+        hasData: queryResult?.data ? queryResult.data.length : 0,
+        resultKeys: queryResult ? Object.keys(queryResult) : []
+      });
 
       const duration = Date.now() - startTime;
 
@@ -257,7 +277,14 @@ class QueryExecutionOrchestrator {
 
       // Store intermediate results for context
       execution.intermediateResults.set(step.stepNumber, stepResult);
-      await queryContextManager.updateStepResult(execution.id, step.stepNumber, stepResult);
+      
+      // Also store in stepResults array for API response
+      if (!execution.stepResults) {
+        execution.stepResults = [];
+      }
+      execution.stepResults.push(stepResult);
+      
+      await this.queryContextManager.updateStepResult(execution.id, step.stepNumber, stepResult);
 
       console.log(`[QueryExecutionOrchestrator] Step ${step.stepNumber} completed in ${duration}ms`);
 
@@ -420,7 +447,7 @@ class QueryExecutionOrchestrator {
    */
   async performIterativeAnalysis(execution, results) {
     try {
-      const analysis = await iterativeAnalysisService.analyzeIntermediateResults(
+      const analysis = await this.iterativeAnalysisService.analyzeIntermediateResults(
         results.stepResults,
         execution.strategy,
         execution.context
@@ -501,7 +528,7 @@ class QueryExecutionOrchestrator {
     
     this.executionHistory.set(executionId, execution);
     this.activeExecutions.delete(executionId);
-    await queryContextManager.finalizeExecution(executionId);
+    await this.queryContextManager.finalizeExecution(executionId);
 
     console.log(`[QueryExecutionOrchestrator] Execution ${executionId} cancelled`);
     return true;
@@ -528,6 +555,111 @@ class QueryExecutionOrchestrator {
       }
     }
   }
+
+  /**
+   * Generate final LLM response from step results
+   * @param {Object} execution - Execution context
+   * @param {Object} results - Step execution results
+   * @returns {string} - Natural language response
+   */
+  async generateFinalResponse(execution, results) {
+    try {
+      console.log('[QueryExecutionOrchestrator] Generating final LLM response from step results');
+      
+      // Collect all step results data
+      const stepData = execution.stepResults || [];
+      const userQuery = execution.strategy.userQuery || execution.userQuery;
+      
+      // Build context for LLM response generation
+      const responsePrompt = this.buildResponsePrompt(userQuery, stepData);
+      
+      // Generate natural language response using LLM
+      const llmResponse = await this.llmService.generateResponse(responsePrompt, {}, {
+        systemPrompt: this.getResponseGenerationSystemPrompt()
+      });
+      
+      // Extract text from LLM response
+      const responseText = typeof llmResponse === 'object' && llmResponse.text ? 
+        llmResponse.text : llmResponse;
+      
+      console.log('[QueryExecutionOrchestrator] Generated final response:', {
+        responseLength: responseText?.length || 0,
+        hasResponse: !!responseText
+      });
+      
+      return responseText || 'I was able to process your query but encountered an issue generating the response.';
+      
+    } catch (error) {
+      console.error('[QueryExecutionOrchestrator] Failed to generate final response:', error);
+      return 'I processed your query successfully but encountered an issue generating the response. Please try again.';
+    }
+  }
+
+  /**
+   * Build prompt for final response generation
+   * @param {string} userQuery - Original user query
+   * @param {Array} stepData - Results from executed steps
+   * @returns {string} - Response generation prompt
+   */
+  buildResponsePrompt(userQuery, stepData) {
+    let prompt = `User Query: "${userQuery}"\n\n`;
+    
+    prompt += `Based on the following data retrieved from our system, provide a helpful and natural response to the user:\n\n`;
+    
+    stepData.forEach((step, index) => {
+      prompt += `Step ${index + 1} (${step.queryType}): ${step.description}\n`;
+      
+      if (step.results && step.results.data) {
+        const data = step.results.data;
+        if (Array.isArray(data) && data.length > 0) {
+          prompt += `Found ${data.length} results:\n`;
+          
+          // Include sample data for context
+          data.slice(0, 3).forEach((item, i) => {
+            if (item.title) {
+              prompt += `- ${item.title}`;
+              if (item.startTime) {
+                const date = new Date(item.startTime);
+                prompt += ` (${date.toLocaleDateString()} at ${date.toLocaleTimeString()})`;
+              }
+              prompt += `\n`;
+            }
+          });
+          
+          if (data.length > 3) {
+            prompt += `... and ${data.length - 3} more\n`;
+          }
+        } else {
+          prompt += `No results found\n`;
+        }
+      }
+      prompt += `\n`;
+    });
+    
+    prompt += `Please provide a conversational, helpful response that directly answers the user's question. `;
+    prompt += `Include specific details from the data when relevant (meeting titles, dates, times, etc.). `;
+    prompt += `If no results were found, explain this clearly and suggest alternative approaches.`;
+    
+    return prompt;
+  }
+
+  /**
+   * Get system prompt for response generation
+   * @returns {string} - System prompt
+   */
+  getResponseGenerationSystemPrompt() {
+    return `You are an intelligent meeting assistant helping users understand their meeting data. 
+    
+Your role is to:
+- Analyze the provided query results and generate natural, conversational responses
+- Include specific details like meeting titles, dates, times, and participants when available
+- Be helpful and informative while staying concise
+- If no results were found, explain why and suggest alternatives
+- Format dates and times in a user-friendly way
+- Focus on directly answering the user's question
+
+Always respond in a natural, conversational tone as if you're a helpful colleague providing meeting insights.`;
+  }
 }
 
-module.exports = new QueryExecutionOrchestrator();
+module.exports = QueryExecutionOrchestrator;
