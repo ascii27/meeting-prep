@@ -1176,8 +1176,55 @@ class LLMQueryService {
     const params = {};
     
     console.log('[LLMQueryService] Getting meeting content for analysis');
+    console.log('[LLMQueryService] Parsed entities:', JSON.stringify(entities, null, 2));
+    console.log('[LLMQueryService] Parameters:', JSON.stringify(parameters, null, 2));
     
-    // Build query to find meetings with documents
+    // First, let's check if there are any meetings that match the criteria (with or without documents)
+    let testCypher = `MATCH (m:Meeting)`;
+    const testConditions = [];
+    const testParams = {};
+    
+    // Add person filter if specified
+    if (entities.people && entities.people.length > 0) {
+      testCypher += `-[:ATTENDED|ORGANIZED]-(p:Person)`;
+      testConditions.push(`p.email IN $people OR p.name IN $people`);
+      testParams.people = entities.people;
+    }
+    
+    // Add timeframe filter
+    if (entities.timeframe) {
+      const timeFilter = this.parseTimeframe(entities.timeframe);
+      if (timeFilter) {
+        testConditions.push(`m.startTime >= $startTime AND m.startTime <= $endTime`);
+        testParams.startTime = timeFilter.start;
+        testParams.endTime = timeFilter.end;
+      }
+    }
+    
+    if (testConditions.length > 0) {
+      testCypher += ` WHERE ${testConditions.join(' AND ')}`;
+    }
+    
+    testCypher += ` RETURN m.title, m.startTime, m.id ORDER BY m.startTime DESC LIMIT 5`;
+    
+    console.log('[LLMQueryService] Testing for any matching meetings first...');
+    console.log('[LLMQueryService] Test query:', testCypher);
+    console.log('[LLMQueryService] Test params:', JSON.stringify(testParams, null, 2));
+    
+    const testResult = await graphDatabaseService.executeQuery(testCypher, testParams);
+    console.log('[LLMQueryService] Found', testResult.records.length, 'matching meetings (with or without documents)');
+    
+    if (testResult.records.length > 0) {
+      testResult.records.forEach((record, index) => {
+        console.log(`[LLMQueryService] Meeting ${index + 1}:`, {
+          title: record.get('m.title'),
+          startTime: record.get('m.startTime'),
+          id: record.get('m.id')
+        });
+      });
+    }
+    
+    // Now build query to find meetings with documents
     let cypher = `MATCH (m:Meeting)-[:HAS_DOCUMENT]->(d:Document)`;
     
     // Add person filter if specified
@@ -1210,7 +1257,12 @@ class LLMQueryService {
     cypher += ` RETURN DISTINCT m, collect(d) as documents ORDER BY m.startTime DESC LIMIT $limit`;
     params.limit = neo4j.int(parseInt(parameters.limit) || 5);
     
+    console.log('[LLMQueryService] Final query for meetings with documents:');
+    console.log('[LLMQueryService] Cypher:', cypher);
+    console.log('[LLMQueryService] Params:', JSON.stringify(params, null, 2));
+    
     const result = await graphDatabaseService.executeQuery(cypher, params);
+    console.log('[LLMQueryService] Query result: Found', result.records.length, 'meetings with documents');
     
     if (result.records.length === 0) {
       return {
