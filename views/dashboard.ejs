@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/css/preparation.css">
   <link rel="stylesheet" href="/css/meeting-card.css">
   <link rel="stylesheet" href="/css/dailyBriefing.css">
+  <link rel="stylesheet" href="/css/chat.css">
 </head>
 <body>
   <header class="header">
@@ -133,6 +134,61 @@
     </div>
   </main>
 
+  <!-- Meeting Intelligence Chat Interface -->
+  <div id="chat-toggle" class="chat-toggle" title="Ask about your meetings">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+  </div>
+
+  <div id="chat-panel" class="chat-panel">
+    <div class="chat-header">
+      <div class="chat-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"></path>
+        </svg>
+        <span>Meeting Intelligence</span>
+      </div>
+      <button id="chat-close" class="chat-close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="chat-content">
+      <div id="chat-messages" class="chat-messages">
+        <div class="chat-message assistant">
+          <div class="message-content">
+            <p>👋 Hi! I'm your Meeting Intelligence assistant. I can help you find information about your meetings, participants, documents, and collaboration patterns.</p>
+            <div class="quick-actions">
+              <button class="quick-action" data-query="Show me meetings from this week">This week's meetings</button>
+              <button class="quick-action" data-query="Who did I meet with recently?">Recent participants</button>
+              <button class="quick-action" data-query="Find documents from yesterday's meetings">Yesterday's documents</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-container">
+        <div class="chat-input-wrapper">
+          <input type="text" id="chat-input" placeholder="Ask about your meetings..." />
+          <button id="chat-send" disabled>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22,2 15,22 11,13 2,9"></polygon>
+            </svg>
+          </button>
+        </div>
+        <div class="chat-examples">
+          <small>Try: "Show me meetings with John", "Find documents about planning", "Who attended yesterday's standup?"</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <footer class="footer">
     <p>&copy; 2025 Meeting Prep Assistant</p>
   </footer>
@@ -141,6 +197,7 @@
   
   <script src="/js/dashboard.js"></script>
   <script src="/js/preparation.js"></script>
+  <script src="/js/chat.js"></script>
   <script src="/js/dailyBriefing.js"></script>
 </body>
 </html>
